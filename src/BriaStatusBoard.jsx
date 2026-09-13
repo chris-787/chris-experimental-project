@@ -320,11 +320,8 @@ export default function BriaStatusBoard({ onLogout }) {
         setClusters(finalClusters);
         try { await storage.set(CLUSTERS_INDEX_KEY, JSON.stringify(finalClusters), false); } catch (e) {}
       }
-      try {
-        const last = await storage.get(LAST_CLUSTER_KEY, false);
-        const lastId = last && last.value;
-        if (lastId && finalClusters.some((c) => c.id === lastId)) setCurrentClusterId(lastId);
-      } catch (e) {}
+      // Sengaja tidak lagi otomatis membuka cluster terakhir di sini —
+      // setiap kali login/buka aplikasi baru, selalu mulai dari Home dulu.
       try {
         const lb = await storage.get(LAST_BACKUP_KEY, false);
         if (lb && lb.value) setLastBackupAt(Number(lb.value));
