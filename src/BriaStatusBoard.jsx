@@ -2104,6 +2104,34 @@ export default function BriaStatusBoard({ onLogout }) {
             )}
           </div>
 
+          <div className="mb-4">
+            <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>Pencarian Blok</div>
+            <input
+              value={kavlingSearch}
+              onChange={(e) => setKavlingSearch(e.target.value)}
+              placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
+              className="text-sm px-3 py-2 rounded-lg border w-full"
+              style={{ borderColor: C.line, color: C.ink }}
+            />
+            {kavlingSearch.trim() && (
+              <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
+                {kavlingSearchResults.length === 0 ? (
+                  <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
+                ) : (
+                  kavlingSearchResults.map((r) => (
+                    <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
+                      <div>
+                        <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
+                        <div style={{ color: C.steel }}>{r.clusterName}</div>
+                      </div>
+                      <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Buka</button>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+
           {clusters.length > 0 && Object.keys(clusterStats).length > 0 && (() => {
             const totalSumHarga = Object.values(clusterStats).reduce((s, x) => s + (x.sumHarga || 0), 0);
             const totalSumHpp = Object.values(clusterStats).reduce((s, x) => s + (x.sumHpp || 0), 0);
@@ -2148,33 +2176,6 @@ export default function BriaStatusBoard({ onLogout }) {
                 })}
             </div>
           )}
-
-          <div className="mb-3" style={{ maxWidth: 360 }}>
-            <input
-              value={kavlingSearch}
-              onChange={(e) => setKavlingSearch(e.target.value)}
-              placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
-              className="text-sm px-3 py-2 rounded-lg border w-full"
-              style={{ borderColor: C.line, color: C.ink }}
-            />
-            {kavlingSearch.trim() && (
-              <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
-                {kavlingSearchResults.length === 0 ? (
-                  <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
-                ) : (
-                  kavlingSearchResults.map((r) => (
-                    <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
-                      <div>
-                        <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
-                        <div style={{ color: C.steel }}>{r.clusterName}</div>
-                      </div>
-                      <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Buka</button>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
 
           {clusters.filter((c) => !c.archived).length > 4 && (
             <input
