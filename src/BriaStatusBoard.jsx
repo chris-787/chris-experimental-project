@@ -2119,7 +2119,7 @@ export default function BriaStatusBoard({ onLogout }) {
           </div>
 
           <div className="mb-4">
-            <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>Pencarian Blok</div>
+            <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>🔍 Pencarian Blok</div>
             <input
               value={kavlingSearch}
               onChange={(e) => setKavlingSearch(e.target.value)}
@@ -2147,7 +2147,7 @@ export default function BriaStatusBoard({ onLogout }) {
           </div>
 
           {clusters.length > 0 && Object.keys(clusterStats).length > 0 && (
-            <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>Dashboard</div>
+            <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>📊 Dashboard</div>
           )}
           {clusters.length > 0 && Object.keys(clusterStats).length > 0 && (() => {
             const totalSumHarga = Object.values(clusterStats).reduce((s, x) => s + (x.sumHarga || 0), 0);
@@ -2194,7 +2194,7 @@ export default function BriaStatusBoard({ onLogout }) {
             </div>
           )}
 
-          <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>Cluster</div>
+          <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>🏘️ Cluster</div>
 
           {clusters.filter((c) => !c.archived).length > 4 && (
             <input
@@ -2319,7 +2319,7 @@ export default function BriaStatusBoard({ onLogout }) {
           <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase", marginBottom: 4 }}>
             {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
           </div>
-          <button onClick={goHome} className="text-xs mb-1" style={{ color: C.accent }}>🏠 Home</button>
+          <button onClick={goHome} className="text-xs mb-1" style={{ color: C.accent }}>← 🏠 Home</button>
           <input
             value={activeCluster.name}
             onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, name: e.target.value } : c)))}
