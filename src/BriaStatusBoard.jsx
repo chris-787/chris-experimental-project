@@ -413,6 +413,75 @@ export default function BriaStatusBoard({ onLogout }) {
     loadCluster(currentClusterId);
   }
 
+  // Dengarkan perubahan Pengaturan (blok/tipe/status/kategori) cluster ini.
+  // Beda dengan data kavling, field-field ini selalu tersimpan langsung tiap
+  // ada aksi (tidak ada draft belum-tersimpan yang bisa ketimpa), jadi
+  // pembaruan dari pengguna lain langsung dipakai tanpa perlu konfirmasi.
+  useEffect(() => {
+    if (!currentClusterId) return;
+    const key = configKeyFor(currentClusterId);
+    const channel = supabase
+      .channel(`kv_store:${key}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "kv_store", filter: `key=eq.${key}` },
+        (payload) => {
+          const row = payload.new;
+          if (!row || !row.value) return;
+          try {
+            const parsed = JSON.parse(row.value);
+            if (parsed.blocks) setBlocks(parsed.blocks);
+            if (parsed.tipeOptions) setTipeOptions(parsed.tipeOptions);
+            if (parsed.statusFields) setStatusFields(parsed.statusFields);
+            if (parsed.kategoriOptions) setKategoriOptions(parsed.kategoriOptions);
+          } catch (e) {}
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [currentClusterId]);
+
+  // Dengarkan perubahan gambar site plan cluster ini dari pengguna lain.
+  useEffect(() => {
+    if (!currentClusterId) return;
+    const key = imageKeyFor(currentClusterId);
+    const channel = supabase
+      .channel(`kv_store:${key}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "kv_store", filter: `key=eq.${key}` },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            setSiteImage(currentClusterId === LEGACY_CLUSTER_ID ? SITE_IMAGE_DEFAULT : null);
+            return;
+          }
+          const row = payload.new;
+          if (row && row.value) setSiteImage(row.value);
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [currentClusterId]);
+
+  // Dengarkan perubahan daftar cluster (tambah/hapus/rename/arsip) di Home,
+  // aktif terus selama aplikasi terbuka (bukan cuma waktu di layar Home) —
+  // karena judul & subjudul cluster yang sedang dibuka juga diambil dari sini.
+  useEffect(() => {
+    const channel = supabase
+      .channel(`kv_store:${CLUSTERS_INDEX_KEY}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "kv_store", filter: `key=eq.${CLUSTERS_INDEX_KEY}` },
+        (payload) => {
+          const row = payload.new;
+          if (!row || !row.value) return;
+          try { setClusters(JSON.parse(row.value)); } catch (e) {}
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const [clusterImages, setClusterImages] = useState({});
   async function loadHomeStats(list) {
     const results = {};
