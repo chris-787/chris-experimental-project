@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
-} from "recharts";
+import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense, lazy } from "react";
 import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
 import { onStorageError } from "./lib/errorBus";
 import { C, PALETTE } from "./theme";
+
+// Grafik dashboard (recharts) baru diunduh saat benar-benar ditampilkan,
+// bukan di awal buka aplikasi — recharts lumayan besar dan tidak semua
+// orang langsung lihat dashboard-nya.
+const DashboardCharts = lazy(() => import("./DashboardCharts"));
 
 const SITE_IMAGE_DEFAULT = "/default-site-plan.jpg";
 const MAX_IMG_DIM = 1600;
@@ -136,6 +137,19 @@ export default function BriaStatusBoard({ onLogout }) {
       storageErrorTimerRef.current = setTimeout(() => setStorageError(null), 6000);
     });
     return unsubscribe;
+  }, []);
+  // Deteksi proaktif kalau koneksi internet Anda sendiri putus, supaya tahu
+  // dari awal — tidak perlu menunggu sampai ada aksi yang gagal disimpan dulu.
+  const [isOffline, setIsOffline] = useState(typeof navigator !== "undefined" ? !navigator.onLine : false);
+  useEffect(() => {
+    function handleOnline() { setIsOffline(false); }
+    function handleOffline() { setIsOffline(true); }
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, []);
   const [homeDirty, setHomeDirty] = useState(false);
   const [homeSavedToast, setHomeSavedToast] = useState(false);
@@ -1521,60 +1535,16 @@ export default function BriaStatusBoard({ onLogout }) {
             </div>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
-            <div className="rounded-xl p-3" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.ink, marginBottom: 4 }}>Kalibrasi per Blok (unit)</div>
-              <ResponsiveContainer width="100%" height={150}>
-                <BarChart data={progressPerBlok} barCategoryGap={8} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="2 2" stroke={C.line} />
-                  <XAxis dataKey="blok" tick={{ fontSize: 10, fill: C.steel }} />
-                  <YAxis tick={{ fontSize: 10, fill: C.steel }} allowDecimals={false} width={24} />
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="Terpetakan" stackId="a" fill={C.accent} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Target" stackId="a" fill={C.faint} radius={[2, 2, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="rounded-xl p-3" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.ink, marginBottom: 4 }}>Margin per Tipe (%)</div>
-              <ResponsiveContainer width="100%" height={150}>
-                <BarChart data={marginPerTipe} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="2 2" stroke={C.line} />
-                  <XAxis dataKey="tipe" tick={{ fontSize: 8, fill: C.steel }} interval={0} angle={-20} textAnchor="end" height={32} />
-                  <YAxis tick={{ fontSize: 10, fill: C.steel }} width={28} />
-                  <Tooltip formatter={(v) => `${v}%`} />
-                  <Bar dataKey="margin" fill={C.accent} radius={[2, 2, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="rounded-xl p-3" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.ink, marginBottom: 4 }}>Kelengkapan Status (semua kavling)</div>
-              <ResponsiveContainer width="100%" height={150}>
-                <BarChart data={statusBreakdown} layout="vertical" margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="2 2" stroke={C.line} />
-                  <XAxis type="number" tick={{ fontSize: 10, fill: C.steel }} allowDecimals={false} />
-                  <YAxis type="category" dataKey="label" tick={{ fontSize: 10, fill: C.steel }} width={80} />
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="Selesai" stackId="s" fill={C.green} />
-                  <Bar dataKey="Belum" stackId="s" fill={C.faint} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="rounded-xl p-3" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.ink, marginBottom: 4 }}>Distribusi Tipe Kavling</div>
-              <ResponsiveContainer width="100%" height={150}>
-                <PieChart>
-                  <Pie data={tipePie} dataKey="value" nameKey="name" innerRadius={32} outerRadius={55}>
-                    {tipePie.map((entry) => <Cell key={entry.name} fill={tipeColor(entry.name)} />)}
-                  </Pie>
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+          <Suspense fallback={<div style={{ minHeight: 150 }} />}>
+            <DashboardCharts
+              C={C}
+              progressPerBlok={progressPerBlok}
+              marginPerTipe={marginPerTipe}
+              statusBreakdown={statusBreakdown}
+              tipePie={tipePie}
+              tipeColor={tipeColor}
+            />
+          </Suspense>
         </div>
   );
 
@@ -1982,6 +1952,18 @@ export default function BriaStatusBoard({ onLogout }) {
         .editable-heading:hover, .editable-heading:focus { border-bottom-color: ${C.line} !important; }
         @keyframes bria-spin { to { transform: rotate(360deg); } }
       `}</style>
+
+      {isOffline && (
+        <div
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, zIndex: 101,
+            background: C.amber, color: "#fff", padding: "8px 14px",
+            fontSize: 13, textAlign: "center", fontWeight: 500,
+          }}
+        >
+          ⚠ Anda sedang offline — perubahan mungkin tidak tersimpan sampai koneksi internet kembali.
+        </div>
+      )}
 
       {storageError && (
         <div
