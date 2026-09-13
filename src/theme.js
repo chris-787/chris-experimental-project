@@ -8,7 +8,7 @@ export const C = {
   steel: "#5B6673",
   faint: "#DAD4C6",
   line: "#C9C2B2",
-  accent: "#1F3F63",
+  accent: "#162C48",
   green: "#3F7D58",
   amber: "#B8791E",
   red: "#BD3B2E",
