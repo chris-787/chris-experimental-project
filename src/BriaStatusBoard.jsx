@@ -5,6 +5,7 @@ import {
 } from "recharts";
 import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
+import { onStorageError } from "./lib/errorBus";
 import { C, PALETTE } from "./theme";
 
 const SITE_IMAGE_DEFAULT = "/default-site-plan.jpg";
@@ -126,6 +127,16 @@ export default function BriaStatusBoard({ onLogout }) {
   const [remoteUpdateAvailable, setRemoteUpdateAvailable] = useState(false);
   const dirtyRef = useRef(dirty);
   useEffect(() => { dirtyRef.current = dirty; }, [dirty]);
+  const [storageError, setStorageError] = useState(null);
+  const storageErrorTimerRef = useRef(null);
+  useEffect(() => {
+    const unsubscribe = onStorageError((message) => {
+      setStorageError(message);
+      clearTimeout(storageErrorTimerRef.current);
+      storageErrorTimerRef.current = setTimeout(() => setStorageError(null), 6000);
+    });
+    return unsubscribe;
+  }, []);
   const [homeDirty, setHomeDirty] = useState(false);
   const [homeSavedToast, setHomeSavedToast] = useState(false);
   const [homeSaving, setHomeSaving] = useState(false);
@@ -1974,6 +1985,18 @@ export default function BriaStatusBoard({ onLogout }) {
         .editable-heading:hover, .editable-heading:focus { border-bottom-color: ${C.line} !important; }
         @keyframes bria-spin { to { transform: rotate(360deg); } }
       `}</style>
+
+      {storageError && (
+        <div
+          style={{
+            position: "fixed", bottom: 16, right: 16, zIndex: 100, maxWidth: 320,
+            background: C.red, color: "#fff", padding: "10px 14px", borderRadius: 10,
+            fontSize: 13, boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+          }}
+        >
+          ⚠ {storageError}
+        </div>
+      )}
 
       {!currentClusterId ? (
         <div style={{ maxWidth: 760, margin: "0 auto" }}>

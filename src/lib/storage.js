@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient";
+import { emitStorageError } from "./errorBus";
 
 /**
  * Pengganti window.storage (API bawaan Claude.ai Artifacts) yang disimpan ke
@@ -17,6 +18,11 @@ import { supabase } from "./supabaseClient";
  * dan melempar error dengan code "CONFLICT" alih-alih menimpa begitu saja.
  * Pemanggilan lama yang mengirim `false`/tidak mengirim apa-apa tetap
  * berjalan seperti biasa (upsert langsung, tanpa cek konflik).
+ *
+ * Semua kegagalan set()/delete() (selain CONFLICT, yang memang disengaja)
+ * diumumkan lewat errorBus supaya UI bisa menampilkan notifikasi ke
+ * pengguna — pemanggil tetap menerima error yang sama seperti sebelumnya,
+ * jadi try/catch yang sudah ada di banyak tempat tidak perlu diubah.
  */
 
 async function get(key) {
@@ -31,30 +37,40 @@ async function get(key) {
 }
 
 async function set(key, value, expectedUpdatedAt) {
-  const nowIso = new Date().toISOString();
-  if (typeof expectedUpdatedAt === "string" && expectedUpdatedAt) {
-    const { data, error } = await supabase
-      .from("kv_store")
-      .update({ value, updated_at: nowIso })
-      .eq("key", key)
-      .eq("updated_at", expectedUpdatedAt)
-      .select();
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      const conflict = new Error("Data ini sudah diubah oleh pengguna lain sejak terakhir dimuat.");
-      conflict.code = "CONFLICT";
-      throw conflict;
+  try {
+    const nowIso = new Date().toISOString();
+    if (typeof expectedUpdatedAt === "string" && expectedUpdatedAt) {
+      const { data, error } = await supabase
+        .from("kv_store")
+        .update({ value, updated_at: nowIso })
+        .eq("key", key)
+        .eq("updated_at", expectedUpdatedAt)
+        .select();
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        const conflict = new Error("Data ini sudah diubah oleh pengguna lain sejak terakhir dimuat.");
+        conflict.code = "CONFLICT";
+        throw conflict;
+      }
+      return { updatedAt: nowIso };
     }
+    const { error } = await supabase.from("kv_store").upsert({ key, value, updated_at: nowIso });
+    if (error) throw error;
     return { updatedAt: nowIso };
+  } catch (e) {
+    if (e.code !== "CONFLICT") emitStorageError("Gagal menyimpan ke server. Periksa koneksi internet Anda.");
+    throw e;
   }
-  const { error } = await supabase.from("kv_store").upsert({ key, value, updated_at: nowIso });
-  if (error) throw error;
-  return { updatedAt: nowIso };
 }
 
 async function del(key) {
-  const { error } = await supabase.from("kv_store").delete().eq("key", key);
-  if (error) throw error;
+  try {
+    const { error } = await supabase.from("kv_store").delete().eq("key", key);
+    if (error) throw error;
+  } catch (e) {
+    emitStorageError("Gagal menghapus data di server. Periksa koneksi internet Anda.");
+    throw e;
+  }
 }
 
 export const storage = { get, set, delete: del };
