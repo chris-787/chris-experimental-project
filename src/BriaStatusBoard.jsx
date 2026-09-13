@@ -409,18 +409,23 @@ export default function BriaStatusBoard({ onLogout }) {
   }
   useEffect(() => { if (currentClusterId) loadCluster(currentClusterId); }, [currentClusterId]);
 
-  // Dengarkan perubahan data kavling cluster ini secara real-time. Kalau ada
-  // pengguna lain menyimpan perubahan: langsung dipakai kalau kita sendiri
-  // tidak sedang punya perubahan belum tersimpan, atau cuma dikasih tahu
-  // (tanpa menimpa layar) kalau kita sedang ada perubahan yang belum disimpan.
+  // Dengarkan perubahan kavling, pengaturan, dan gambar site plan cluster
+  // ini lewat SATU koneksi real-time (bukan 3 koneksi terpisah seperti
+  // sebelumnya) -- cuma penataan ulang struktur, perilakunya identik:
+  // - Kavling: langsung dipakai kalau tidak ada perubahan lokal belum
+  //   tersimpan, atau cuma dikasih tahu (tanpa menimpa layar) kalau ada.
+  // - Pengaturan & gambar: selalu tersimpan langsung tiap ada aksi (tidak
+  //   ada draft yang bisa ketimpa), jadi pembaruan langsung dipakai.
   useEffect(() => {
     if (!currentClusterId) return;
-    const key = housesKeyFor(currentClusterId);
+    const housesKey = housesKeyFor(currentClusterId);
+    const configKey = configKeyFor(currentClusterId);
+    const imgKey = imageKeyFor(currentClusterId);
     const channel = supabase
-      .channel(`kv_store:${key}`)
+      .channel(`kv_store:cluster:${currentClusterId}`)
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "kv_store", filter: `key=eq.${key}` },
+        { event: "UPDATE", schema: "public", table: "kv_store", filter: `key=eq.${housesKey}` },
         (payload) => {
           const row = payload.new;
           if (!row) return;
@@ -436,28 +441,9 @@ export default function BriaStatusBoard({ onLogout }) {
           }
         }
       )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [currentClusterId]);
-
-  function reloadAfterRemoteUpdate() {
-    setRemoteUpdateAvailable(false);
-    setSaveConflict(false);
-    loadCluster(currentClusterId);
-  }
-
-  // Dengarkan perubahan Pengaturan (blok/tipe/status/kategori) cluster ini.
-  // Beda dengan data kavling, field-field ini selalu tersimpan langsung tiap
-  // ada aksi (tidak ada draft belum-tersimpan yang bisa ketimpa), jadi
-  // pembaruan dari pengguna lain langsung dipakai tanpa perlu konfirmasi.
-  useEffect(() => {
-    if (!currentClusterId) return;
-    const key = configKeyFor(currentClusterId);
-    const channel = supabase
-      .channel(`kv_store:${key}`)
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "kv_store", filter: `key=eq.${key}` },
+        { event: "UPDATE", schema: "public", table: "kv_store", filter: `key=eq.${configKey}` },
         (payload) => {
           const row = payload.new;
           if (!row || !row.value) return;
@@ -470,19 +456,9 @@ export default function BriaStatusBoard({ onLogout }) {
           } catch (e) {}
         }
       )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [currentClusterId]);
-
-  // Dengarkan perubahan gambar site plan cluster ini dari pengguna lain.
-  useEffect(() => {
-    if (!currentClusterId) return;
-    const key = imageKeyFor(currentClusterId);
-    const channel = supabase
-      .channel(`kv_store:${key}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "kv_store", filter: `key=eq.${key}` },
+        { event: "*", schema: "public", table: "kv_store", filter: `key=eq.${imgKey}` },
         (payload) => {
           if (payload.eventType === "DELETE") {
             setSiteImage(currentClusterId === LEGACY_CLUSTER_ID ? SITE_IMAGE_DEFAULT : null);
@@ -495,6 +471,12 @@ export default function BriaStatusBoard({ onLogout }) {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [currentClusterId]);
+
+  function reloadAfterRemoteUpdate() {
+    setRemoteUpdateAvailable(false);
+    setSaveConflict(false);
+    loadCluster(currentClusterId);
+  }
 
   // Dengarkan perubahan daftar cluster (tambah/hapus/rename/arsip) di Home,
   // aktif terus selama aplikasi terbuka (bukan cuma waktu di layar Home) —
