@@ -151,6 +151,17 @@ export default function BriaStatusBoard({ onLogout }) {
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
+  // Peringatkan sebelum tab/browser ditutup atau di-reload kalau masih ada
+  // perubahan kavling yang belum tersimpan (pelengkap dari perbaikan goHome).
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      if (!dirtyRef.current) return;
+      e.preventDefault();
+      e.returnValue = "";
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
   const [homeDirty, setHomeDirty] = useState(false);
   const [homeSavedToast, setHomeSavedToast] = useState(false);
   const [homeSaving, setHomeSaving] = useState(false);
@@ -615,7 +626,10 @@ export default function BriaStatusBoard({ onLogout }) {
     setCurrentClusterId(id);
     storage.set(LAST_CLUSTER_KEY, id, false).catch(() => {});
   }
-  function goHome() {
+  async function goHome() {
+    if (dirty) {
+      await saveHouses();
+    }
     setCurrentClusterId(null);
     storage.delete(LAST_CLUSTER_KEY, false).catch(() => {});
   }
@@ -2305,7 +2319,7 @@ export default function BriaStatusBoard({ onLogout }) {
           <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase", marginBottom: 4 }}>
             {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
           </div>
-          <button onClick={goHome} className="text-xs mb-1" style={{ color: C.accent }}>← Semua Cluster</button>
+          <button onClick={goHome} className="text-xs mb-1" style={{ color: C.accent }}>🏠 Home</button>
           <input
             value={activeCluster.name}
             onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, name: e.target.value } : c)))}
