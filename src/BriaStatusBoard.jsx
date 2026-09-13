@@ -505,9 +505,11 @@ export default function BriaStatusBoard({ onLogout }) {
   }, []);
 
   const [clusterImages, setClusterImages] = useState({});
+  const [globalHousesIndex, setGlobalHousesIndex] = useState({});
   async function loadHomeStats(list) {
     const results = {};
     const images = {};
+    const housesIndex = {};
     await Promise.all(list.map(async (c) => {
       try {
         const [hRes, cfgRes, imgRes] = await Promise.all([
@@ -517,6 +519,7 @@ export default function BriaStatusBoard({ onLogout }) {
         ]);
         images[c.id] = (imgRes && imgRes.value) || (c.id === LEGACY_CLUSTER_ID ? SITE_IMAGE_DEFAULT : null);
         const chouses = hRes && hRes.value ? JSON.parse(hRes.value) : [];
+        housesIndex[c.id] = chouses;
         const cfgParsed = cfgRes && cfgRes.value ? JSON.parse(cfgRes.value) : null;
         const ctipe = (cfgParsed && cfgParsed.tipeOptions) || (c.id === LEGACY_CLUSTER_ID ? DEFAULT_TIPE : []);
         const cblocks = (cfgParsed && cfgParsed.blocks) || (c.id === LEGACY_CLUSTER_ID ? DEFAULT_BLOCKS : []);
@@ -549,12 +552,47 @@ export default function BriaStatusBoard({ onLogout }) {
     }));
     setClusterStats(results);
     setClusterImages(images);
+    setGlobalHousesIndex(housesIndex);
   }
   useEffect(() => {
     if (currentClusterId || !homeLoaded) return;
     if (clusters.length === 0) return;
     loadHomeStats(clusters);
   }, [currentClusterId, homeLoaded, clusters.length]);
+
+  // ---- pencarian kavling lintas-cluster (di Home) ----
+  const [kavlingSearch, setKavlingSearch] = useState("");
+  const kavlingSearchResults = useMemo(() => {
+    const q = kavlingSearch.trim().toLowerCase();
+    if (!q) return [];
+    const results = [];
+    Object.entries(globalHousesIndex).forEach(([clusterId, chouses]) => {
+      const cluster = clusters.find((c) => c.id === clusterId);
+      if (!cluster) return;
+      (chouses || []).forEach((h) => {
+        const kavlingLabel = `${h.blok}-${h.noKavling}`;
+        if (kavlingLabel.toLowerCase().includes(q)) {
+          results.push({ house: h, clusterId, clusterName: cluster.name, kavlingLabel });
+        }
+      });
+    });
+    return results.slice(0, 30);
+  }, [kavlingSearch, globalHousesIndex, clusters]);
+
+  const [pendingHighlight, setPendingHighlight] = useState(null);
+  useEffect(() => {
+    if (!pendingHighlight || !clusterLoaded) return;
+    if (pendingHighlight.clusterId !== currentClusterId) return;
+    setMode("kerja");
+    setSelectedId(pendingHighlight.houseId);
+    setPendingHighlight(null);
+  }, [pendingHighlight, clusterLoaded, currentClusterId]);
+
+  function openKavlingFromSearch(clusterId, houseId) {
+    setPendingHighlight({ clusterId, houseId });
+    setKavlingSearch("");
+    openCluster(clusterId);
+  }
 
   function newClusterId() { return `cl-${Date.now().toString(36)}${Math.random().toString(36).slice(-4)}`; }
   function saveClustersIndex(next) {
@@ -1612,7 +1650,7 @@ export default function BriaStatusBoard({ onLogout }) {
                     {selectedId === h.id && (
                       <polygon
                         points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
-                        fill="none" stroke={C.gold} strokeWidth="2.2" strokeLinejoin="round"
+                        fill="none" stroke={C.gold} strokeWidth="3.5" strokeLinejoin="round"
                         vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }}
                       />
                     )}
@@ -2110,6 +2148,33 @@ export default function BriaStatusBoard({ onLogout }) {
                 })}
             </div>
           )}
+
+          <div className="mb-3" style={{ maxWidth: 360 }}>
+            <input
+              value={kavlingSearch}
+              onChange={(e) => setKavlingSearch(e.target.value)}
+              placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
+              className="text-sm px-3 py-2 rounded-lg border w-full"
+              style={{ borderColor: C.line, color: C.ink }}
+            />
+            {kavlingSearch.trim() && (
+              <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
+                {kavlingSearchResults.length === 0 ? (
+                  <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
+                ) : (
+                  kavlingSearchResults.map((r) => (
+                    <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
+                      <div>
+                        <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
+                        <div style={{ color: C.steel }}>{r.clusterName}</div>
+                      </div>
+                      <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Buka</button>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
 
           {clusters.filter((c) => !c.archived).length > 4 && (
             <input
