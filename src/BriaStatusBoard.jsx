@@ -555,7 +555,8 @@ export default function BriaStatusBoard({ onLogout }) {
 
   // ---- pencarian kavling lintas-cluster (di Home) ----
   const [kavlingSearch, setKavlingSearch] = useState("");
-  const kavlingSearchResults = useMemo(() => {
+  const KAVLING_SEARCH_LIMIT = 30;
+  const kavlingSearchAllMatches = useMemo(() => {
     const q = kavlingSearch.trim().toLowerCase();
     if (!q) return [];
     const results = [];
@@ -569,8 +570,12 @@ export default function BriaStatusBoard({ onLogout }) {
         }
       });
     });
-    return results.slice(0, 30);
+    return results;
   }, [kavlingSearch, globalHousesIndex, clusters]);
+  const kavlingSearchResults = useMemo(
+    () => kavlingSearchAllMatches.slice(0, KAVLING_SEARCH_LIMIT),
+    [kavlingSearchAllMatches]
+  );
 
   const [pendingHighlight, setPendingHighlight] = useState(null);
   useEffect(() => {
@@ -2111,18 +2116,25 @@ export default function BriaStatusBoard({ onLogout }) {
             />
             {kavlingSearch.trim() && (
               <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
-                {kavlingSearchResults.length === 0 ? (
-                  <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
-                ) : (
-                  kavlingSearchResults.map((r) => (
-                    <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
-                      <div>
-                        <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
-                        <div style={{ color: C.steel }}>{r.clusterName}</div>
+                <div style={{ maxHeight: 320, overflowY: "auto" }}>
+                  {kavlingSearchResults.length === 0 ? (
+                    <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
+                  ) : (
+                    kavlingSearchResults.map((r) => (
+                      <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
+                        <div>
+                          <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
+                          <div style={{ color: C.steel }}>{r.clusterName}</div>
+                        </div>
+                        <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff", flexShrink: 0 }}>Buka</button>
                       </div>
-                      <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Buka</button>
-                    </div>
-                  ))
+                    ))
+                  )}
+                </div>
+                {kavlingSearchAllMatches.length > KAVLING_SEARCH_LIMIT && (
+                  <div className="text-xs px-3 py-2" style={{ color: C.steel, background: C.paper, borderTop: `1px solid ${C.line}` }}>
+                    Menampilkan {KAVLING_SEARCH_LIMIT} dari {kavlingSearchAllMatches.length} hasil — ketik lebih spesifik untuk mempersempit.
+                  </div>
                 )}
               </div>
             )}
