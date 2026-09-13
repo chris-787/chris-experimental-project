@@ -2048,7 +2048,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
                 {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
                 <button onClick={saveHomeChanges} className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>
-                <button onClick={onLogout} className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ border: `1px solid ${C.line}`, color: C.steel, background: "#fff" }}>Keluar</button>
+                <button onClick={onLogout} className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ border: `1px solid ${C.red}`, color: C.red, background: "#fff" }}>Log Out</button>
               </div>
             </div>
             <div className="text-sm mt-1" style={{ color: C.steel }}>Pilih cluster untuk mulai bekerja, atau tambah cluster baru.</div>
