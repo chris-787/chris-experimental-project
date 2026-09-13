@@ -4,6 +4,7 @@ import {
   PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { storage } from "./lib/storage";
+import { supabase } from "./lib/supabaseClient";
 import { C, PALETTE } from "./theme";
 
 const SITE_IMAGE_DEFAULT = "/default-site-plan.jpg";
@@ -120,6 +121,11 @@ export default function BriaStatusBoard({ onLogout }) {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedToast, setSavedToast] = useState(false);
+  const [housesUpdatedAt, setHousesUpdatedAt] = useState(null);
+  const [saveConflict, setSaveConflict] = useState(false);
+  const [remoteUpdateAvailable, setRemoteUpdateAvailable] = useState(false);
+  const dirtyRef = useRef(dirty);
+  useEffect(() => { dirtyRef.current = dirty; }, [dirty]);
   const [homeDirty, setHomeDirty] = useState(false);
   const [homeSavedToast, setHomeSavedToast] = useState(false);
   const [homeSaving, setHomeSaving] = useState(false);
@@ -328,9 +334,11 @@ export default function BriaStatusBoard({ onLogout }) {
     setSelectedId(null); setConfirmDeleteId(null); setActionMenuId(null);
     setEditingShapeId(null); setEditPoints(null); setSelectedRows([]);
     setDraft(null); setDrawingPoints([]); setMode("input"); setFollowUpFilterActive(false);
+    setHousesUpdatedAt(null); setSaveConflict(false); setRemoteUpdateAvailable(false);
     try {
       const h = await storage.get(housesKeyFor(id), false);
       if (h && h.value) setHouses(JSON.parse(h.value));
+      setHousesUpdatedAt(h ? h.updatedAt : null);
     } catch (e) {}
     try {
       const img = await storage.get(imageKeyFor(id), false);
@@ -367,6 +375,43 @@ export default function BriaStatusBoard({ onLogout }) {
     setClusterLoaded(true);
   }
   useEffect(() => { if (currentClusterId) loadCluster(currentClusterId); }, [currentClusterId]);
+
+  // Dengarkan perubahan data kavling cluster ini secara real-time. Kalau ada
+  // pengguna lain menyimpan perubahan: langsung dipakai kalau kita sendiri
+  // tidak sedang punya perubahan belum tersimpan, atau cuma dikasih tahu
+  // (tanpa menimpa layar) kalau kita sedang ada perubahan yang belum disimpan.
+  useEffect(() => {
+    if (!currentClusterId) return;
+    const key = housesKeyFor(currentClusterId);
+    const channel = supabase
+      .channel(`kv_store:${key}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "kv_store", filter: `key=eq.${key}` },
+        (payload) => {
+          const row = payload.new;
+          if (!row) return;
+          if (dirtyRef.current) {
+            setRemoteUpdateAvailable(true);
+          } else {
+            try {
+              setHouses(JSON.parse(row.value));
+              setHousesUpdatedAt(row.updated_at);
+              setSaveConflict(false);
+              setRemoteUpdateAvailable(false);
+            } catch (e) {}
+          }
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [currentClusterId]);
+
+  function reloadAfterRemoteUpdate() {
+    setRemoteUpdateAvailable(false);
+    setSaveConflict(false);
+    loadCluster(currentClusterId);
+  }
 
   const [clusterImages, setClusterImages] = useState({});
   async function loadHomeStats(list) {
@@ -487,12 +532,17 @@ export default function BriaStatusBoard({ onLogout }) {
   async function saveHouses(next) {
     setSaving(true);
     try {
-      await storage.set(housesKeyFor(currentClusterId), JSON.stringify(next ?? houses), false);
+      const result = await storage.set(housesKeyFor(currentClusterId), JSON.stringify(next ?? houses), housesUpdatedAt);
+      setHousesUpdatedAt(result.updatedAt);
+      setSaveConflict(false);
       setDirty(false);
       setSavedToast(true);
       setTimeout(() => setSavedToast(false), 2200);
     }
-    catch (e) { console.error(e); }
+    catch (e) {
+      if (e && e.code === "CONFLICT") setSaveConflict(true);
+      else console.error(e);
+    }
     finally { setSaving(false); }
   }
   async function saveConfig(next) {
@@ -2145,6 +2195,19 @@ export default function BriaStatusBoard({ onLogout }) {
           </button>
         </div>
       </div>
+
+      {saveConflict && (
+        <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: "#FBEAE6", border: `1px solid ${C.red}` }}>
+          <span className="text-xs" style={{ color: C.red }}>Gagal menyimpan — data ini sudah diubah oleh pengguna lain. Perubahan Anda masih ada di layar, tapi belum tersimpan.</span>
+          <button onClick={reloadAfterRemoteUpdate} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.red, color: "#fff" }}>Muat Ulang</button>
+        </div>
+      )}
+      {!saveConflict && remoteUpdateAvailable && (
+        <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: "#FFF7E8", border: `1px solid ${C.amber}` }}>
+          <span className="text-xs" style={{ color: C.amber }}>Ada pembaruan baru dari pengguna lain. Muat ulang untuk melihatnya (perubahan Anda yang belum disimpan akan hilang).</span>
+          <button onClick={reloadAfterRemoteUpdate} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.amber}`, color: C.amber, background: "#fff" }}>Muat Ulang</button>
+        </div>
+      )}
 
       {/* TABS */}
       <div className="rounded-xl p-3 mb-4 flex flex-col gap-3" style={{ background: C.panel, border: `1px solid ${C.line}` }}>

@@ -37,3 +37,16 @@ create policy "authenticated can delete kv_store"
   on kv_store for delete
   to authenticated
   using (true);
+
+-- Aktifkan update real-time: supaya semua orang yang sedang membuka cluster
+-- yang sama langsung tahu begitu ada perubahan disimpan orang lain.
+-- Dibungkus pengecekan supaya aman dijalankan ulang tanpa error.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'kv_store'
+  ) then
+    alter publication supabase_realtime add table kv_store;
+  end if;
+end $$;
