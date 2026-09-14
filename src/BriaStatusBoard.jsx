@@ -38,6 +38,8 @@ const HOUSES_KEY_BASE = "bria-houses-v2";
 const CONFIG_KEY_BASE = "bria-config-v1";
 const IMAGE_KEY_BASE = "bria-siteplan-image";
 const TABLE_LAYOUT_KEY = "bria-table-layout-v1";
+const TABLE_FILTER_KEY_BASE = "bria-table-filter-v1";
+function tableFilterKeyFor(id) { return id === LEGACY_CLUSTER_ID ? TABLE_FILTER_KEY_BASE : `${TABLE_FILTER_KEY_BASE}:${id}`; }
 const CLUSTERS_INDEX_KEY = "clusters-index-v1";
 const APP_TITLE_KEY = "app-title-v1";
 const LAST_CLUSTER_KEY = "last-cluster-v1";
@@ -248,6 +250,9 @@ export default function BriaStatusBoard({ onLogout }) {
   function resetColWidths() {
     setColWidths({});
     saveTableLayout({ colWidths: {} });
+    setTableBlocks(blocks.map((b) => b.name));
+    setTableTipes(tipeOptions.map((t) => t.name));
+    setTableStatusFilter("semua");
   }
   async function saveTableLayout(next) {
     try {
@@ -372,6 +377,8 @@ export default function BriaStatusBoard({ onLogout }) {
     setKategoriOptions(id === LEGACY_CLUSTER_ID ? DEFAULT_KATEGORI : []);
     setSiteImage(id === LEGACY_CLUSTER_ID ? SITE_IMAGE_DEFAULT : null);
     setTableBlocks(id === LEGACY_CLUSTER_ID ? DEFAULT_BLOCKS.map((b) => b.name) : []);
+    setTableTipes(id === LEGACY_CLUSTER_ID ? DEFAULT_TIPE.map((t) => t.name) : []);
+    setTableStatusFilter("semua");
     setSelectedId(null); setConfirmDeleteId(null); setActionMenuId(null);
     setEditingShapeId(null); setEditPoints(null); setSelectedRows([]);
     setDraft(null); setDrawingPoints([]); setMode("input"); setFollowUpFilterActive(false);
@@ -406,16 +413,33 @@ export default function BriaStatusBoard({ onLogout }) {
         if (parsed.statusFields) setStatusFields(parsed.statusFields);
         if (parsed.kategoriOptions) setKategoriOptions(parsed.kategoriOptions);
         if (migratedBlocks) setTableBlocks(migratedBlocks.map((b) => b.name));
+        if (migratedTipe) setTableTipes(migratedTipe.map((t) => t.name));
         if (blocksMigrated || tipeMigrated) {
           try {
             await storage.set(configKeyFor(id), JSON.stringify({ ...parsed, blocks: migratedBlocks, tipeOptions: migratedTipe }), false);
           } catch (e) {}
         }
+        try {
+          const savedFilter = await storage.get(tableFilterKeyFor(id), false);
+          if (savedFilter && savedFilter.value) {
+            const pf = JSON.parse(savedFilter.value);
+            const validBlockNames = (migratedBlocks || []).map((b) => b.name);
+            const validTipeNames = (migratedTipe || []).map((t) => t.name);
+            if (Array.isArray(pf.tableBlocks)) setTableBlocks(pf.tableBlocks.filter((n) => validBlockNames.includes(n)));
+            if (Array.isArray(pf.tableTipes)) setTableTipes(pf.tableTipes.filter((n) => validTipeNames.includes(n)));
+            if (typeof pf.tableStatusFilter === "string") setTableStatusFilter(pf.tableStatusFilter);
+          }
+        } catch (e) {}
       }
     } catch (e) {}
     setClusterLoaded(true);
   }
   useEffect(() => { if (currentClusterId) loadCluster(currentClusterId); }, [currentClusterId]);
+
+  useEffect(() => {
+    if (!currentClusterId || !clusterLoaded) return;
+    storage.set(tableFilterKeyFor(currentClusterId), JSON.stringify({ tableBlocks, tableTipes, tableStatusFilter }), false).catch(() => {});
+  }, [tableBlocks, tableTipes, tableStatusFilter, currentClusterId, clusterLoaded]);
 
   // Dengarkan perubahan kavling, pengaturan, dan gambar site plan cluster
   // ini lewat SATU koneksi real-time (bukan 3 koneksi terpisah seperti
@@ -627,6 +651,12 @@ export default function BriaStatusBoard({ onLogout }) {
     }
     setCurrentClusterId(null);
     storage.delete(LAST_CLUSTER_KEY, false).catch(() => {});
+  }
+  async function handleLogoutClick() {
+    if (homeDirty) {
+      await saveHomeChanges();
+    }
+    onLogout();
   }
   function addCluster(name, subtitle) {
     const id = newClusterId();
@@ -2107,7 +2137,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
                 {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
                 <button onClick={saveHomeChanges} className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>
-                <button onClick={onLogout} className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ border: `1px solid ${C.red}`, color: C.red, background: "#fff" }}>Log Out</button>
+                <button onClick={handleLogoutClick} className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ border: `1px solid ${C.red}`, color: C.red, background: "#fff" }}>Log Out</button>
               </div>
             </div>
             <div className="text-sm mt-1" style={{ color: C.steel }}>Pilih cluster untuk mulai bekerja, atau tambah cluster baru.</div>
@@ -2855,7 +2885,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 Import Excel/CSV
                 <input type="file" accept=".xlsx,.xls,.csv" onChange={importExcel} style={{ display: "none" }} />
               </label>
-              <button onClick={resetColWidths} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.steel, background: "#fff" }}>Reset Lebar Kolom</button>
+              <button onClick={resetColWidths} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.steel, background: "#fff" }}>Reset</button>
               <div style={{ position: "relative" }}>
                 <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: "#fff" }}>Kolom</button>
                 {showColMenu && (
@@ -2935,6 +2965,7 @@ export default function BriaStatusBoard({ onLogout }) {
                             <input
                               defaultValue={h.noKavling}
                               onBlur={(e) => updateHouse(h.id, { noKavling: e.target.value })}
+                              onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
                               style={{ ...cellInput, minWidth: 0, flex: 1, padding: "3px 4px" }}
                             />
                           </div>
