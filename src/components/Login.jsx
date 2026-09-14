@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { C } from "../theme";
 
@@ -11,7 +11,35 @@ function usernameToEmail(username) {
   return `${username.trim().toLowerCase()}@${USERNAME_DOMAIN}`;
 }
 
+// Jam & ucapan selamat selalu memakai zona waktu WIB (Asia/Jakarta),
+// tidak peduli zona waktu perangkat pengunjung.
+const JAKARTA_TZ = "Asia/Jakarta";
+const dayFormatter = new Intl.DateTimeFormat("id-ID", { weekday: "long", timeZone: JAKARTA_TZ });
+const dateFormatter = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: JAKARTA_TZ });
+// Locale "en-GB" dipakai khusus untuk jam supaya pemisahnya titik dua (:),
+// bukan titik (.) seperti default format Indonesia.
+const timeFormatter = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: JAKARTA_TZ });
+const hourFormatter = new Intl.DateTimeFormat("en-US", { hour: "2-digit", hour12: false, timeZone: JAKARTA_TZ });
+
+function greetingFor(date) {
+  const hour = parseInt(hourFormatter.format(date), 10);
+  if (hour >= 5 && hour < 11) return "Selamat Pagi";
+  if (hour >= 11 && hour < 15) return "Selamat Siang";
+  if (hour >= 15 && hour < 19) return "Selamat Sore";
+  return "Selamat Malam";
+}
+
+function useJakartaClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  return now;
+}
+
 export default function Login() {
+  const now = useJakartaClock();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -52,6 +80,15 @@ export default function Login() {
           padding: 28,
         }}
       >
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: C.ink, marginBottom: 2 }}>
+            {greetingFor(now)}
+          </div>
+          <div style={{ fontSize: 12, fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>
+            {dayFormatter.format(now)}, {dateFormatter.format(now)} {timeFormatter.format(now)} WIB
+          </div>
+        </div>
+
         <div
           style={{
             fontSize: 11,
