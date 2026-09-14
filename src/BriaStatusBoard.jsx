@@ -2057,7 +2057,7 @@ export default function BriaStatusBoard({ onLogout }) {
         .col-resize-handle:active { background: ${C.accent}55; }
         .editable-heading:hover, .editable-heading:focus { border-bottom-color: ${C.line} !important; }
         @keyframes bria-spin { to { transform: rotate(360deg); } }
-        @media (max-width: 680px) { .panel-resize-handle { display: none !important; } }
+        @media (max-width: 680px) { .panel-resize-handle { display: none !important; } .map-panel-col { flex-basis: 100% !important; min-width: 0 !important; padding-right: 0 !important; } }
       `}</style>
 
       {isOffline && (
@@ -2703,7 +2703,7 @@ export default function BriaStatusBoard({ onLogout }) {
           <div ref={rowRef} style={{ display: "flex", flexWrap: "wrap", gap: 0, marginBottom: 16 }}>
             {mode === "kerja" || dashboardPos === "kanan" ? (
               <>
-                <div style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
+                <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
                   {mapPanelJSX}
                 </div>
                 <div
