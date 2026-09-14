@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense, laz
 import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
 import { onStorageError } from "./lib/errorBus";
+import { formatJakartaDateTime, useJakartaClock } from "./lib/jakartaClock";
 import { C, PALETTE } from "./theme";
 
 // Grafik dashboard (recharts) baru diunduh saat benar-benar ditampilkan,
@@ -102,6 +103,7 @@ function resizeImageFile(file, maxDim) {
 }
 
 export default function BriaStatusBoard({ onLogout }) {
+  const now = useJakartaClock();
   const [houses, setHouses] = useState([]);
   const [siteImage, setSiteImage] = useState(SITE_IMAGE_DEFAULT);
   const [imgUploading, setImgUploading] = useState(false);
@@ -2039,6 +2041,7 @@ export default function BriaStatusBoard({ onLogout }) {
               </div>
             </div>
             <div className="text-sm mt-1" style={{ color: C.steel }}>Pilih cluster untuk mulai bekerja, atau tambah cluster baru.</div>
+            <div className="text-xs mt-1" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
             {clusters.length === 0 && (
               <div className="mt-2 text-xs">
                 <span style={{ color: C.steel }}>Tidak melihat data lama Anda? </span>
@@ -2313,7 +2316,7 @@ export default function BriaStatusBoard({ onLogout }) {
           <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase", marginBottom: 4 }}>
             {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
           </div>
-          <button onClick={goHome} className="text-xs mb-1" style={{ color: C.accent }}>← 🏠 Home</button>
+          <button onClick={goHome} className="text-xs px-3 py-1.5 rounded-full border font-medium mb-1 transition-colors" style={{ borderColor: C.line, color: C.accent, background: "#fff" }}>← 🏠 Home</button>
           <input
             value={activeCluster.name}
             onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, name: e.target.value } : c)))}
@@ -2336,13 +2339,16 @@ export default function BriaStatusBoard({ onLogout }) {
             <span className="text-sm" style={{ color: C.steel }}>· target {totalTarget} unit, {blocks.length} blok</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {saving && <SmallSpinner />}
-          {!saving && dirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
-          {!saving && savedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
-          <button onClick={() => saveHouses()} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
-            Simpan Perubahan
-          </button>
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-2">
+            {saving && <SmallSpinner />}
+            {!saving && dirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
+            {!saving && savedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
+            <button onClick={() => saveHouses()} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
+              Simpan Perubahan
+            </button>
+          </div>
+          <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
         </div>
       </div>
 

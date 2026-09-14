@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { C } from "../theme";
+import { JAKARTA_TZ, dayFormatter, dateFormatter, timeFormatter, useJakartaClock } from "../lib/jakartaClock";
 
 // Supabase Auth aslinya butuh "email", tapi supaya Anda cukup ingat satu
 // username sederhana, kita tempelkan domain palsu ini di belakang layar.
@@ -11,14 +12,6 @@ function usernameToEmail(username) {
   return `${username.trim().toLowerCase()}@${USERNAME_DOMAIN}`;
 }
 
-// Jam & ucapan selamat selalu memakai zona waktu WIB (Asia/Jakarta),
-// tidak peduli zona waktu perangkat pengunjung.
-const JAKARTA_TZ = "Asia/Jakarta";
-const dayFormatter = new Intl.DateTimeFormat("id-ID", { weekday: "long", timeZone: JAKARTA_TZ });
-const dateFormatter = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: JAKARTA_TZ });
-// Locale "en-GB" dipakai khusus untuk jam supaya pemisahnya titik dua (:),
-// bukan titik (.) seperti default format Indonesia.
-const timeFormatter = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: JAKARTA_TZ });
 const hourFormatter = new Intl.DateTimeFormat("en-US", { hour: "2-digit", hour12: false, timeZone: JAKARTA_TZ });
 
 function greetingFor(date) {
@@ -27,15 +20,6 @@ function greetingFor(date) {
   if (hour >= 11 && hour < 15) return "Selamat Siang";
   if (hour >= 15 && hour < 19) return "Selamat Sore";
   return "Selamat Malam";
-}
-
-function useJakartaClock() {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-  return now;
 }
 
 export default function Login() {
