@@ -2057,6 +2057,7 @@ export default function BriaStatusBoard({ onLogout }) {
         .col-resize-handle:active { background: ${C.accent}55; }
         .editable-heading:hover, .editable-heading:focus { border-bottom-color: ${C.line} !important; }
         @keyframes bria-spin { to { transform: rotate(360deg); } }
+        @media (max-width: 680px) { .panel-resize-handle { display: none !important; } }
       `}</style>
 
       {isOffline && (
@@ -2708,6 +2709,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 <div
                   onMouseDown={startDrag}
                   title="Geser untuk mengubah lebar"
+                  className="panel-resize-handle"
                   style={{ flex: "0 0 8px", cursor: "col-resize", background: C.line, borderRadius: 8, margin: "0 4px", alignSelf: "stretch", minHeight: 40 }}
                 />
                 <div style={{ flex: "1 1 300px", minWidth: 300, paddingLeft: 8 }}>
