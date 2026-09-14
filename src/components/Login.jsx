@@ -77,11 +77,8 @@ export default function Login() {
         <h1 style={{ fontSize: 22, fontWeight: 700, color: C.ink, margin: "0 0 4px" }}>
           Cluster Bintaro Jaya [Experimental Project]
         </h1>
-        <p style={{ fontSize: 13, color: C.steel, margin: "0 0 4px" }}>
+        <p style={{ fontSize: 13, color: C.steel, margin: "0 0 20px" }}>
           Masukkan username dan password Anda untuk melanjutkan.
-        </p>
-        <p style={{ fontSize: 11, color: C.steel, margin: "0 0 20px" }}>
-          Created by Aditya Christiandi Sinulingga
         </p>
 
         <label style={{ display: "block", fontSize: 12, color: C.steel, marginBottom: 4 }}>Username</label>
@@ -160,6 +157,9 @@ export default function Login() {
 
         <p style={{ fontSize: 11, color: C.faint, marginTop: 16, marginBottom: 0 }}>
           Belum punya akun? Hubungi Admin untuk dibuatkan akses.
+        </p>
+        <p style={{ fontSize: 11, color: C.steel, marginTop: 6, marginBottom: 0 }}>
+          Created by Aditya Christiandi Sinulingga
         </p>
       </form>
     </div>
