@@ -253,6 +253,8 @@ export default function BriaStatusBoard({ onLogout }) {
     setTableBlocks(blocks.map((b) => b.name));
     setTableTipes(tipeOptions.map((t) => t.name));
     setTableStatusFilter("semua");
+    setSortKey(null);
+    setSortDir("asc");
   }
   async function saveTableLayout(next) {
     try {
