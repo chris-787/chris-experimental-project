@@ -81,7 +81,7 @@ export default function Login() {
         }}
       >
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: C.ink, marginBottom: 2 }}>
+          <div style={{ fontSize: 18, fontWeight: 600, color: C.ink, marginBottom: 2 }}>
             {greetingFor(now)}
           </div>
           <div style={{ fontSize: 12, fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>
@@ -99,7 +99,7 @@ export default function Login() {
             marginBottom: 6,
           }}
         >
-          Masuk
+          Log In
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: C.ink, margin: "0 0 4px" }}>
           Cluster Bintaro Jaya [Experimental Project]
@@ -107,7 +107,7 @@ export default function Login() {
         <p style={{ fontSize: 13, color: C.steel, margin: "0 0 4px" }}>
           Masukkan username dan password Anda untuk melanjutkan.
         </p>
-        <p style={{ fontSize: 11, color: C.faint, margin: "0 0 20px" }}>
+        <p style={{ fontSize: 11, color: C.steel, margin: "0 0 20px" }}>
           Created by Aditya Christiandi Sinulingga
         </p>
 
@@ -182,7 +182,7 @@ export default function Login() {
             opacity: loading ? 0.7 : 1,
           }}
         >
-          {loading ? "Memeriksa..." : "Masuk"}
+          {loading ? "Memeriksa..." : "Log In"}
         </button>
 
         <p style={{ fontSize: 11, color: C.faint, marginTop: 16, marginBottom: 0 }}>
