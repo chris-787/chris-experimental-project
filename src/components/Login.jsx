@@ -155,11 +155,11 @@ export default function Login() {
           {loading ? "Memeriksa..." : "Log In"}
         </button>
 
-        <p style={{ fontSize: 11, color: C.faint, marginTop: 16, marginBottom: 0 }}>
-          Belum punya akun? Hubungi Admin untuk dibuatkan akses.
-        </p>
-        <p style={{ fontSize: 11, color: C.steel, marginTop: 6, marginBottom: 0 }}>
+        <p style={{ fontSize: 11, color: C.steel, marginTop: 16, marginBottom: 0 }}>
           Created by Aditya Christiandi Sinulingga
+        </p>
+        <p style={{ fontSize: 11, color: C.faint, marginTop: 6, marginBottom: 0 }}>
+          Belum punya akun? Hubungi Admin untuk dibuatkan akses.
         </p>
       </form>
     </div>
