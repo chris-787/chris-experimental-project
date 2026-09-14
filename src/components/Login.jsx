@@ -89,18 +89,7 @@ export default function Login() {
           </div>
         </div>
 
-        <div
-          style={{
-            fontSize: 11,
-            fontFamily: "'IBM Plex Mono', monospace",
-            letterSpacing: 1,
-            color: C.steel,
-            textTransform: "uppercase",
-            marginBottom: 6,
-          }}
-        >
-          Log In
-        </div>
+        <div style={{ borderTop: `1px solid ${C.line}`, marginBottom: 14 }} />
         <h1 style={{ fontSize: 22, fontWeight: 700, color: C.ink, margin: "0 0 4px" }}>
           Cluster Bintaro Jaya [Experimental Project]
         </h1>
