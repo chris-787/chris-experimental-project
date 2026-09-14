@@ -2313,6 +2313,7 @@ export default function BriaStatusBoard({ onLogout }) {
       {/* HEADER */}
       <div className="mb-4 flex items-baseline justify-between flex-wrap gap-2">
         <div style={{ flex: 1, minWidth: 240 }}>
+          <div className="text-xs mb-1" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
           <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase", marginBottom: 4 }}>
             {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
           </div>
@@ -2348,8 +2349,6 @@ export default function BriaStatusBoard({ onLogout }) {
           </button>
         </div>
       </div>
-
-      <div className="text-xs text-right mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
 
       {saveConflict && (
         <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: "#FBEAE6", border: `1px solid ${C.red}` }}>
