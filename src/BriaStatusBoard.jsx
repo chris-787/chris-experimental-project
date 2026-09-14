@@ -2310,45 +2310,50 @@ export default function BriaStatusBoard({ onLogout }) {
         </div>
       ) : (
       <>
-      {/* HEADER */}
-      <div className="mb-4 flex items-baseline justify-between flex-wrap gap-2">
-        <div style={{ flex: 1, minWidth: 240 }}>
-          <div className="flex items-center justify-between gap-2 mb-3">
+      {/* HEADER (bar atas ini "freeze" / nempel saat di-scroll) */}
+      <div className="sticky top-0 z-30 -mx-5 -mt-5 px-5 pt-3 pb-3 mb-4" style={{ background: C.paper, borderBottom: `2px solid ${C.line}` }}>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3">
             <button onClick={goHome} className="text-xs px-3 py-1.5 rounded-full border font-medium transition-colors" style={{ borderColor: C.line, color: C.accent, background: "#fff" }}>← 🏠 Home</button>
-            <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
+            <div>
+              <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
+              <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase" }}>
+                {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
+              </div>
+            </div>
           </div>
-          <div className="text-right" style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase", marginBottom: 4 }}>
-            {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
-          </div>
-          <input
-            value={activeCluster.name}
-            onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, name: e.target.value } : c)))}
-            onBlur={(e) => updateClusterMeta(currentClusterId, { name: e.target.value })}
-            onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
-            className="text-lg font-semibold editable-heading"
-            title="Klik untuk edit judul"
-            style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, fontFamily: "Inter, sans-serif" }}
-          />
-          <div className="flex items-center gap-1">
-            <input
-              value={activeCluster.subtitle}
-              onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, subtitle: e.target.value } : c)))}
-              onBlur={(e) => updateClusterMeta(currentClusterId, { subtitle: e.target.value })}
-              onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
-              className="text-sm editable-heading"
-              title="Klik untuk edit subjudul"
-              style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", fontFamily: "Inter, sans-serif", width: 220 }}
-            />
-            <span className="text-sm" style={{ color: C.steel }}>· target {totalTarget} unit, {blocks.length} blok</span>
+          <div className="flex items-center gap-2">
+            {saving && <SmallSpinner />}
+            {!saving && dirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
+            {!saving && savedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
+            <button onClick={() => saveHouses()} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
+              Simpan Perubahan
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {saving && <SmallSpinner />}
-          {!saving && dirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
-          {!saving && savedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
-          <button onClick={() => saveHouses()} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
-            Simpan Perubahan
-          </button>
+      </div>
+
+      <div className="mb-4">
+        <input
+          value={activeCluster.name}
+          onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, name: e.target.value } : c)))}
+          onBlur={(e) => updateClusterMeta(currentClusterId, { name: e.target.value })}
+          onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
+          className="text-lg font-semibold editable-heading"
+          title="Klik untuk edit judul"
+          style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, fontFamily: "Inter, sans-serif" }}
+        />
+        <div className="flex items-center gap-1">
+          <input
+            value={activeCluster.subtitle}
+            onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, subtitle: e.target.value } : c)))}
+            onBlur={(e) => updateClusterMeta(currentClusterId, { subtitle: e.target.value })}
+            onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
+            className="text-sm editable-heading"
+            title="Klik untuk edit subjudul"
+            style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", fontFamily: "Inter, sans-serif", width: 220 }}
+          />
+          <span className="text-sm" style={{ color: C.steel }}>· target {totalTarget} unit, {blocks.length} blok</span>
         </div>
       </div>
 
