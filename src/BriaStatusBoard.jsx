@@ -2057,7 +2057,12 @@ export default function BriaStatusBoard({ onLogout }) {
         .col-resize-handle:active { background: ${C.accent}55; }
         .editable-heading:hover, .editable-heading:focus { border-bottom-color: ${C.line} !important; }
         @keyframes bria-spin { to { transform: rotate(360deg); } }
-        @media (max-width: 680px) { .panel-resize-handle { display: none !important; } .map-panel-col { flex-basis: 100% !important; min-width: 0 !important; padding-right: 0 !important; } }
+        @media (max-width: 680px) {
+          .map-data-row { flex-direction: column; }
+          .panel-resize-handle { display: none !important; }
+          .map-panel-col { flex-basis: 100% !important; min-width: 0 !important; padding-right: 0 !important; }
+          .inspector-panel-col { flex-basis: 100% !important; min-width: 0 !important; padding-left: 0 !important; }
+        }
       `}</style>
 
       {isOffline && (
@@ -2700,7 +2705,7 @@ export default function BriaStatusBoard({ onLogout }) {
               </button>
             </div>
           )}
-          <div ref={rowRef} style={{ display: "flex", flexWrap: "wrap", gap: 0, marginBottom: 16 }}>
+          <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", gap: 0, marginBottom: 16 }}>
             {mode === "kerja" || dashboardPos === "kanan" ? (
               <>
                 <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
@@ -2712,7 +2717,7 @@ export default function BriaStatusBoard({ onLogout }) {
                   className="panel-resize-handle"
                   style={{ flex: "0 0 8px", cursor: "col-resize", background: C.line, borderRadius: 8, margin: "0 4px", alignSelf: "stretch", minHeight: 40 }}
                 />
-                <div style={{ flex: "1 1 300px", minWidth: 300, paddingLeft: 8 }}>
+                <div className="inspector-panel-col" style={{ flex: "1 1 300px", minWidth: 300, paddingLeft: 8 }}>
                   {mode === "kerja" && (
                     <div className="rounded-xl p-4 mb-4" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
                       {InspectorPanel()}
