@@ -168,9 +168,15 @@ export default function BriaStatusBoard({ onLogout }) {
   const [homeSavedToast, setHomeSavedToast] = useState(false);
   const [homeSaving, setHomeSaving] = useState(false);
   const [lastDeleted, setLastDeleted] = useState(null);
+  const [lastDeletedBulk, setLastDeletedBulk] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
   const [bulkDeleteArmed, setBulkDeleteArmed] = useState(false);
   const undoTimerRef = useRef(null);
+  const bulkUndoTimerRef = useRef(null);
+  const [confirmDeleteBlokId, setConfirmDeleteBlokId] = useState(null);
+  const [confirmDeleteTipeName, setConfirmDeleteTipeName] = useState(null);
+  const [confirmDeleteStatusKey, setConfirmDeleteStatusKey] = useState(null);
+  const [confirmDeleteKategoriName, setConfirmDeleteKategoriName] = useState(null);
 
   const [mode, setMode] = useState("input"); // input | kerja | dashboard | pengaturan
   const [activeBlock, setActiveBlock] = useState(DEFAULT_BLOCKS[0].name);
@@ -784,8 +790,24 @@ export default function BriaStatusBoard({ onLogout }) {
     setHouses((prev) => { const next = prev.map((h) => (selectedRows.includes(h.id) ? { ...h, followUpDate: date || null } : h)); saveHouses(next); return next; });
   }
   function bulkDelete() {
-    setHouses((prev) => { const next = prev.filter((h) => !selectedRows.includes(h.id)); saveHouses(next); return next; });
+    setHouses((prev) => {
+      const removed = prev.filter((h) => selectedRows.includes(h.id));
+      const next = prev.filter((h) => !selectedRows.includes(h.id));
+      saveHouses(next);
+      if (removed.length) {
+        setLastDeletedBulk(removed);
+        clearTimeout(bulkUndoTimerRef.current);
+        bulkUndoTimerRef.current = setTimeout(() => setLastDeletedBulk(null), 8000);
+      }
+      return next;
+    });
     setSelectedRows([]);
+  }
+  function undoBulkDelete() {
+    if (!lastDeletedBulk) return;
+    setHouses((prev) => { const next = [...prev, ...lastDeletedBulk]; saveHouses(next); return next; });
+    setLastDeletedBulk(null);
+    clearTimeout(bulkUndoTimerRef.current);
   }
   function duplicateHouse(id) {
     const src = houses.find((h) => h.id === id);
@@ -1038,7 +1060,7 @@ export default function BriaStatusBoard({ onLogout }) {
     reader.readAsArrayBuffer(file);
     e.target.value = "";
   }
-  function exportReportHTML() {
+  function buildReportHtml() {
     const tanggal = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
     const statusRows = statusFields.map((s) => {
       const done = houses.filter((h) => h.status[s.key]).length;
@@ -1125,6 +1147,10 @@ export default function BriaStatusBoard({ onLogout }) {
 
   <p style="font-size:11px;color:#9CA6AE;">Dibuat otomatis dari Papan Status Tender. Buka file ini di browser, lalu tekan Ctrl+P (atau Cmd+P di Mac) dan pilih "Save as PDF" untuk menyimpan sebagai PDF.</p>
 </body></html>`;
+    return html;
+  }
+  function exportReportHTML() {
+    const html = buildReportHtml();
     const blob = new Blob([html], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -1134,6 +1160,57 @@ export default function BriaStatusBoard({ onLogout }) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+  function printReportPDF() {
+    const w = window.open("", "_blank");
+    if (!w) { alert("Popup diblokir browser. Izinkan popup untuk situs ini lalu coba lagi."); return; }
+    w.document.write(buildReportHtml());
+    w.document.close();
+    w.onload = () => { w.focus(); w.print(); };
+  }
+  function printSitePlan() {
+    const legendItems = colorMode === "blok"
+      ? blocks.map((b) => ({ label: b.name, color: blockColor(b.name) }))
+      : colorMode === "tipe"
+      ? tipeOptions.map((t) => ({ label: t.name, color: t.color }))
+      : [{ label: "Sudah", color: C.green }, { label: "Belum", color: C.red }];
+    const colorModeLabel = colorMode === "blok" ? "Per Blok" : colorMode === "tipe" ? "Per Tipe" : (statusFields.find((s) => s.key === colorMode)?.label || colorMode);
+    const tanggal = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+    const imgSrc = new URL(siteImage, window.location.href).href;
+    const shapesSvg = houses.map((h) => {
+      const pts = h.points.map((p) => `${p.x},${p.y}`).join(" ");
+      const { cx, cy } = centroid(h.points);
+      return `<polygon points="${pts}" fill="${polyColor(h)}" fill-opacity="${opacity / 100}" stroke="#00000066" stroke-width="0.2" vector-effect="non-scaling-stroke" /><text x="${cx}" y="${cy}" font-size="1.6" text-anchor="middle" dominant-baseline="middle" fill="#1B2A3C" style="font-family:Arial,sans-serif;">${h.noKavling}</text>`;
+    }).join("");
+    const legendHtml = legendItems.map((l) => `<div class="legend-item"><span class="swatch" style="background:${l.color}"></span>${l.label}</div>`).join("");
+    const html = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><title>Site Plan ${activeCluster.name}</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; color: #1B2A3C; padding: 24px; margin: 0; }
+  h1 { font-size: 18px; margin: 0 0 2px; }
+  .sub { color: #5B6673; font-size: 12px; margin-bottom: 16px; }
+  .plan-wrap { position: relative; width: 100%; border: 1px solid #C9C2B2; }
+  .plan-wrap img { width: 100%; display: block; }
+  .plan-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  @media print { body { padding: 0; } }
+</style></head>
+<body>
+  <h1>${activeCluster.name} — Site Plan</h1>
+  <div class="sub">${activeCluster.subtitle} · Warna: ${colorModeLabel} · dicetak ${tanggal}</div>
+  <div class="plan-wrap">
+    <img src="${imgSrc}" />
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none">${shapesSvg}</svg>
+  </div>
+  <div class="legend">${legendHtml}</div>
+</body></html>`;
+    const w = window.open("", "_blank");
+    if (!w) { alert("Popup diblokir browser. Izinkan popup untuk situs ini lalu coba lagi."); return; }
+    w.document.write(html);
+    w.document.close();
+    w.onload = () => { w.focus(); w.print(); };
   }
   async function exportExcel() {
     const XLSX = await import("xlsx");
@@ -1524,6 +1601,7 @@ export default function BriaStatusBoard({ onLogout }) {
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm font-semibold" style={{ color: C.ink }}>Dashboard</div>
             <button onClick={exportReportHTML} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Unduh Dashboard (HTML)</button>
+            <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: "#fff" }}>🖨️ Cetak / Simpan sebagai PDF</button>
           </div>
 
           {followUpList.length > 0 && (
@@ -2412,6 +2490,7 @@ export default function BriaStatusBoard({ onLogout }) {
               <input type="range" min="10" max="100" value={opacity} onChange={(e) => setOpacity(Number(e.target.value))} style={{ width: 100 }} />
               <span className="text-xs" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }}>{opacity}%</span>
             </div>
+            <button onClick={printSitePlan} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: "#fff" }}>🖨️ Cetak Site Plan</button>
           </div>
         )}
       </div>
@@ -2452,13 +2531,20 @@ export default function BriaStatusBoard({ onLogout }) {
                       title="Target unit"
                     />
                     <span className="text-xs whitespace-nowrap" style={{ color: isDuplicateName ? C.red : C.steel }}>{b.placed} terpetakan{isDuplicateName ? " · nama duplikat" : ""}</span>
-                    <button
-                      onClick={() => removeBlock(b.id)}
-                      disabled={!canDelete}
-                      title={!canDelete ? `Masih ada ${b.placed} kavling di blok ini` : "Hapus blok"}
-                      className="text-xs ml-auto"
-                      style={{ color: canDelete ? C.red : C.faint, cursor: canDelete ? "pointer" : "not-allowed" }}
-                    >Hapus</button>
+                    {confirmDeleteBlokId === b.id ? (
+                      <span className="flex items-center gap-1 ml-auto">
+                        <button onClick={() => { removeBlock(b.id); setConfirmDeleteBlokId(null); }} className="text-xs px-2 py-0.5 rounded-lg" style={{ background: C.red, color: "#fff" }}>Ya, Hapus</button>
+                        <button onClick={() => setConfirmDeleteBlokId(null)} className="text-xs px-2 py-0.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmDeleteBlokId(b.id)}
+                        disabled={!canDelete}
+                        title={!canDelete ? `Masih ada ${b.placed} kavling di blok ini` : "Hapus blok"}
+                        className="text-xs ml-auto"
+                        style={{ color: canDelete ? C.red : C.faint, cursor: canDelete ? "pointer" : "not-allowed" }}
+                      >Hapus</button>
+                    )}
                   </div>
                 );
               })}
@@ -2509,7 +2595,14 @@ export default function BriaStatusBoard({ onLogout }) {
                     style={{ ...cellInput, width: "auto", flex: "0 1 130px" }}
                   />
                   <span className="text-xs" style={{ color: C.steel }}>m²</span>
-                  <button onClick={() => removeTipe(t.name)} className="text-xs ml-auto" style={{ color: C.red }}>Hapus</button>
+                  {confirmDeleteTipeName === t.name ? (
+                    <span className="flex items-center gap-1 ml-auto">
+                      <button onClick={() => { removeTipe(t.name); setConfirmDeleteTipeName(null); }} className="text-xs px-2 py-0.5 rounded-lg" style={{ background: C.red, color: "#fff" }}>Ya, Hapus</button>
+                      <button onClick={() => setConfirmDeleteTipeName(null)} className="text-xs px-2 py-0.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                    </span>
+                  ) : (
+                    <button onClick={() => setConfirmDeleteTipeName(t.name)} className="text-xs ml-auto" style={{ color: C.red }}>Hapus</button>
+                  )}
                 </div>
               ))}
             </div>
@@ -2541,7 +2634,14 @@ export default function BriaStatusBoard({ onLogout }) {
                     <label className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
                       <input type="checkbox" checked={!!s.hasDetail} onChange={() => toggleStatusDetail(s.key)} /> Detail
                     </label>
-                    <button onClick={() => removeStatusField(s.key)} className="text-xs" style={{ color: C.red }}>Hapus</button>
+                    {confirmDeleteStatusKey === s.key ? (
+                      <span className="flex items-center gap-1">
+                        <button onClick={() => { removeStatusField(s.key); setConfirmDeleteStatusKey(null); }} className="text-xs px-2 py-0.5 rounded-lg" style={{ background: C.red, color: "#fff" }}>Ya, Hapus</button>
+                        <button onClick={() => setConfirmDeleteStatusKey(null)} className="text-xs px-2 py-0.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                      </span>
+                    ) : (
+                      <button onClick={() => setConfirmDeleteStatusKey(s.key)} className="text-xs" style={{ color: C.red }}>Hapus</button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -2566,7 +2666,14 @@ export default function BriaStatusBoard({ onLogout }) {
                     onBlur={(e) => renameKategori(k, e.target.value)}
                     style={{ ...cellInput, width: "auto", flex: "0 1 180px" }}
                   />
-                  <button onClick={() => removeKategori(k)} className="text-xs" style={{ color: C.red }}>Hapus</button>
+                  {confirmDeleteKategoriName === k ? (
+                    <span className="flex items-center gap-1">
+                      <button onClick={() => { removeKategori(k); setConfirmDeleteKategoriName(null); }} className="text-xs px-2 py-0.5 rounded-lg" style={{ background: C.red, color: "#fff" }}>Ya, Hapus</button>
+                      <button onClick={() => setConfirmDeleteKategoriName(null)} className="text-xs px-2 py-0.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                    </span>
+                  ) : (
+                    <button onClick={() => setConfirmDeleteKategoriName(k)} className="text-xs" style={{ color: C.red }}>Hapus</button>
+                  )}
                 </div>
               ))}
             </div>
@@ -2645,6 +2752,12 @@ export default function BriaStatusBoard({ onLogout }) {
             <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: "#FFF7E8", border: `1px solid ${C.amber}` }}>
               <span className="text-xs" style={{ color: C.amber }}>Kavling {lastDeleted.blok}-{lastDeleted.noKavling} dihapus.</span>
               <button onClick={undoDelete} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.amber, color: "#fff" }}>Undo</button>
+            </div>
+          )}
+          {lastDeletedBulk && (
+            <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: "#FFF7E8", border: `1px solid ${C.amber}` }}>
+              <span className="text-xs" style={{ color: C.amber }}>{lastDeletedBulk.length} kavling dihapus.</span>
+              <button onClick={undoBulkDelete} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.amber, color: "#fff" }}>Undo</button>
             </div>
           )}
           {selectedRows.length > 0 && (
