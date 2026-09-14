@@ -159,8 +159,7 @@ export default function Login() {
         </button>
 
         <p style={{ fontSize: 11, color: C.faint, marginTop: 16, marginBottom: 0 }}>
-          Belum punya akun? Buat lewat Supabase Dashboard → Authentication → Users
-          (isi Email address dengan <code>username-anda@{USERNAME_DOMAIN}</code>).
+          Belum punya akun? Hubungi Admin untuk dibuatkan akses.
         </p>
       </form>
     </div>

@@ -1145,21 +1145,9 @@ export default function BriaStatusBoard({ onLogout }) {
   <h2>Kelengkapan Status</h2>
   <table><thead><tr><th>Status</th><th>Sudah</th><th>Belum</th></tr></thead><tbody>${statusRows}</tbody></table>
 
-  <p style="font-size:11px;color:#9CA6AE;">Dibuat otomatis dari Papan Status Tender. Buka file ini di browser, lalu tekan Ctrl+P (atau Cmd+P di Mac) dan pilih "Save as PDF" untuk menyimpan sebagai PDF.</p>
+  <p style="font-size:11px;color:#9CA6AE;">Dibuat otomatis dari Papan Status Tender.</p>
 </body></html>`;
     return html;
-  }
-  function exportReportHTML() {
-    const html = buildReportHtml();
-    const blob = new Blob([html], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `laporan-${new Date().toISOString().slice(0, 10)}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   }
   function printReportPDF() {
     const w = window.open("", "_blank");
@@ -1179,22 +1167,22 @@ export default function BriaStatusBoard({ onLogout }) {
     const imgSrc = new URL(siteImage, window.location.href).href;
     const shapesSvg = houses.map((h) => {
       const pts = h.points.map((p) => `${p.x},${p.y}`).join(" ");
-      const { cx, cy } = centroid(h.points);
-      return `<polygon points="${pts}" fill="${polyColor(h)}" fill-opacity="${opacity / 100}" stroke="#00000066" stroke-width="0.2" vector-effect="non-scaling-stroke" /><text x="${cx}" y="${cy}" font-size="1.6" text-anchor="middle" dominant-baseline="middle" fill="#1B2A3C" style="font-family:Arial,sans-serif;">${h.noKavling}</text>`;
+      return `<polygon points="${pts}" fill="${polyColor(h)}" fill-opacity="${opacity / 100}" stroke="#00000066" stroke-width="0.2" vector-effect="non-scaling-stroke" />`;
     }).join("");
-    const legendHtml = legendItems.map((l) => `<div class="legend-item"><span class="swatch" style="background:${l.color}"></span>${l.label}</div>`).join("");
+    const legendHtml = legendItems.map((l) => `<div class="legend-item"><span class="swatch" style="background-color:${l.color}"></span>${l.label}</div>`).join("");
     const html = `<!DOCTYPE html>
 <html lang="id"><head><meta charset="UTF-8"><title>Site Plan ${activeCluster.name}</title>
 <style>
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
   body { font-family: Arial, Helvetica, sans-serif; color: #1B2A3C; padding: 24px; margin: 0; }
   h1 { font-size: 18px; margin: 0 0 2px; }
   .sub { color: #5B6673; font-size: 12px; margin-bottom: 16px; }
   .plan-wrap { position: relative; width: 100%; border: 1px solid #C9C2B2; }
   .plan-wrap img { width: 100%; display: block; }
   .plan-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; font-size: 12px; }
-  .legend-item { display: flex; align-items: center; gap: 5px; }
-  .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 14px; height: 14px; border-radius: 2px; display: inline-block; border: 1px solid #00000033; flex-shrink: 0; }
   @media print { body { padding: 0; } }
 </style></head>
 <body>
@@ -1600,8 +1588,7 @@ export default function BriaStatusBoard({ onLogout }) {
         <div className="mb-3">
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm font-semibold" style={{ color: C.ink }}>Dashboard</div>
-            <button onClick={exportReportHTML} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Unduh Dashboard (HTML)</button>
-            <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: "#fff" }}>🖨️ Cetak / Simpan sebagai PDF</button>
+            <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>🖨️ Cetak / Simpan sebagai PDF</button>
           </div>
 
           {followUpList.length > 0 && (
