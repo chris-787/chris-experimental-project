@@ -2106,7 +2106,7 @@ export default function BriaStatusBoard({ onLogout }) {
           </div>
 
           <div className="mb-4">
-            <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>🔍 Pencarian Blok</div>
+            <div className="text-base font-semibold mb-2" style={{ color: C.ink }}>🔍 Pencarian Blok</div>
             <input
               value={kavlingSearch}
               onChange={(e) => setKavlingSearch(e.target.value)}
@@ -2141,7 +2141,7 @@ export default function BriaStatusBoard({ onLogout }) {
           </div>
 
           {clusters.length > 0 && Object.keys(clusterStats).length > 0 && (
-            <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>📊 Dashboard</div>
+            <div className="text-base font-semibold mb-2" style={{ color: C.ink }}>📊 Dashboard</div>
           )}
           {clusters.length > 0 && Object.keys(clusterStats).length > 0 && (() => {
             const totalSumHarga = Object.values(clusterStats).reduce((s, x) => s + (x.sumHarga || 0), 0);
@@ -2188,7 +2188,7 @@ export default function BriaStatusBoard({ onLogout }) {
             </div>
           )}
 
-          <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>🏘️ Cluster</div>
+          <div className="text-base font-semibold mb-2" style={{ color: C.ink }}>🏘️ Cluster</div>
 
           {clusters.filter((c) => !c.archived).length > 4 && (
             <input
