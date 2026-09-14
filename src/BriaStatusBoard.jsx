@@ -2313,11 +2313,13 @@ export default function BriaStatusBoard({ onLogout }) {
       {/* HEADER */}
       <div className="mb-4 flex items-baseline justify-between flex-wrap gap-2">
         <div style={{ flex: 1, minWidth: 240 }}>
-          <div className="text-xs mb-1" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
-          <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase", marginBottom: 4 }}>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <button onClick={goHome} className="text-xs px-3 py-1.5 rounded-full border font-medium transition-colors" style={{ borderColor: C.line, color: C.accent, background: "#fff" }}>← 🏠 Home</button>
+            <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
+          </div>
+          <div className="text-right" style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase", marginBottom: 4 }}>
             {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
           </div>
-          <button onClick={goHome} className="text-xs px-3 py-1.5 rounded-full border font-medium mb-1 transition-colors" style={{ borderColor: C.line, color: C.accent, background: "#fff" }}>← 🏠 Home</button>
           <input
             value={activeCluster.name}
             onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, name: e.target.value } : c)))}
