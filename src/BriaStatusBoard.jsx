@@ -2092,7 +2092,6 @@ export default function BriaStatusBoard({ onLogout }) {
       {!currentClusterId ? (
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <div className="mb-6">
-            <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase", marginBottom: 6 }}>Home</div>
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <input
                 value={appTitle}
