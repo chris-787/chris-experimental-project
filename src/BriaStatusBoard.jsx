@@ -2879,7 +2879,7 @@ export default function BriaStatusBoard({ onLogout }) {
               <input
                 value={tableSearchQuery}
                 onChange={(e) => setTableSearchQuery(e.target.value)}
-                placeholder="Cari nomor kavling... (mis. A-11)"
+                placeholder="🔍 Cari nomor kavling... (mis. A-11)"
                 className="text-xs px-2 py-1 rounded-lg border"
                 style={{ borderColor: C.line, color: C.ink, minWidth: 180 }}
               />
