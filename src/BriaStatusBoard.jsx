@@ -234,6 +234,7 @@ export default function BriaStatusBoard({ onLogout }) {
   const [tableBlocks, setTableBlocks] = useState(DEFAULT_BLOCKS.map((b) => b.name));
   const [tableTipes, setTableTipes] = useState(DEFAULT_TIPE.map((t) => t.name));
   const [tableStatusFilter, setTableStatusFilter] = useState("semua");
+  const [tableSearchQuery, setTableSearchQuery] = useState("");
   const [followUpFilterActive, setFollowUpFilterActive] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -253,6 +254,7 @@ export default function BriaStatusBoard({ onLogout }) {
     setTableBlocks(blocks.map((b) => b.name));
     setTableTipes(tipeOptions.map((t) => t.name));
     setTableStatusFilter("semua");
+    setTableSearchQuery("");
     setSortKey(null);
     setSortDir("asc");
   }
@@ -1522,6 +1524,7 @@ export default function BriaStatusBoard({ onLogout }) {
         return !!h.status[key] === (val === "true");
       })
       .filter((h) => !followUpFilterActive || (h.followUpDate && h.followUpDate <= in7Str))
+      .filter((h) => !tableSearchQuery.trim() || `${h.blok}-${h.noKavling}`.toLowerCase().includes(tableSearchQuery.trim().toLowerCase()))
       .sort((a, b) => {
         if (sortKey) {
           const va = getSortValue(a, sortKey), vb = getSortValue(b, sortKey);
@@ -1532,9 +1535,9 @@ export default function BriaStatusBoard({ onLogout }) {
         }
         return a.blok === b.blok ? String(a.noKavling).localeCompare(String(b.noKavling), undefined, { numeric: true }) : a.blok.localeCompare(b.blok);
       });
-  }, [houses, tableBlocks, tableTipes, tableStatusFilter, followUpFilterActive, sortKey, sortDir]);
+  }, [houses, tableBlocks, tableTipes, tableStatusFilter, tableSearchQuery, followUpFilterActive, sortKey, sortDir]);
 
-  useEffect(() => { setCurrentPage(1); }, [tableBlocks, tableTipes, tableStatusFilter, pageSize]);
+  useEffect(() => { setCurrentPage(1); }, [tableBlocks, tableTipes, tableStatusFilter, tableSearchQuery, pageSize]);
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -2873,6 +2876,13 @@ export default function BriaStatusBoard({ onLogout }) {
               </div>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
+              <input
+                value={tableSearchQuery}
+                onChange={(e) => setTableSearchQuery(e.target.value)}
+                placeholder="Cari nomor kavling... (mis. A-11)"
+                className="text-xs px-2 py-1 rounded-lg border"
+                style={{ borderColor: C.line, color: C.ink, minWidth: 180 }}
+              />
               <select value={tableStatusFilter} onChange={(e) => setTableStatusFilter(e.target.value)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
                 <option value="semua">Semua Status</option>
                 {statusFields.map((s) => (
