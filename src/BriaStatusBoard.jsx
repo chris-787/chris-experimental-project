@@ -1782,13 +1782,13 @@ export default function BriaStatusBoard({ onLogout }) {
                   <polygon points={editPoints.map((p) => `${p.x},${p.y}`).join(" ")} fill={C.accent} fillOpacity="0.3" stroke={C.accent} strokeWidth="0.4" vectorEffect="non-scaling-stroke" />
                 )}
                 {editingShapeId && editPoints && editPoints.map((p, i) => (
-                  <circle key={i} cx={p.x} cy={p.y} r="0.6" fill="#fff" stroke={C.accent} strokeWidth="0.3" vectorEffect="non-scaling-stroke"
+                  <circle key={i} cx={p.x} cy={p.y} r="0.35" fill="#fff" stroke={C.accent} strokeWidth="0.2" vectorEffect="non-scaling-stroke"
                     style={{ cursor: "grab" }} onMouseDown={(e) => startVertexDrag(i, e)} />
                 ))}
                 {drawingPoints.length > 0 && (
                   <polyline points={drawingPoints.map((p) => `${p.x},${p.y}`).join(" ")} fill="none" stroke={C.red} strokeWidth="0.2" vectorEffect="non-scaling-stroke" />
                 )}
-                {drawingPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r="0.3" fill={C.red} stroke="#fff" strokeWidth="0.1" vectorEffect="non-scaling-stroke" />)}
+                {drawingPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r="0.18" fill={C.red} stroke="#fff" strokeWidth="0.08" vectorEffect="non-scaling-stroke" />)}
                 {draft && (
                   <polygon points={draft.points.map((p) => `${p.x},${p.y}`).join(" ")} fill={C.red} fillOpacity="0.35" stroke={C.red} strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
                 )}
