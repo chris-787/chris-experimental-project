@@ -2091,7 +2091,7 @@ export default function BriaStatusBoard({ onLogout }) {
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 6px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
-        table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; }
+        table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; will-change: transform; }
         table.dataTbl tr:hover td { background: #FAF8F2; }
         table.dataTbl tr:hover .kavling-link { text-decoration-color: currentColor; }
         input[type=range] { accent-color: ${C.accent}; }
@@ -2423,7 +2423,7 @@ export default function BriaStatusBoard({ onLogout }) {
       ) : (
       <>
       {/* HEADER (bar atas ini "freeze" / nempel saat di-scroll) */}
-      <div className="sticky top-0 z-30 -mx-5 -mt-5 px-5 pt-3 pb-3 mb-4" style={{ background: C.paper, borderBottom: `2px solid ${C.line}` }}>
+      <div className="sticky top-0 z-30 -mx-5 -mt-5 px-5 pt-3 pb-3 mb-4" style={{ background: C.paper, borderBottom: `2px solid ${C.line}`, willChange: "transform", transform: "translateZ(0)" }}>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
             <button onClick={goHome} className="text-xs px-3 py-1.5 rounded-full border font-medium transition-colors" style={{ borderColor: C.line, color: C.accent, background: "#fff" }}>← 🏠 Home</button>
