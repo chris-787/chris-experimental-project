@@ -250,7 +250,7 @@ export default function BriaStatusBoard({ onLogout }) {
   const [colWidths, setColWidths] = useState({});
   const [showColMenu, setShowColMenu] = useState(false);
 
-  const DEFAULT_COL_WIDTH = { select: 34, kavling: 90, tipe: 120, kategori: 140, kontraktor: 150, noSpk: 150, thSpk: 75, blnSpk: 75, luasBangunan: 90, hpp: 160, adendum: 110, hargaJual: 160, margin: 120, catatan: 160, aksi: 170 };
+  const DEFAULT_COL_WIDTH = { no: 44, select: 34, kavling: 90, tipe: 120, kategori: 140, kontraktor: 150, noSpk: 150, thSpk: 75, blnSpk: 75, luasBangunan: 90, hpp: 160, adendum: 110, hargaJual: 160, margin: 120, catatan: 160, aksi: 170 };
   function colWidth(key) {
     const w = colWidths[key] || DEFAULT_COL_WIDTH[key] || (key === "acOrder" ? 170 : 90);
     if (key === "select") return w;
@@ -1504,6 +1504,7 @@ export default function BriaStatusBoard({ onLogout }) {
   const polygonsClickable = mode === "kerja" || (mode === "input" && drawingPoints.length === 0 && !draft && !editingShapeId);
 
   const columns = useMemo(() => ([
+    { key: "no", label: "No" },
     { key: "select", label: "" },
     { key: "kavling", label: "Kavling" },
     { key: "tipe", label: "Tipe" },
@@ -2927,7 +2928,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 {showColMenu && (
                   <div style={{ position: "absolute", right: 0, top: "110%", zIndex: 20, background: "#fff", border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 180, maxHeight: 260, overflowY: "auto" }}>
                     <div className="text-xs font-semibold mb-1" style={{ color: C.ink }}>Tampilkan kolom</div>
-                    {columns.filter((c) => c.key !== "kavling" && c.key !== "aksi" && c.key !== "select").map((c) => (
+                    {columns.filter((c) => c.key !== "no" && c.key !== "kavling" && c.key !== "aksi" && c.key !== "select").map((c) => (
                       <label key={c.key} className="flex items-center gap-2 text-xs py-1" style={{ color: C.ink }}>
                         <input type="checkbox" checked={!hiddenCols.includes(c.key)} onChange={() => toggleColHidden(c.key)} />
                         {c.label}
@@ -2950,7 +2951,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 <tr>
                   {columns.map((c) => (
                     <th key={c.key} style={{ position: "sticky", top: 0, borderRight: (c.key !== "aksi" && c.key !== "select") ? `1px solid ${C.line}` : "none" }}>
-                      {c.key === "aksi" ? c.label : c.key === "select" ? (
+                      {c.key === "no" || c.key === "aksi" ? c.label : c.key === "select" ? (
                         <input
                           type="checkbox"
                           checked={pageRows.length > 0 && pageRows.every((h) => selectedRows.includes(h.id))}
@@ -2978,7 +2979,7 @@ export default function BriaStatusBoard({ onLogout }) {
               </thead>
               <tbody>
                 {pageRows.length === 0 && (
-                  <tr><td colSpan={15 + statusFields.length} className="text-center py-4" style={{ color: C.steel }}>
+                  <tr><td colSpan={16 + statusFields.length} className="text-center py-4" style={{ color: C.steel }}>
                     {houses.length === 0
                       ? "Belum ada data. Tambahkan lewat Mode Kalibrasi di peta."
                       : totalRows === 0
@@ -2986,8 +2987,11 @@ export default function BriaStatusBoard({ onLogout }) {
                         : "Tidak ada data di halaman ini."}
                   </td></tr>
                 )}
-                {pageRows.map((h) => (
+                {pageRows.map((h, i) => (
                   <tr key={h.id} ref={(el) => (rowRefs.current[h.id] = el)} style={{ background: selectedRows.includes(h.id) ? "#FFF7E8" : selectedId === h.id ? "#EFF3F6" : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
+                    <td className="text-center" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }} onClick={(e) => e.stopPropagation()}>
+                      {(pageSize === "all" ? 0 : (currentPage - 1) * pageSize) + i + 1}
+                    </td>
                     <td className="text-center" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={selectedRows.includes(h.id)} onChange={() => toggleRowSelect(h.id)} />
                     </td>
@@ -3204,7 +3208,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 ))}
                 {Array.from({ length: Math.max(0, (typeof pageSize === "number" ? pageSize : 10) - pageRows.length) }).map((_, i) => (
                   <tr key={`fill-${i}`} style={{ height: 33 }}>
-                    <td colSpan={15 + statusFields.length}>&nbsp;</td>
+                    <td colSpan={16 + statusFields.length}>&nbsp;</td>
                   </tr>
                 ))}
               </tbody>
