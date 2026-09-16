@@ -2323,7 +2323,7 @@ export default function BriaStatusBoard({ onLogout }) {
               .map((c) => (
               <div key={c.id} className="rounded-xl p-4" style={{ background: C.panel, border: `1px solid ${c.pinned ? C.accent : C.line}` }}>
                 {clusterImages[c.id] ? (
-                  <img src={clusterImages[c.id]} alt={c.name} style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 8, marginBottom: 10, border: `1px solid ${C.line}` }} />
+                  <img src={clusterImages[c.id]} alt={c.name} loading="lazy" decoding="async" style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 8, marginBottom: 10, border: `1px solid ${C.line}` }} />
                 ) : (
                   <div className="flex items-center justify-center" style={{ width: "100%", height: 100, borderRadius: 8, marginBottom: 10, border: `1px dashed ${C.line}`, background: C.paper }}>
                     <span className="text-xs" style={{ color: C.faint }}>Belum ada site plan</span>
@@ -2593,7 +2593,7 @@ export default function BriaStatusBoard({ onLogout }) {
           <div className="rounded-xl p-4" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
             <div className="text-sm font-medium mb-1" style={{ color: C.ink }}>Gambar Site Plan</div>
             <p className="text-xs mb-3" style={{ color: C.steel }}>Ganti dengan revisi terbaru kapan saja. Titik-titik kavling yang sudah dikalibrasi tetap tersimpan (posisinya persentase, jadi sesuaikan lagi kalau layout gambarnya berubah total).</p>
-            <img src={siteImage} alt="Preview site plan" style={{ width: "100%", maxHeight: 140, objectFit: "cover", borderRadius: 8, border: `1px solid ${C.line}`, marginBottom: 10 }} />
+            <img src={siteImage} alt="Preview site plan" loading="lazy" decoding="async" style={{ width: "100%", maxHeight: 140, objectFit: "cover", borderRadius: 8, border: `1px solid ${C.line}`, marginBottom: 10 }} />
             <div className="flex items-center gap-2 flex-wrap">
               <label className="text-xs px-3 py-1.5 rounded-lg cursor-pointer" style={{ background: C.accent, color: "#fff" }}>
                 {imgUploading ? "Memproses..." : "Unggah Gambar Baru"}
