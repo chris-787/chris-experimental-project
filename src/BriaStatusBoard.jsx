@@ -2949,7 +2949,7 @@ export default function BriaStatusBoard({ onLogout }) {
               <thead>
                 <tr>
                   {columns.map((c) => (
-                    <th key={c.key} style={{ position: "relative", borderRight: (c.key !== "aksi" && c.key !== "select") ? `1px solid ${C.line}` : "none" }}>
+                    <th key={c.key} style={{ position: "sticky", top: 0, borderRight: (c.key !== "aksi" && c.key !== "select") ? `1px solid ${C.line}` : "none" }}>
                       {c.key === "aksi" ? c.label : c.key === "select" ? (
                         <input
                           type="checkbox"
