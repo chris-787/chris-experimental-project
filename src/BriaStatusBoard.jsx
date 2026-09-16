@@ -10,6 +10,14 @@ import { C, PALETTE } from "./theme";
 // orang langsung lihat dashboard-nya.
 const DashboardCharts = lazy(() => import("./DashboardCharts"));
 
+// Komponen terpisah supaya detak jam tiap detik cuma me-render ulang
+// teks jam ini saja, bukan seluruh halaman (tabel & site plan bisa
+// sangat besar, jadi render ulang tiap detik bikin scroll patah-patah).
+function ClockText() {
+  const now = useJakartaClock();
+  return formatJakartaDateTime(now);
+}
+
 const SITE_IMAGE_DEFAULT = "/default-site-plan.jpg";
 const MAX_IMG_DIM = 1600;
 
@@ -105,7 +113,6 @@ function resizeImageFile(file, maxDim) {
 }
 
 export default function BriaStatusBoard({ onLogout }) {
-  const now = useJakartaClock();
   const [houses, setHouses] = useState([]);
   const [siteImage, setSiteImage] = useState(SITE_IMAGE_DEFAULT);
   const [imgUploading, setImgUploading] = useState(false);
@@ -2146,7 +2153,7 @@ export default function BriaStatusBoard({ onLogout }) {
               </div>
             </div>
             <div className="text-sm mt-1" style={{ color: C.steel }}>Pilih cluster untuk mulai bekerja, atau tambah cluster baru.</div>
-            <div className="text-xs mt-1" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
+            <div className="text-xs mt-1" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}><ClockText /></div>
             {clusters.length === 0 && (
               <div className="mt-2 text-xs">
                 <span style={{ color: C.steel }}>Tidak melihat data lama Anda? </span>
@@ -2421,7 +2428,7 @@ export default function BriaStatusBoard({ onLogout }) {
           <div className="flex items-center gap-3">
             <button onClick={goHome} className="text-xs px-3 py-1.5 rounded-full border font-medium transition-colors" style={{ borderColor: C.line, color: C.accent, background: "#fff" }}>← 🏠 Home</button>
             <div>
-              <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>{formatJakartaDateTime(now)}</div>
+              <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}><ClockText /></div>
               <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase" }}>
                 {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
               </div>
