@@ -2916,7 +2916,7 @@ export default function BriaStatusBoard({ onLogout }) {
                     onChange={(e) => setTableZoom(Math.min(150, Math.max(50, Number(e.target.value) || 100)))}
                     onDoubleClick={() => setTableZoom(100)}
                     title="Zoom tabel. Klik 2x untuk kembali ke 100%"
-                    style={{ width: 36, textAlign: "right", border: "none", outline: "none", fontSize: 12, color: C.steel, padding: "0 2px 0 6px" }}
+                    style={{ width: 46, textAlign: "right", border: "none", outline: "none", fontSize: 12, color: C.steel, padding: "0 2px 0 6px" }}
                   />
                   <span className="text-xs pr-2" style={{ color: C.steel }}>%</span>
                 </div>
