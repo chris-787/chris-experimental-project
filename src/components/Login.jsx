@@ -156,7 +156,7 @@ export default function Login() {
         </button>
 
         <p style={{ fontSize: 11, color: C.steel, marginTop: 16, marginBottom: 0 }}>
-          Created by Aditya Christiandi Sinulingga
+          Created by Aditya Christiandi Sinulingga. Ver 1.0
         </p>
         <p style={{ fontSize: 11, color: C.faint, marginTop: 6, marginBottom: 0 }}>
           Belum punya akun? Hubungi Admin untuk dibuatkan akses.
