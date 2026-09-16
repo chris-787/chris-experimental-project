@@ -1679,7 +1679,7 @@ export default function BriaStatusBoard({ onLogout }) {
               {marginPerTipe.filter((t) => t.n > 0).map((t) => (
                 <div key={t.tipe} className="p-3 rounded-xl" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
                   <div style={{ fontSize: 11, color: C.steel, marginBottom: 3 }}>Margin {t.tipe}</div>
-                  <div className="text-base font-semibold" style={{ color: t.margin >= 0 ? C.green : C.red, fontFamily: "IBM Plex Mono, monospace" }}>{t.margin}%</div>
+                  <div className="text-base font-semibold" style={{ color: t.margin >= 20 ? C.green : C.red, fontFamily: "IBM Plex Mono, monospace" }}>{t.margin}%</div>
                 </div>
               ))}
             </div>
@@ -2046,7 +2046,7 @@ export default function BriaStatusBoard({ onLogout }) {
               <span className="text-xs" style={{ color: C.steel }}>atur Luas Bangunan Tipe</span>
             ) : (
               <span style={{ textAlign: "right" }}>
-                <div className="text-base font-semibold" style={{ fontFamily: "IBM Plex Mono, monospace", color: marginOf(h) >= 0 ? C.green : C.red }}>{marginPct(h).toFixed(2)}%</div>
+                <div className="text-base font-semibold" style={{ fontFamily: "IBM Plex Mono, monospace", color: marginPct(h) >= 20 ? C.green : C.red }}>{marginPct(h).toFixed(2)}%</div>
                 <div className="text-xs" style={{ color: C.steel }}>{rupiah(marginOf(h))}</div>
               </span>
             )}
@@ -3162,7 +3162,7 @@ export default function BriaStatusBoard({ onLogout }) {
                         </div>
                       )}
                     </td>
-                    <td style={{ fontFamily: "IBM Plex Mono, monospace", color: marginOf(h) >= 0 ? C.green : C.red, fontWeight: 600, whiteSpace: "normal", wordBreak: "break-word" }}>
+                    <td style={{ fontFamily: "IBM Plex Mono, monospace", color: marginPct(h) >= 20 ? C.green : C.red, fontWeight: 600, whiteSpace: "normal", wordBreak: "break-word" }}>
                       {!luasBangunanOf(h) ? <span style={{ color: C.steel, fontWeight: 400, fontSize: 11 }}>atur LB Tipe</span> : (
                         <>
                           {marginPct(h).toFixed(2)}%
