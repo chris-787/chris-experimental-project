@@ -242,6 +242,7 @@ export default function BriaStatusBoard({ onLogout }) {
   const [tableTipes, setTableTipes] = useState(DEFAULT_TIPE.map((t) => t.name));
   const [tableStatusFilter, setTableStatusFilter] = useState("semua");
   const [tableSearchQuery, setTableSearchQuery] = useState("");
+  const [tableZoom, setTableZoom] = useState(100);
   const [followUpFilterActive, setFollowUpFilterActive] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -264,6 +265,7 @@ export default function BriaStatusBoard({ onLogout }) {
     setTableSearchQuery("");
     setSortKey(null);
     setSortDir("asc");
+    setTableZoom(100);
   }
   async function saveTableLayout(next) {
     try {
@@ -2905,6 +2907,21 @@ export default function BriaStatusBoard({ onLogout }) {
                 <input type="file" accept=".xlsx,.xls,.csv" onChange={importExcel} style={{ display: "none" }} />
               </label>
               <button onClick={resetColWidths} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.steel, background: "#fff" }}>Reset</button>
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => setTableZoom((z) => Math.max(50, z - 10))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>−</button>
+                <div className="flex items-center h-7 rounded-lg" style={{ border: `1px solid ${C.line}`, background: "#fff" }}>
+                  <input
+                    type="number"
+                    value={tableZoom}
+                    onChange={(e) => setTableZoom(Math.min(150, Math.max(50, Number(e.target.value) || 100)))}
+                    onDoubleClick={() => setTableZoom(100)}
+                    title="Zoom tabel. Klik 2x untuk kembali ke 100%"
+                    style={{ width: 36, textAlign: "right", border: "none", outline: "none", fontSize: 12, color: C.steel, padding: "0 2px 0 6px" }}
+                  />
+                  <span className="text-xs pr-2" style={{ color: C.steel }}>%</span>
+                </div>
+                <button onClick={() => setTableZoom((z) => Math.min(150, z + 10))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>+</button>
+              </div>
               <div style={{ position: "relative" }}>
                 <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: "#fff" }}>Kolom</button>
                 {showColMenu && (
@@ -2922,7 +2939,7 @@ export default function BriaStatusBoard({ onLogout }) {
             </div>
           </div>
 
-          <div style={{ overflowX: "auto", maxHeight: 480, overflowY: "auto" }}>
+          <div style={{ overflowX: "auto", maxHeight: 480, overflowY: "auto", zoom: tableZoom / 100 }}>
             <table className="dataTbl w-full" style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
                 {columns.map((c) => (
