@@ -84,7 +84,7 @@ function StatusRow({ label, value, onToggle }) {
     </label>
   );
 }
-const cellInput = { width: "100%", minWidth: 80, padding: "4px 6px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: "#fff" };
+const cellInput = { width: "100%", minWidth: 80, padding: "2px 6px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: "#fff" };
 const formInput = { width: "100%", padding: "6px 8px", fontSize: 13, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: "#fff" };
 
 function resizeImageFile(file, maxDim) {
@@ -2093,7 +2093,7 @@ export default function BriaStatusBoard({ onLogout }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
-        table.dataTbl th, table.dataTbl td { padding: 6px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
+        table.dataTbl th, table.dataTbl td { padding: 3px 6px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
         table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; will-change: transform; }
         table.dataTbl tr:hover td { background: #FAF8F2; }
         table.dataTbl tr:hover .kavling-link { text-decoration-color: currentColor; }
@@ -3063,7 +3063,7 @@ export default function BriaStatusBoard({ onLogout }) {
                           onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }}
                         />
                       ) : (
-                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:kontraktor`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "5px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:kontraktor`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
                           {h.kontraktor}
                         </div>
                       )}
@@ -3078,7 +3078,7 @@ export default function BriaStatusBoard({ onLogout }) {
                           onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }}
                         />
                       ) : (
-                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:spkNo`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "5px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:spkNo`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
                           {h.spkNo}
                         </div>
                       )}
@@ -3093,7 +3093,7 @@ export default function BriaStatusBoard({ onLogout }) {
                           onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }}
                         />
                       ) : (
-                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:spkTahun`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "5px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, fontFamily: "IBM Plex Mono, monospace", width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:spkTahun`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, fontFamily: "IBM Plex Mono, monospace", width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
                           {h.spkTahun}
                         </div>
                       )}
@@ -3110,7 +3110,7 @@ export default function BriaStatusBoard({ onLogout }) {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setMonthEditingKey(h.id); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "5px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, textAlign: "center" }}
+                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, textAlign: "center" }}
                         >
                           {MONTHS[h.spkBulan - 1]}
                         </div>
@@ -3130,7 +3130,7 @@ export default function BriaStatusBoard({ onLogout }) {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:hpp`); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "5px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "normal", wordBreak: "break-word" }}
+                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "normal", wordBreak: "break-word" }}
                         >
                           {rupiah(h.hppPerM2)}
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hppTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
@@ -3159,7 +3159,7 @@ export default function BriaStatusBoard({ onLogout }) {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:harga`); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "5px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "normal", wordBreak: "break-word" }}
+                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "normal", wordBreak: "break-word" }}
                         >
                           {rupiah(h.hargaJualPerM2)}
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hargaJualTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
@@ -3186,7 +3186,7 @@ export default function BriaStatusBoard({ onLogout }) {
                           placeholder="..."
                         />
                       ) : (
-                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:catatan`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "5px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:catatan`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
                           {h.catatan}
                         </div>
                       )}
