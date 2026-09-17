@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense, lazy } from "react";
+import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, Suspense, lazy } from "react";
 import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
 import { onStorageError } from "./lib/errorBus";
@@ -58,6 +58,13 @@ function configKeyFor(id) { return id === LEGACY_CLUSTER_ID ? CONFIG_KEY_BASE : 
 function imageKeyFor(id) { return id === LEGACY_CLUSTER_ID ? IMAGE_KEY_BASE : `${IMAGE_KEY_BASE}:${id}`; }
 
 const rupiah = (n) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n || 0);
+let _measureCanvas = null;
+function measureTextWidth(text, font) {
+  if (!_measureCanvas) _measureCanvas = document.createElement("canvas");
+  const ctx = _measureCanvas.getContext("2d");
+  ctx.font = font;
+  return ctx.measureText(text || "").width;
+}
 function centroid(points) {
   const cx = points.reduce((s, p) => s + p.x, 0) / points.length;
   const cy = points.reduce((s, p) => s + p.y, 0) / points.length;
@@ -194,6 +201,12 @@ export default function BriaStatusBoard({ onLogout }) {
   const [selectedId, setSelectedId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [actionMenuId, setActionMenuId] = useState(null);
+  const [subtitleWidth, setSubtitleWidth] = useState(20);
+  useEffect(() => {
+    const subtitle = (clusters.find((c) => c.id === currentClusterId) || {}).subtitle || "";
+    const width = measureTextWidth(subtitle, "14px Inter, sans-serif");
+    setSubtitleWidth(Math.max(Math.ceil(width) + 4, 20));
+  }, [clusters, currentClusterId]);
   const [editingShapeId, setEditingShapeId] = useState(null);
   const [editPoints, setEditPoints] = useState(null);
   const draggingVertexRef = useRef(null);
@@ -2555,10 +2568,9 @@ export default function BriaStatusBoard({ onLogout }) {
             onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, subtitle: e.target.value } : c)))}
             onBlur={(e) => updateClusterMeta(currentClusterId, { subtitle: e.target.value })}
             onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
-            size={Math.max(activeCluster.subtitle.length, 1)}
             className="text-sm editable-heading"
             title="Klik untuk edit subjudul"
-            style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", fontFamily: "Inter, sans-serif", minWidth: 20, flex: "0 1 auto" }}
+            style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", fontFamily: "Inter, sans-serif", width: subtitleWidth, flex: "0 0 auto" }}
           />
           <span className="text-sm" style={{ color: C.steel }}>· target {totalTarget} unit, {blocks.length} blok</span>
         </div>
