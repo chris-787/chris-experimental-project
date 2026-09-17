@@ -2555,9 +2555,10 @@ export default function BriaStatusBoard({ onLogout }) {
             onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, subtitle: e.target.value } : c)))}
             onBlur={(e) => updateClusterMeta(currentClusterId, { subtitle: e.target.value })}
             onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
+            size={Math.max(activeCluster.subtitle.length, 1)}
             className="text-sm editable-heading"
             title="Klik untuk edit subjudul"
-            style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", fontFamily: "Inter, sans-serif", width: 220 }}
+            style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", fontFamily: "Inter, sans-serif", minWidth: 20, flex: "0 1 auto" }}
           />
           <span className="text-sm" style={{ color: C.steel }}>· target {totalTarget} unit, {blocks.length} blok</span>
         </div>
