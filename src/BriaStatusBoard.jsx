@@ -1553,6 +1553,10 @@ export default function BriaStatusBoard({ onLogout }) {
 
   useEffect(() => {
     function onKeyDown(e) {
+      if (e.key === "Escape" && actionMenuId) {
+        setActionMenuId(null);
+        return;
+      }
       if (mode !== "kerja" || !selectedId) return;
       const tag = (e.target.tagName || "").toLowerCase();
       const isTyping = tag === "input" || tag === "textarea" || tag === "select";
@@ -1574,7 +1578,7 @@ export default function BriaStatusBoard({ onLogout }) {
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [mode, selectedId, tableRows]);
+  }, [mode, selectedId, tableRows, actionMenuId]);
   const totalRows = tableRows.length;
   const effectivePageSize = pageSize === "all" ? Math.max(totalRows, 1) : pageSize;
   const totalPages = Math.max(1, Math.ceil(totalRows / effectivePageSize));
