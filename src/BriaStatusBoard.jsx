@@ -1850,8 +1850,10 @@ export default function BriaStatusBoard({ onLogout }) {
                       </select>
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <button onClick={() => startEditShape(target.id)} className="text-xs px-2 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Edit Bentuk</button>
-                      <button onClick={() => { setConfirmDeleteId(target.id); setActionMenuId(null); }} className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.red}`, color: C.red }}>Hapus</button>
+                      <div className="flex gap-1.5">
+                        <button onClick={() => startEditShape(target.id)} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Edit Bentuk</button>
+                        <button onClick={() => { setConfirmDeleteId(target.id); setActionMenuId(null); }} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ border: `1px solid ${C.red}`, color: C.red }}>Hapus</button>
+                      </div>
                       <div className="flex gap-1.5">
                         <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ background: C.green, color: "#fff" }}>OK</button>
                         <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
