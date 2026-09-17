@@ -1836,8 +1836,19 @@ export default function BriaStatusBoard({ onLogout }) {
                 if (!target) return null;
                 const { cx, cy } = centroid(target.points);
                 return (
-                  <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(10px, 10px)", background: "#fff", border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 11, width: 190 }}>
+                  <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(10px, 10px)", background: "#fff", border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 11, width: 210 }}>
                     <div className="text-xs font-semibold mb-2" style={{ color: C.ink }}>{target.blok}-{target.noKavling}</div>
+                    <div className="flex flex-col gap-1.5 mb-2">
+                      <div className="flex gap-1.5">
+                        <select value={target.blok} onChange={(e) => updateHouse(target.id, { blok: e.target.value })} style={{ ...cellInput, flex: 1, padding: "3px 4px" }}>
+                          {blocks.map((b) => <option key={b.id} value={b.name}>{b.name}</option>)}
+                        </select>
+                        <input value={target.noKavling} onChange={(e) => updateHouse(target.id, { noKavling: e.target.value })} style={{ ...cellInput, width: 60, padding: "3px 4px" }} placeholder="No." />
+                      </div>
+                      <select value={target.tipe} onChange={(e) => updateHouse(target.id, { tipe: e.target.value })} style={{ ...cellInput, padding: "3px 4px" }}>
+                        {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
+                      </select>
+                    </div>
                     <div className="flex flex-col gap-1.5">
                       <button onClick={() => startEditShape(target.id)} className="text-xs px-2 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Edit Bentuk</button>
                       <button onClick={() => { setConfirmDeleteId(target.id); setActionMenuId(null); }} className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.red}`, color: C.red }}>Hapus</button>
