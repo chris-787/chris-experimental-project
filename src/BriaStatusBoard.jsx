@@ -1837,7 +1837,8 @@ export default function BriaStatusBoard({ onLogout }) {
                 const { cx, cy } = centroid(target.points);
                 return (
                   <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(10px, 10px)", background: "#fff", border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 11, width: 210 }}>
-                    <div className="text-xs font-semibold mb-2" style={{ color: C.ink }}>{target.blok}-{target.noKavling}</div>
+                    <button onClick={() => setActionMenuId(null)} aria-label="Tutup" style={{ position: "absolute", top: 6, right: 6, width: 20, height: 20, lineHeight: "20px", textAlign: "center", border: "none", background: "transparent", color: C.steel, cursor: "pointer", fontSize: 14 }}>×</button>
+                    <div className="text-xs font-semibold mb-2" style={{ color: C.ink, paddingRight: 18 }}>{target.blok}-{target.noKavling}</div>
                     <div className="flex flex-col gap-1.5 mb-2">
                       <div className="flex gap-1.5">
                         <select value={target.blok} onChange={(e) => updateHouse(target.id, { blok: e.target.value })} style={{ ...cellInput, flex: 1, padding: "3px 4px" }}>
