@@ -1615,6 +1615,37 @@ export default function BriaStatusBoard({ onLogout }) {
       .sort((a, b) => (a.followUpDate < b.followUpDate ? -1 : 1));
   }, [houses]);
 
+  // Peringatan lintas-cluster di Home: follow-up jatuh tempo & nomor
+  // kavling duplikat, dipakaikan dari globalHousesIndex yang sudah
+  // dimuat untuk pencarian blok (tidak ada panggilan jaringan baru).
+  const homeFollowUpList = useMemo(() => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const in7Str = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    const list = [];
+    clusters.forEach((c) => {
+      (globalHousesIndex[c.id] || []).forEach((h) => {
+        if (h.followUpDate && h.followUpDate <= in7Str) {
+          list.push({ ...h, clusterId: c.id, clusterName: c.name, overdue: h.followUpDate < todayStr });
+        }
+      });
+    });
+    return list.sort((a, b) => (a.followUpDate < b.followUpDate ? -1 : 1));
+  }, [clusters, globalHousesIndex]);
+
+  const homeDuplicateList = useMemo(() => {
+    const list = [];
+    clusters.forEach((c) => {
+      const chouses = globalHousesIndex[c.id] || [];
+      const counts = {};
+      chouses.forEach((h) => { const key = `${h.blok}-${h.noKavling}`; counts[key] = (counts[key] || 0) + 1; });
+      chouses.forEach((h) => {
+        const key = `${h.blok}-${h.noKavling}`;
+        if (counts[key] > 1) list.push({ ...h, clusterId: c.id, clusterName: c.name });
+      });
+    });
+    return list;
+  }, [clusters, globalHousesIndex]);
+
   const SmallSpinner = () => (
     <span style={{
       display: "inline-block", width: 12, height: 12, borderRadius: "50%",
@@ -2222,6 +2253,41 @@ export default function BriaStatusBoard({ onLogout }) {
               </div>
             )}
           </div>
+
+          {homeFollowUpList.length > 0 && (
+            <div className="mb-4 p-3 rounded-lg" style={{ background: "#FFF7E8", border: `1px solid ${C.amber}` }}>
+              <div className="text-sm font-semibold mb-2" style={{ color: C.ink }}>⏰ Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
+              <div className="flex flex-col gap-1">
+                {homeFollowUpList.slice(0, 8).map((h) => (
+                  <div key={h.id} className="flex items-center justify-between text-xs">
+                    <span onClick={() => openKavlingFromSearch(h.clusterId, h.id)} style={{ color: C.ink, cursor: "pointer", textDecoration: "underline" }}>
+                      {h.clusterName} · {h.blok}-{h.noKavling}
+                    </span>
+                    <span style={{ color: h.overdue ? C.red : C.steel, fontFamily: "IBM Plex Mono, monospace" }}>
+                      {h.overdue ? "Lewat tenggat — " : ""}{new Date(h.followUpDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                    </span>
+                  </div>
+                ))}
+                {homeFollowUpList.length > 8 && <div className="text-xs" style={{ color: C.steel }}>+{homeFollowUpList.length - 8} lainnya</div>}
+              </div>
+            </div>
+          )}
+
+          {homeDuplicateList.length > 0 && (
+            <div className="mb-4 p-3 rounded-lg" style={{ background: "#FBEAE6", border: `1px solid ${C.red}` }}>
+              <div className="text-sm font-semibold mb-2" style={{ color: C.ink }}>⚠️ Nomor Kavling Duplikat ({homeDuplicateList.length})</div>
+              <div className="flex flex-col gap-1">
+                {homeDuplicateList.slice(0, 8).map((h) => (
+                  <div key={h.id} className="flex items-center justify-between text-xs">
+                    <span onClick={() => openKavlingFromSearch(h.clusterId, h.id)} style={{ color: C.ink, cursor: "pointer", textDecoration: "underline" }}>
+                      {h.clusterName} · {h.blok}-{h.noKavling}
+                    </span>
+                  </div>
+                ))}
+                {homeDuplicateList.length > 8 && <div className="text-xs" style={{ color: C.steel }}>+{homeDuplicateList.length - 8} lainnya</div>}
+              </div>
+            </div>
+          )}
 
           <div className="mb-4">
             <div className="text-base font-semibold mb-2" style={{ color: C.ink }}>🔍 Pencarian Blok</div>
