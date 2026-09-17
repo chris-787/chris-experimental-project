@@ -1848,12 +1848,14 @@ export default function BriaStatusBoard({ onLogout }) {
                       <select value={target.tipe} onChange={(e) => updateHouse(target.id, { tipe: e.target.value })} style={{ ...cellInput, padding: "3px 4px" }}>
                         {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
                       </select>
-                      <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1.5 rounded-lg" style={{ background: C.green, color: "#fff" }}>OK</button>
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <button onClick={() => startEditShape(target.id)} className="text-xs px-2 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Edit Bentuk</button>
                       <button onClick={() => { setConfirmDeleteId(target.id); setActionMenuId(null); }} className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.red}`, color: C.red }}>Hapus</button>
-                      <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                      <div className="flex gap-1.5">
+                        <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ background: C.green, color: "#fff" }}>OK</button>
+                        <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                      </div>
                     </div>
                   </div>
                 );
