@@ -244,6 +244,7 @@ export default function BriaStatusBoard({ onLogout }) {
   const [tableSearchQuery, setTableSearchQuery] = useState("");
   const [tableZoom, setTableZoom] = useState(100);
   const [followUpFilterActive, setFollowUpFilterActive] = useState(false);
+  const [duplicateFilterActive, setDuplicateFilterActive] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [hiddenCols, setHiddenCols] = useState([]);
@@ -1534,6 +1535,7 @@ export default function BriaStatusBoard({ onLogout }) {
         return !!h.status[key] === (val === "true");
       })
       .filter((h) => !followUpFilterActive || (h.followUpDate && h.followUpDate <= in7Str))
+      .filter((h) => !duplicateFilterActive || isDuplicateKavling(h))
       .filter((h) => !tableSearchQuery.trim() || `${h.blok}-${h.noKavling}`.toLowerCase().includes(tableSearchQuery.trim().toLowerCase()))
       .sort((a, b) => {
         if (sortKey) {
@@ -1545,9 +1547,9 @@ export default function BriaStatusBoard({ onLogout }) {
         }
         return a.blok === b.blok ? String(a.noKavling).localeCompare(String(b.noKavling), undefined, { numeric: true }) : a.blok.localeCompare(b.blok);
       });
-  }, [houses, tableBlocks, tableTipes, tableStatusFilter, tableSearchQuery, followUpFilterActive, sortKey, sortDir]);
+  }, [houses, tableBlocks, tableTipes, tableStatusFilter, tableSearchQuery, followUpFilterActive, duplicateFilterActive, sortKey, sortDir]);
 
-  useEffect(() => { setCurrentPage(1); }, [tableBlocks, tableTipes, tableStatusFilter, tableSearchQuery, pageSize]);
+  useEffect(() => { setCurrentPage(1); }, [tableBlocks, tableTipes, tableStatusFilter, tableSearchQuery, duplicateFilterActive, pageSize]);
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -1605,6 +1607,8 @@ export default function BriaStatusBoard({ onLogout }) {
     Selesai: houses.filter((h) => h.status[s.key]).length,
     Belum: houses.length - houses.filter((h) => h.status[s.key]).length,
   })), [houses, statusFields]);
+
+  const clusterDuplicateCount = useMemo(() => houses.filter((h) => isDuplicateKavling(h)).length, [houses]);
 
   const followUpList = useMemo(() => {
     const todayStr = new Date().toISOString().slice(0, 10);
@@ -2850,6 +2854,17 @@ export default function BriaStatusBoard({ onLogout }) {
             <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: "#FFF7E8", border: `1px solid ${C.amber}` }}>
               <span className="text-xs" style={{ color: C.amber }}>Menampilkan hanya kavling yang perlu ditindaklanjuti.</span>
               <button onClick={() => setFollowUpFilterActive(false)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.amber}`, color: C.amber, background: "#fff" }}>Tampilkan Semua</button>
+            </div>
+          )}
+          {duplicateFilterActive ? (
+            <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: "#FBEAE6", border: `1px solid ${C.red}` }}>
+              <span className="text-xs" style={{ color: C.red }}>Menampilkan hanya kavling dengan nomor duplikat.</span>
+              <button onClick={() => setDuplicateFilterActive(false)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.red}`, color: C.red, background: "#fff" }}>Tampilkan Semua</button>
+            </div>
+          ) : clusterDuplicateCount > 0 && (
+            <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: "#FBEAE6", border: `1px solid ${C.red}` }}>
+              <span className="text-xs" style={{ color: C.red }}>⚠️ Ada {clusterDuplicateCount} kavling dengan nomor duplikat di cluster ini.</span>
+              <button onClick={() => setDuplicateFilterActive(true)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.red, color: "#fff" }}>Lihat</button>
             </div>
           )}
           {lastDeleted && (
