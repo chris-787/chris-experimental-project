@@ -2347,6 +2347,9 @@ export default function BriaStatusBoard({ onLogout }) {
                   Pulihkan dari Cadangan (JSON)
                   <input type="file" accept=".json" onChange={handleRestoreAllFile} style={{ display: "none" }} />
                 </label>
+                <button onClick={() => setShowWhatsNew(true)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.steel, background: "#fff" }}>
+                  🆕 What's New
+                </button>
               </div>
             )}
             {restoreAllResult && (
