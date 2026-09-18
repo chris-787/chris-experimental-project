@@ -2267,28 +2267,30 @@ export default function BriaStatusBoard({ onLogout }) {
 
       {!currentClusterId && homeLoaded && showWhatsNew && (
         <div onClick={() => setShowWhatsNew(false)} style={{ position: "fixed", inset: 0, background: "rgba(27,42,60,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, maxHeight: "85vh", overflowY: "auto", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, padding: 24, boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}>
-            <div className="flex items-center justify-between mb-4">
+          <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, maxHeight: "85vh", display: "flex", flexDirection: "column", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, boxShadow: "0 12px 32px rgba(0,0,0,0.25)", overflow: "hidden" }}>
+            <div className="flex items-center justify-between" style={{ padding: "20px 24px 16px", borderBottom: `1px solid ${C.line}`, flexShrink: 0 }}>
               <div className="text-lg font-semibold" style={{ color: C.ink }}>🆕 What's New</div>
               <button onClick={() => setShowWhatsNew(false)} aria-label="Tutup" style={{ border: "none", background: "transparent", color: C.steel, fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
-            {WHATS_NEW_GROUPS.map((group, gi) => (
-              <div key={gi} className="mb-4">
-                <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.gold, textTransform: "uppercase" }}>{group.date}</div>
-                <div className="flex flex-col gap-3">
-                  {group.items.map((it, i) => (
-                    <div key={i} className="flex gap-2.5">
-                      <div style={{ fontSize: 20, lineHeight: "26px" }}>{it.icon}</div>
-                      <div>
-                        <div className="text-sm font-medium" style={{ color: C.ink }}>{it.title}</div>
-                        <div className="text-xs" style={{ color: C.steel, lineHeight: 1.5 }}>{it.desc}</div>
+            <div style={{ overflowY: "auto", padding: "16px 24px 24px" }}>
+              {WHATS_NEW_GROUPS.map((group, gi) => (
+                <div key={gi} className="mb-4">
+                  <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.gold, textTransform: "uppercase" }}>{group.date}</div>
+                  <div className="flex flex-col gap-3">
+                    {group.items.map((it, i) => (
+                      <div key={i} className="flex gap-2.5">
+                        <div style={{ fontSize: 20, lineHeight: "26px" }}>{it.icon}</div>
+                        <div>
+                          <div className="text-sm font-medium" style={{ color: C.ink }}>{it.title}</div>
+                          <div className="text-xs" style={{ color: C.steel, lineHeight: 1.5 }}>{it.desc}</div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-            <button onClick={() => setShowWhatsNew(false)} className="text-sm w-full px-3 py-2 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Oke, Mengerti</button>
+              ))}
+              <button onClick={() => setShowWhatsNew(false)} className="text-sm w-full px-3 py-2 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Oke, Mengerti</button>
+            </div>
           </div>
         </div>
       )}
