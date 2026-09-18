@@ -23,14 +23,35 @@ const MAX_IMG_DIM = 1600;
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
 
-const WHATS_NEW_ITEMS = [
-  { icon: "🔔", title: "Notifikasi Follow-up & Duplikat di Home", desc: "Langsung lihat kavling yang perlu ditindaklanjuti dan nomor kavling duplikat dari semua cluster, tanpa harus buka satu-satu." },
-  { icon: "⚠️", title: "Deteksi Duplikat di Dalam Cluster", desc: "Ada peringatan otomatis di tabel Data Blok kalau ada nomor kavling yang sama persis di cluster yang sama." },
-  { icon: "✏️", title: "Edit Blok/Nomor/Tipe Langsung dari Peta", desc: "Di Mode Kalibrasi, klik kavling untuk langsung ubah Blok, Nomor, dan Tipe-nya tanpa perlu gambar ulang." },
-  { icon: "🔍", title: "Kontrol Zoom Tabel & Site Plan", desc: "Tombol perbesar/perkecil/reset kini tersedia di tabel Data Blok maupun peta Site Plan." },
-  { icon: "🖨️", title: "Cetak Site Plan & Dashboard ke PDF", desc: "Site Plan berwarna dan Dashboard bisa langsung dicetak atau diekspor jadi PDF untuk laporan." },
-  { icon: "↩️", title: "Undo & Konfirmasi Sebelum Menghapus", desc: "Ada jendela Undo dan konfirmasi tambahan sebelum data (kavling, blok, tipe, status) terhapus permanen." },
-  { icon: "⚡", title: "Tabel & Scroll Lebih Ringan", desc: "Perbaikan performa supaya scroll tabel data yang panjang tidak lagi patah-patah." },
+const WHATS_NEW_GROUPS = [
+  {
+    date: "18 September 2026",
+    items: [
+      { icon: "🆕", title: "Popup What's New di Home", desc: "Menampilkan ringkasan pembaruan tiap kali login, tidak muncul lagi kalau cuma pindah dari cluster ke Home." },
+      { icon: "🔍", title: "Zoom Site Plan Lebih Cepat", desc: "Tombol +/− di peta Site Plan sekarang melompat 20% tiap klik (sebelumnya 5%), lebih cepat untuk memperbesar detail." },
+      { icon: "⌨️", title: "Tutup Popup Kalibrasi Pakai Esc", desc: "Selain klik ikon ×, popup edit Blok/Nomor/Tipe di Mode Kalibrasi kini bisa ditutup cukup dengan tombol Esc." },
+      { icon: "🧹", title: "Rapikan Judul Cluster", desc: "Celah kosong aneh antara subjudul cluster dan info \"target unit, blok\" sudah dihilangkan." },
+    ],
+  },
+  {
+    date: "17 September 2026",
+    items: [
+      { icon: "🔔", title: "Notifikasi Lintas-Cluster di Home", desc: "Kavling yang follow-up-nya lewat tenggat dan nomor kavling duplikat kini langsung terlihat di Home, dari semua cluster sekaligus." },
+      { icon: "⚠️", title: "Deteksi Duplikat per Cluster", desc: "Banner otomatis muncul di tabel Data Blok kalau ada nomor kavling yang sama persis di cluster yang sama, lengkap tombol filter \"Lihat\"." },
+      { icon: "✏️", title: "Edit Blok/Nomor/Tipe dari Popup Peta", desc: "Di Mode Kalibrasi, klik kavling yang sudah digambar untuk langsung ubah Blok, Nomor, dan Tipe-nya, lengkap tombol OK & Batal." },
+      { icon: "🗂️", title: "Tombol Edit Bentuk & Hapus Dirapikan", desc: "Kedua tombol kini sejajar dalam satu baris supaya popup edit kavling tidak makan tempat." },
+    ],
+  },
+  {
+    date: "16 September 2026",
+    items: [
+      { icon: "🔎", title: "Kontrol Zoom di Tabel Data Blok", desc: "Tombol perbesar, perkecil, dan reset kini tersedia khusus untuk tampilan tabel." },
+      { icon: "🔢", title: "Kolom Nomor Urut Otomatis", desc: "Kolom \"No\" ditambahkan di paling kiri tabel Data Blok supaya lebih mudah dibaca." },
+      { icon: "📌", title: "Header Tabel Benar-Benar Freeze", desc: "Perbaikan bug: header tabel sekarang benar-benar menempel di atas saat tabel discroll." },
+      { icon: "⚡", title: "Scroll Tabel Lebih Halus", desc: "Perbaikan performa besar supaya scroll tabel data yang panjang tidak lagi patah-patah." },
+      { icon: "🔍", title: "Pencarian Nomor Kavling di Tabel", desc: "Bisa langsung cari nomor kavling di dalam tabel Data Blok satu cluster." },
+    ],
+  },
 ];
 
 const DEFAULT_BLOCKS = [
@@ -2221,22 +2242,26 @@ export default function BriaStatusBoard({ onLogout }) {
       {!currentClusterId && homeLoaded && showWhatsNew && (
         <div onClick={() => setShowWhatsNew(false)} style={{ position: "fixed", inset: 0, background: "rgba(27,42,60,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, maxHeight: "85vh", overflowY: "auto", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, padding: 24, boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}>
-            <div className="flex items-center justify-between mb-1">
-              <div className="text-lg font-semibold" style={{ color: C.ink }}>🎉 Apa yang Baru</div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-lg font-semibold" style={{ color: C.ink }}>🆕 What's New</div>
               <button onClick={() => setShowWhatsNew(false)} aria-label="Tutup" style={{ border: "none", background: "transparent", color: C.steel, fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
-            <p className="text-xs mb-4" style={{ color: C.steel }}>Beberapa pembaruan terbaru di sistem ini:</p>
-            <div className="flex flex-col gap-3 mb-4">
-              {WHATS_NEW_ITEMS.map((it, i) => (
-                <div key={i} className="flex gap-2.5">
-                  <div style={{ fontSize: 20, lineHeight: "26px" }}>{it.icon}</div>
-                  <div>
-                    <div className="text-sm font-medium" style={{ color: C.ink }}>{it.title}</div>
-                    <div className="text-xs" style={{ color: C.steel, lineHeight: 1.5 }}>{it.desc}</div>
-                  </div>
+            {WHATS_NEW_GROUPS.map((group, gi) => (
+              <div key={gi} className="mb-4">
+                <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.gold, textTransform: "uppercase" }}>{group.date}</div>
+                <div className="flex flex-col gap-3">
+                  {group.items.map((it, i) => (
+                    <div key={i} className="flex gap-2.5">
+                      <div style={{ fontSize: 20, lineHeight: "26px" }}>{it.icon}</div>
+                      <div>
+                        <div className="text-sm font-medium" style={{ color: C.ink }}>{it.title}</div>
+                        <div className="text-xs" style={{ color: C.steel, lineHeight: 1.5 }}>{it.desc}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
             <button onClick={() => setShowWhatsNew(false)} className="text-sm w-full px-3 py-2 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Oke, Mengerti</button>
           </div>
         </div>
