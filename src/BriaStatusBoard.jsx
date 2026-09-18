@@ -52,6 +52,32 @@ const WHATS_NEW_GROUPS = [
       { icon: "🔍", title: "Pencarian Nomor Kavling di Tabel", desc: "Bisa langsung cari nomor kavling di dalam tabel Data Blok satu cluster." },
     ],
   },
+  {
+    date: "14 September 2026",
+    items: [
+      { icon: "🖨️", title: "Cetak Site Plan & Dashboard ke PDF", desc: "Site Plan berwarna dan Dashboard kini bisa langsung dicetak atau diekspor jadi PDF untuk laporan." },
+      { icon: "↩️", title: "Undo & Konfirmasi Sebelum Hapus", desc: "Ada jendela Undo dan konfirmasi tambahan sebelum data Blok, Tipe, Status, atau Kategori terhapus permanen." },
+      { icon: "📌", title: "Header Cluster Jadi Sticky", desc: "Nama cluster & jam tetap terlihat menempel di atas saat halaman discroll." },
+      { icon: "📱", title: "Perbaikan Tampilan di HP", desc: "Site Plan kini tampil penuh selebar layar di HP, tidak lagi terpotong." },
+    ],
+  },
+  {
+    date: "13 September 2026",
+    items: [
+      { icon: "🔄", title: "Sinkronisasi Real-Time", desc: "Perubahan data, pengaturan, gambar, dan daftar cluster langsung terlihat ke semua pengguna yang sedang login." },
+      { icon: "🛡️", title: "Cegah Data Tertimpa", desc: "Sistem memperingatkan kalau ada dua orang mengedit data yang sama nyaris bersamaan, supaya tidak ada yang tertimpa diam-diam." },
+      { icon: "🔍", title: "Pencarian Kavling Lintas-Cluster", desc: "Cari nomor kavling apa saja langsung dari Home, tanpa perlu buka cluster satu-satu." },
+      { icon: "📶", title: "Deteksi Offline Proaktif", desc: "Muncul notifikasi kalau koneksi internet terputus saat sedang bekerja, supaya tahu perubahan belum tersimpan." },
+    ],
+  },
+  {
+    date: "12 September 2026",
+    items: [
+      { icon: "🚀", title: "Peluncuran Sistem", desc: "Papan Status Tender resmi pindah dari Excel/kertas ke website, siap dipakai kapan saja secara online." },
+      { icon: "⚡", title: "Optimasi Kecepatan Awal", desc: "Gambar default site plan & library Excel dimuat belakangan (lazy-load) supaya halaman pertama kali dibuka lebih cepat." },
+      { icon: "🔒", title: "Logout Otomatis", desc: "Sesi otomatis keluar begitu tab atau browser ditutup, demi keamanan data." },
+    ],
+  },
 ];
 
 const DEFAULT_BLOCKS = [
