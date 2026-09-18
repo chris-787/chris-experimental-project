@@ -23,6 +23,16 @@ const MAX_IMG_DIM = 1600;
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
 
+const WHATS_NEW_ITEMS = [
+  { icon: "🔔", title: "Notifikasi Follow-up & Duplikat di Home", desc: "Langsung lihat kavling yang perlu ditindaklanjuti dan nomor kavling duplikat dari semua cluster, tanpa harus buka satu-satu." },
+  { icon: "⚠️", title: "Deteksi Duplikat di Dalam Cluster", desc: "Ada peringatan otomatis di tabel Data Blok kalau ada nomor kavling yang sama persis di cluster yang sama." },
+  { icon: "✏️", title: "Edit Blok/Nomor/Tipe Langsung dari Peta", desc: "Di Mode Kalibrasi, klik kavling untuk langsung ubah Blok, Nomor, dan Tipe-nya tanpa perlu gambar ulang." },
+  { icon: "🔍", title: "Kontrol Zoom Tabel & Site Plan", desc: "Tombol perbesar/perkecil/reset kini tersedia di tabel Data Blok maupun peta Site Plan." },
+  { icon: "🖨️", title: "Cetak Site Plan & Dashboard ke PDF", desc: "Site Plan berwarna dan Dashboard bisa langsung dicetak atau diekspor jadi PDF untuk laporan." },
+  { icon: "↩️", title: "Undo & Konfirmasi Sebelum Menghapus", desc: "Ada jendela Undo dan konfirmasi tambahan sebelum data (kavling, blok, tipe, status) terhapus permanen." },
+  { icon: "⚡", title: "Tabel & Scroll Lebih Ringan", desc: "Perbaikan performa supaya scroll tabel data yang panjang tidak lagi patah-patah." },
+];
+
 const DEFAULT_BLOCKS = [
   { id: "blk-a", name: "RB/A", target: 16 }, { id: "blk-b", name: "RB/B", target: 11 }, { id: "blk-c", name: "RB/C", target: 11 },
   { id: "blk-d", name: "RB/D", target: 20 }, { id: "blk-e", name: "RB/E", target: 2 }, { id: "blk-f", name: "RB/F", target: 16 },
@@ -120,6 +130,7 @@ function resizeImageFile(file, maxDim) {
 }
 
 export default function BriaStatusBoard({ onLogout }) {
+  const [showWhatsNew, setShowWhatsNew] = useState(true);
   const [houses, setHouses] = useState([]);
   const [siteImage, setSiteImage] = useState(SITE_IMAGE_DEFAULT);
   const [imgUploading, setImgUploading] = useState(false);
@@ -1570,6 +1581,10 @@ export default function BriaStatusBoard({ onLogout }) {
         setActionMenuId(null);
         return;
       }
+      if (e.key === "Escape" && showWhatsNew) {
+        setShowWhatsNew(false);
+        return;
+      }
       if (mode !== "kerja" || !selectedId) return;
       const tag = (e.target.tagName || "").toLowerCase();
       const isTyping = tag === "input" || tag === "textarea" || tag === "select";
@@ -1591,7 +1606,7 @@ export default function BriaStatusBoard({ onLogout }) {
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [mode, selectedId, tableRows, actionMenuId]);
+  }, [mode, selectedId, tableRows, actionMenuId, showWhatsNew]);
   const totalRows = tableRows.length;
   const effectivePageSize = pageSize === "all" ? Math.max(totalRows, 1) : pageSize;
   const totalPages = Math.max(1, Math.ceil(totalRows / effectivePageSize));
@@ -2200,6 +2215,30 @@ export default function BriaStatusBoard({ onLogout }) {
           }}
         >
           ⚠ {storageError}
+        </div>
+      )}
+
+      {!currentClusterId && homeLoaded && showWhatsNew && (
+        <div onClick={() => setShowWhatsNew(false)} style={{ position: "fixed", inset: 0, background: "rgba(27,42,60,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, maxHeight: "85vh", overflowY: "auto", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, padding: 24, boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}>
+            <div className="flex items-center justify-between mb-1">
+              <div className="text-lg font-semibold" style={{ color: C.ink }}>🎉 Apa yang Baru</div>
+              <button onClick={() => setShowWhatsNew(false)} aria-label="Tutup" style={{ border: "none", background: "transparent", color: C.steel, fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
+            </div>
+            <p className="text-xs mb-4" style={{ color: C.steel }}>Beberapa pembaruan terbaru di sistem ini:</p>
+            <div className="flex flex-col gap-3 mb-4">
+              {WHATS_NEW_ITEMS.map((it, i) => (
+                <div key={i} className="flex gap-2.5">
+                  <div style={{ fontSize: 20, lineHeight: "26px" }}>{it.icon}</div>
+                  <div>
+                    <div className="text-sm font-medium" style={{ color: C.ink }}>{it.title}</div>
+                    <div className="text-xs" style={{ color: C.steel, lineHeight: 1.5 }}>{it.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setShowWhatsNew(false)} className="text-sm w-full px-3 py-2 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Oke, Mengerti</button>
+          </div>
         </div>
       )}
 
