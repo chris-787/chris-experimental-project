@@ -1770,7 +1770,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 </div>
               )}
               <div className="flex items-center gap-1.5">
-                <button onClick={() => setZoom((z) => Math.max(50, z - 5))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>−</button>
+                <button onClick={() => setZoom((z) => Math.max(50, z - 10))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>−</button>
                 <div className="flex items-center h-7 rounded-lg" style={{ border: `1px solid ${C.line}`, background: "#fff" }}>
                   <input
                     type="number"
@@ -1782,7 +1782,7 @@ export default function BriaStatusBoard({ onLogout }) {
                   />
                   <span className="text-xs pr-2" style={{ color: C.steel }}>%</span>
                 </div>
-                <button onClick={() => setZoom((z) => Math.min(400, z + 5))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>+</button>
+                <button onClick={() => setZoom((z) => Math.min(400, z + 10))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>+</button>
                 {selectedId && (
                   <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: "#fff" }}>Clear</button>
                 )}
