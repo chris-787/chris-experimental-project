@@ -26,9 +26,15 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "
 
 const WHATS_NEW_GROUPS = [
   {
+    date: "19 September 2026",
+    items: [
+      { icon: "🧮", title: "Simulasi Harga", desc: "Coba-coba ubah harga jual atau HPP per m² (naik/turun persen atau ganti angka) untuk semua kavling, satu blok, atau satu tipe, lalu lihat dampaknya ke total harga, margin, dan margin per tipe. Data asli tidak berubah. Tombolnya ada di Dashboard cluster." },
+    ],
+  },
+  {
     date: "18 September 2026",
     items: [
-      { icon: "🆕", title: "Popup What's New di Home", desc: "Menampilkan ringkasan pembaruan tiap kali login, tidak muncul lagi kalau cuma pindah dari cluster ke Home." },
+      { icon: "🆕", title: "Popup What's New di Home", desc: "Menampilkan ringkasan pembaruan tiap kali login, tidak muncul lagi kalau cuma pindah dari cluster ke Home. Bisa dibuka lagi kapan saja lewat tombol What's New di Home." },
       { icon: "🔍", title: "Zoom Site Plan Lebih Cepat", desc: "Tombol +/− di peta Site Plan sekarang melompat 20% tiap klik (sebelumnya 5%), lebih cepat untuk memperbesar detail." },
       { icon: "⌨️", title: "Tutup Popup Kalibrasi Pakai Esc", desc: "Selain klik ikon ×, popup edit Blok/Nomor/Tipe di Mode Kalibrasi kini bisa ditutup cukup dengan tombol Esc." },
       { icon: "🧹", title: "Rapikan Judul Cluster", desc: "Celah kosong aneh antara subjudul cluster dan info \"target unit, blok\" sudah dihilangkan." },
@@ -69,14 +75,6 @@ const WHATS_NEW_GROUPS = [
       { icon: "🛡️", title: "Cegah Data Tertimpa", desc: "Sistem memperingatkan kalau ada dua orang mengedit data yang sama nyaris bersamaan, supaya tidak ada yang tertimpa diam-diam." },
       { icon: "🔍", title: "Pencarian Kavling Lintas-Cluster", desc: "Cari nomor kavling apa saja langsung dari Home, tanpa perlu buka cluster satu-satu." },
       { icon: "📶", title: "Deteksi Offline Proaktif", desc: "Muncul notifikasi kalau koneksi internet terputus saat sedang bekerja, supaya tahu perubahan belum tersimpan." },
-    ],
-  },
-  {
-    date: "12 September 2026",
-    items: [
-      { icon: "🚀", title: "Peluncuran Sistem", desc: "Papan Status Tender resmi pindah dari Excel/kertas ke website, siap dipakai kapan saja secara online." },
-      { icon: "⚡", title: "Optimasi Kecepatan Awal", desc: "Gambar default site plan & library Excel dimuat belakangan (lazy-load) supaya halaman pertama kali dibuka lebih cepat." },
-      { icon: "🔒", title: "Logout Otomatis", desc: "Sesi otomatis keluar begitu tab atau browser ditutup, demi keamanan data." },
     ],
   },
 ];
