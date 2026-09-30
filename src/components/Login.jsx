@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { C } from "../theme";
-import { JAKARTA_TZ, dayFormatter, dateFormatter, timeFormatter, useJakartaClock } from "../lib/jakartaClock";
+import { dayFormatter, dateFormatter, timeFormatter, useJakartaClock, greetingFor } from "../lib/jakartaClock";
 
 // Supabase Auth aslinya butuh "email", tapi supaya Anda cukup ingat satu
 // username sederhana, kita tempelkan domain palsu ini di belakang layar.
@@ -10,16 +10,6 @@ import { JAKARTA_TZ, dayFormatter, dateFormatter, timeFormatter, useJakartaClock
 const USERNAME_DOMAIN = "cluster-bintaro-jaya.local";
 function usernameToEmail(username) {
   return `${username.trim().toLowerCase()}@${USERNAME_DOMAIN}`;
-}
-
-const hourFormatter = new Intl.DateTimeFormat("en-US", { hour: "2-digit", hour12: false, timeZone: JAKARTA_TZ });
-
-function greetingFor(date) {
-  const hour = parseInt(hourFormatter.format(date), 10);
-  if (hour >= 5 && hour < 11) return "Selamat Pagi";
-  if (hour >= 11 && hour < 15) return "Selamat Siang";
-  if (hour >= 15 && hour < 19) return "Selamat Sore";
-  return "Selamat Malam";
 }
 
 export default function Login() {

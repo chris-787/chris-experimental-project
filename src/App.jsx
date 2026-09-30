@@ -59,5 +59,5 @@ export default function App() {
     return <Login />;
   }
 
-  return <BriaStatusBoard onLogout={() => supabase.auth.signOut()} />;
+  return <BriaStatusBoard onLogout={() => supabase.auth.signOut()} session={session} />;
 }

@@ -3,7 +3,7 @@ import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
 import { onStorageError } from "./lib/errorBus";
 import { simulatePrice } from "./lib/priceSimulation";
-import { formatJakartaDateTime, useJakartaClock } from "./lib/jakartaClock";
+import { formatJakartaDateTime, useJakartaClock, greetingFor } from "./lib/jakartaClock";
 import { C, PALETTE } from "./theme";
 
 // Grafik dashboard (recharts) baru diunduh saat benar-benar ditampilkan,
@@ -17,6 +17,12 @@ const DashboardCharts = lazy(() => import("./DashboardCharts"));
 function ClockText() {
   const now = useJakartaClock();
   return formatJakartaDateTime(now);
+}
+// Sama alasannya seperti ClockText — supaya ganti sapaan tiap jam tidak
+// ikut me-render ulang seluruh halaman.
+function GreetingText({ name }) {
+  const now = useJakartaClock();
+  return `${greetingFor(now)}${name ? `, ${name}` : ""}`;
 }
 
 const SITE_IMAGE_DEFAULT = "/default-site-plan.jpg";
@@ -169,6 +175,8 @@ const ICON_PATHS = {
   back: <><path d="M15 6l-6 6 6 6" /></>,
   clock: <><circle cx="12" cy="13" r="8" /><path d="M12 9v4l3 2" /></>,
   warning: <><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4" /><path d="M12 17h.01" /></>,
+  download: <><path d="M12 3v13" /><path d="m7 11 5 5 5-5" /><path d="M4 21h16" /></>,
+  upload: <><path d="M12 21V8" /><path d="m7 12 5-5 5 5" /><path d="M4 21h16" /></>,
 };
 function Ic({ name, size = 16, color }) {
   return (
@@ -225,7 +233,12 @@ function resizeImageFile(file, maxDim) {
   });
 }
 
-export default function BriaStatusBoard({ onLogout }) {
+export default function BriaStatusBoard({ onLogout, session }) {
+  const displayName = (() => {
+    const email = session?.user?.email || "";
+    const local = email.split("@")[0] || "";
+    return local ? local.charAt(0).toUpperCase() + local.slice(1) : "";
+  })();
   const [showWhatsNew, setShowWhatsNew] = useState(true);
   const [showSimulasi, setShowSimulasi] = useState(false);
   const [simScope, setSimScope] = useState("all");
@@ -1929,16 +1942,19 @@ export default function BriaStatusBoard({ onLogout }) {
           </div>
 
           {followUpList.length > 0 && (
-            <div className="mb-3 p-3 rounded-lg" style={{ background: "#FFF7E8", border: `1px solid ${C.amber}` }}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm font-semibold" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({followUpList.length})</div>
+            <div className="mb-3 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <IconChip name="clock" bg="#FCEFD6" color={C.amber} size={30} />
+                  <div className="text-sm font-semibold" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({followUpList.length})</div>
+                </div>
                 <button
                   onClick={() => { setFollowUpFilterActive(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  className="text-xs px-2 py-1 rounded-lg"
+                  className="text-xs px-3 py-1.5 rounded-full font-semibold"
                   style={{ background: C.amber, color: "#fff" }}
                 >Lihat di tabel →</button>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1" style={{ paddingLeft: 42 }}>
                 {followUpList.slice(0, 8).map((h) => (
                   <div key={h.id} className="flex items-center justify-between text-xs">
                     <span onClick={() => setSelectedId(h.id)} style={{ color: C.ink, cursor: "pointer", textDecoration: "underline" }}>{h.blok}-{h.noKavling}</span>
@@ -2638,8 +2654,9 @@ export default function BriaStatusBoard({ onLogout }) {
                 <button onClick={handleLogoutClick} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ border: "none", color: C.red, background: "#FBEDEA" }}>Log Out</button>
               </div>
             </div>
-            <div className="text-sm mt-1" style={{ color: C.steel }}>Pilih cluster untuk mulai bekerja, atau tambah cluster baru.</div>
+            <div className="text-sm mt-1" style={{ color: C.steel }}><GreetingText name={displayName} /></div>
             <div className="text-xs mt-1" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}><ClockText /></div>
+            <div className="text-xs mt-0.5" style={{ color: C.faint }}>Created by Aditya Christiandi Sinulingga. Ver 1.0</div>
             {clusters.length === 0 && (
               <div className="mt-2 text-xs">
                 <span style={{ color: C.steel }}>Tidak melihat data lama Anda? </span>
@@ -2659,14 +2676,14 @@ export default function BriaStatusBoard({ onLogout }) {
             })()}
             {clusters.length > 0 && (
               <div className="flex items-center gap-2 mt-2 flex-wrap">
-                <button onClick={exportAllExcel} disabled={exportingExcelAll} className="text-xs px-3 py-1.5 rounded-full" style={{ border: "none", color: C.green, background: "#F1EEE4" }}>
-                  {exportingExcelAll && <SmallSpinner />} Export Semua ke Excel
+                <button onClick={exportAllExcel} disabled={exportingExcelAll} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.green, background: "#F1EEE4" }}>
+                  {exportingExcelAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Export ke Excel
                 </button>
-                <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-1.5 rounded-full" style={{ border: "none", color: C.accent, background: "#F1EEE4" }}>
-                  {exportingBackupAll && <SmallSpinner />} Unduh Cadangan Semua Cluster (JSON)
+                <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.accent, background: "#F1EEE4" }}>
+                  {exportingBackupAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Backup Semua (JSON)
                 </button>
-                <label className="text-xs px-3 py-1.5 rounded-full cursor-pointer" style={{ border: "none", color: C.steel, background: "#F1EEE4" }}>
-                  Pulihkan dari Cadangan (JSON)
+                <label className="text-xs px-3 py-1.5 rounded-full cursor-pointer flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: "#F1EEE4" }}>
+                  <Ic name="upload" size={14} /> Pulihkan (JSON)
                   <input type="file" accept=".json" onChange={handleRestoreAllFile} style={{ display: "none" }} />
                 </label>
                 <button onClick={() => setShowWhatsNew(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: "#F1EEE4" }}>
@@ -2705,6 +2722,44 @@ export default function BriaStatusBoard({ onLogout }) {
                   </button>
                   <button onClick={() => setPendingRestoreAll(null)} disabled={restoringAll} className="text-xs px-3 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
                 </div>
+              </div>
+            )}
+          </div>
+
+          <div className="mb-4 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
+            <div className="flex items-center gap-3 mb-2">
+              <IconChip name="search" bg="#EAF0FA" color={C.accent2} size={34} />
+              <div className="text-sm font-semibold" style={{ color: C.ink }}>Pencarian Blok</div>
+            </div>
+            <input
+              value={kavlingSearch}
+              onChange={(e) => setKavlingSearch(e.target.value)}
+              placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
+              className="text-sm px-4 py-3 rounded-full w-full"
+              style={{ border: "none", color: C.ink, background: "#EAF0FA" }}
+            />
+            {kavlingSearch.trim() && (
+              <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
+                <div style={{ maxHeight: 320, overflowY: "auto" }}>
+                  {kavlingSearchResults.length === 0 ? (
+                    <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
+                  ) : (
+                    kavlingSearchResults.map((r) => (
+                      <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
+                        <div>
+                          <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
+                          <div style={{ color: C.steel }}>{r.clusterName}</div>
+                        </div>
+                        <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff", flexShrink: 0 }}>Buka</button>
+                      </div>
+                    ))
+                  )}
+                </div>
+                {kavlingSearchAllMatches.length > KAVLING_SEARCH_LIMIT && (
+                  <div className="text-xs px-3 py-2" style={{ color: C.steel, background: C.paper, borderTop: `1px solid ${C.line}` }}>
+                    Menampilkan {KAVLING_SEARCH_LIMIT} dari {kavlingSearchAllMatches.length} hasil — ketik lebih spesifik untuk mempersempit.
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -2829,41 +2884,6 @@ export default function BriaStatusBoard({ onLogout }) {
               </div>
             </div>
           )}
-
-          <div className="mb-4">
-            <div className="text-base font-semibold mb-2 flex items-center gap-2" style={{ color: C.ink }}><Ic name="search" size={17} color={C.steel} /> Pencarian Blok</div>
-            <input
-              value={kavlingSearch}
-              onChange={(e) => setKavlingSearch(e.target.value)}
-              placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
-              className="text-sm px-4 py-3 rounded-full w-full"
-              style={{ border: "none", color: C.ink, background: "#F1EEE4" }}
-            />
-            {kavlingSearch.trim() && (
-              <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
-                <div style={{ maxHeight: 320, overflowY: "auto" }}>
-                  {kavlingSearchResults.length === 0 ? (
-                    <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
-                  ) : (
-                    kavlingSearchResults.map((r) => (
-                      <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
-                        <div>
-                          <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
-                          <div style={{ color: C.steel }}>{r.clusterName}</div>
-                        </div>
-                        <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff", flexShrink: 0 }}>Buka</button>
-                      </div>
-                    ))
-                  )}
-                </div>
-                {kavlingSearchAllMatches.length > KAVLING_SEARCH_LIMIT && (
-                  <div className="text-xs px-3 py-2" style={{ color: C.steel, background: C.paper, borderTop: `1px solid ${C.line}` }}>
-                    Menampilkan {KAVLING_SEARCH_LIMIT} dari {kavlingSearchAllMatches.length} hasil — ketik lebih spesifik untuk mempersempit.
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
 
           {clusters.length > 0 && Object.keys(clusterStats).length > 0 && (
             <div className="text-base font-semibold mb-2 flex items-center gap-2" style={{ color: C.ink }}><Ic name="chart" size={17} color={C.steel} /> Dashboard</div>

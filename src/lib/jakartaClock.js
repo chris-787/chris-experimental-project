@@ -14,6 +14,15 @@ export function formatJakartaDateTime(date) {
   return `${dayFormatter.format(date)}, ${dateFormatter.format(date)} ${timeFormatter.format(date)} WIB`;
 }
 
+const hourFormatter = new Intl.DateTimeFormat("en-US", { hour: "2-digit", hour12: false, timeZone: JAKARTA_TZ });
+export function greetingFor(date) {
+  const hour = parseInt(hourFormatter.format(date), 10);
+  if (hour >= 5 && hour < 11) return "Selamat Pagi";
+  if (hour >= 11 && hour < 15) return "Selamat Siang";
+  if (hour >= 15 && hour < 19) return "Selamat Sore";
+  return "Selamat Malam";
+}
+
 export function useJakartaClock() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
