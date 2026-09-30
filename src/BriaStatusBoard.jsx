@@ -2726,11 +2726,11 @@ export default function BriaStatusBoard({ onLogout }) {
                         return (
                           <div
                             key={i}
-                            onClick={() => items.length > 0 && setCalendarSelectedDate(isSelected ? null : dateStr)}
+                            onClick={() => setCalendarSelectedDate(isSelected ? null : dateStr)}
                             className="flex flex-col items-center justify-center"
                             style={{
-                              height: 30, borderRadius: 6, fontSize: 10, cursor: items.length > 0 ? "pointer" : "default",
-                              color: items.length > 0 ? C.ink : C.faint,
+                              height: 30, borderRadius: 6, fontSize: 10, cursor: "pointer",
+                              color: items.length > 0 ? C.ink : C.steel,
                               background: isSelected ? C.amber : isToday ? "#FFFFFF" : "transparent",
                               border: isToday ? `1px solid ${C.amber}` : "1px solid transparent",
                               fontWeight: items.length > 0 ? 600 : 400,
