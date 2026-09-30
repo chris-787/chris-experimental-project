@@ -36,7 +36,6 @@ const WHATS_NEW_GROUPS = [
     items: [
       { icon: "🎨", title: "Desain Baru", desc: "Tampilan Home, Mode Kalibrasi/Kerja/Pengaturan, dan Login dirombak: kartu putih berbayang lembut, tombol berbentuk pil, ikon pengganti emoji, dan label tombol lebih ringkas (Export to Excel, Backup (JSON), Restore (JSON), Print)." },
       { icon: "👋", title: "Sapaan Personal di Home", desc: "Home sekarang menyapa sesuai waktu (Selamat Pagi/Siang/Sore/Malam) beserta nama Anda, di atas jam dan tanggal." },
-      { icon: "🔍", title: "Pencarian Blok Dipindah ke Atas", desc: "Kotak Pencarian Blok di Home sekarang jadi bagian paling atas (sebelum kartu notifikasi), supaya lebih cepat dipakai." },
       { icon: "📅", title: "Kalender Follow-up di Home", desc: "Kartu \"Perlu Ditindaklanjuti\" sekarang punya tampilan kalender bulanan, bukan cuma daftar. Titik merah = lewat tenggat, kuning = akan datang. Klik tanggalnya untuk lihat & langsung buka kavlingnya." },
       { icon: "🖨️", title: "Ringkasan Kavling (PDF)", desc: "Tombol \"Ringkasan\" di panel detail kavling (Mode Kerja) mencetak satu halaman berisi data, status, kontraktor, harga, dan margin kavling itu — cocok dilampirkan ke berkas atau dikirim ke atasan." },
       { icon: "👷", title: "Rekap Kontraktor", desc: "Tombol di Dashboard cluster menampilkan rekap jumlah unit, total HPP, dan progres Order SPK per kontraktor." },
@@ -2729,41 +2728,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
             )}
           </div>
 
-          <div className="mb-6">
-            <div className="text-base font-semibold mb-2 flex items-center gap-2" style={{ color: C.ink }}><Ic name="search" size={17} color={C.steel} /> Pencarian Blok</div>
-            <input
-              value={kavlingSearch}
-              onChange={(e) => setKavlingSearch(e.target.value)}
-              placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
-              className="text-sm px-4 py-3 rounded-full w-full kavling-search-input"
-              style={{ border: "none", color: C.ink, background: "#F1EEE4" }}
-            />
-            {kavlingSearch.trim() && (
-              <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
-                <div style={{ maxHeight: 320, overflowY: "auto" }}>
-                  {kavlingSearchResults.length === 0 ? (
-                    <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
-                  ) : (
-                    kavlingSearchResults.map((r) => (
-                      <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
-                        <div>
-                          <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
-                          <div style={{ color: C.steel }}>{r.clusterName}</div>
-                        </div>
-                        <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff", flexShrink: 0 }}>Buka</button>
-                      </div>
-                    ))
-                  )}
-                </div>
-                {kavlingSearchAllMatches.length > KAVLING_SEARCH_LIMIT && (
-                  <div className="text-xs px-3 py-2" style={{ color: C.steel, background: C.paper, borderTop: `1px solid ${C.line}` }}>
-                    Menampilkan {KAVLING_SEARCH_LIMIT} dari {kavlingSearchAllMatches.length} hasil — ketik lebih spesifik untuk mempersempit.
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
           {homeAllFollowUpList.length > 0 && (
             <div className="mb-6 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
@@ -2884,6 +2848,41 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </div>
             </div>
           )}
+
+          <div className="mb-4">
+            <div className="text-base font-semibold mb-2 flex items-center gap-2" style={{ color: C.ink }}><Ic name="search" size={17} color={C.steel} /> Pencarian Blok</div>
+            <input
+              value={kavlingSearch}
+              onChange={(e) => setKavlingSearch(e.target.value)}
+              placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
+              className="text-sm px-4 py-3 rounded-full w-full kavling-search-input"
+              style={{ border: "none", color: C.ink, background: "#F7F4EB" }}
+            />
+            {kavlingSearch.trim() && (
+              <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
+                <div style={{ maxHeight: 320, overflowY: "auto" }}>
+                  {kavlingSearchResults.length === 0 ? (
+                    <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
+                  ) : (
+                    kavlingSearchResults.map((r) => (
+                      <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
+                        <div>
+                          <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
+                          <div style={{ color: C.steel }}>{r.clusterName}</div>
+                        </div>
+                        <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff", flexShrink: 0 }}>Buka</button>
+                      </div>
+                    ))
+                  )}
+                </div>
+                {kavlingSearchAllMatches.length > KAVLING_SEARCH_LIMIT && (
+                  <div className="text-xs px-3 py-2" style={{ color: C.steel, background: C.paper, borderTop: `1px solid ${C.line}` }}>
+                    Menampilkan {KAVLING_SEARCH_LIMIT} dari {kavlingSearchAllMatches.length} hasil — ketik lebih spesifik untuk mempersempit.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {clusters.length > 0 && Object.keys(clusterStats).length > 0 && (
             <div className="text-base font-semibold mb-2 flex items-center gap-2" style={{ color: C.ink }}><Ic name="chart" size={17} color={C.steel} /> Dashboard</div>
