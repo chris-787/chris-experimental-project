@@ -2729,11 +2729,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
             )}
           </div>
 
-          <div className="mb-6 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
-            <div className="flex items-center gap-3 mb-2">
-              <IconChip name="search" bg="#EAF0FA" color={C.accent2} size={34} />
-              <div className="text-sm font-semibold" style={{ color: C.ink }}>Pencarian Blok</div>
-            </div>
+          <div className="mb-6">
+            <div className="text-base font-semibold mb-2 flex items-center gap-2" style={{ color: C.ink }}><Ic name="search" size={17} color={C.steel} /> Pencarian Blok</div>
             <input
               value={kavlingSearch}
               onChange={(e) => setKavlingSearch(e.target.value)}
