@@ -121,6 +121,21 @@ function measureTextWidth(text, font) {
   ctx.font = font;
   return ctx.measureText(text || "").width;
 }
+const WEEKDAY_LABELS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+const MONTH_LABELS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+function buildCalendarGrid(year, month) {
+  const first = new Date(year, month, 1);
+  const startOffset = first.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < startOffset; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    cells.push(dateStr);
+  }
+  while (cells.length % 7 !== 0) cells.push(null);
+  return cells;
+}
 function centroid(points) {
   const cx = points.reduce((s, p) => s + p.x, 0) / points.length;
   const cy = points.reduce((s, p) => s + p.y, 0) / points.length;
@@ -183,6 +198,10 @@ export default function BriaStatusBoard({ onLogout }) {
   const [simHargaValue, setSimHargaValue] = useState("");
   const [simHppMode, setSimHppMode] = useState("persen");
   const [simHppValue, setSimHppValue] = useState("");
+  const [followUpView, setFollowUpView] = useState("list");
+  const [calendarMonth, setCalendarMonth] = useState(() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; });
+  const [calendarSelectedDate, setCalendarSelectedDate] = useState(null);
+  const [showRekapKontraktor, setShowRekapKontraktor] = useState(false);
   const [houses, setHouses] = useState([]);
   const [siteImage, setSiteImage] = useState(SITE_IMAGE_DEFAULT);
   const [imgUploading, setImgUploading] = useState(false);
@@ -1320,6 +1339,63 @@ export default function BriaStatusBoard({ onLogout }) {
     w.document.close();
     w.onload = () => { w.focus(); w.print(); };
   }
+  function printKavlingSummary(h) {
+    const tanggal = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+    const lb = luasBangunanOf(h);
+    const statusRows = statusFields.map((s) => {
+      const detail = s.hasDetail ? getDetail(h, s.key) : "";
+      return `<tr><td>${s.label}</td><td>${h.status[s.key] ? "Sudah" : "Belum"}${detail ? ` — ${detail}` : ""}</td></tr>`;
+    }).join("");
+    const html = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><title>Ringkasan ${h.blok}-${h.noKavling}</title>
+<style>
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #1B2A3C; padding: 32px; margin: 0; }
+  h1 { font-size: 22px; margin: 0 0 2px; }
+  .sub { color: #5B6673; font-size: 12px; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+  td { padding: 6px 8px; border-bottom: 1px solid #C9C2B2; font-size: 13px; vertical-align: top; }
+  td:first-child { color: #5B6673; width: 42%; }
+  .section-title { font-size: 13px; font-weight: bold; margin: 0 0 6px; text-transform: uppercase; letter-spacing: 0.5px; color: #5B6673; }
+  .margin-box { border: 1px solid #C9C2B2; border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: baseline; }
+  .margin-pct { font-size: 24px; font-weight: bold; }
+  .footer { margin-top: 24px; font-size: 11px; color: #5B6673; }
+  @media print { body { padding: 0; } }
+</style></head>
+<body>
+  <h1>${h.blok}-${h.noKavling}</h1>
+  <div class="sub">${activeCluster.name}${activeCluster.subtitle ? ` · ${activeCluster.subtitle}` : ""} · dicetak ${tanggal}</div>
+
+  <div class="section-title">Data Kavling</div>
+  <table>
+    <tr><td>Tipe / Ukuran</td><td>${h.tipe || "-"}</td></tr>
+    <tr><td>Kategori</td><td>${h.kategori || "-"}</td></tr>
+    <tr><td>Luas Bangunan</td><td>${lb ? `${lb} m²` : "-"}</td></tr>
+    <tr><td>Kontraktor</td><td>${h.kontraktor || "-"}</td></tr>
+    <tr><td>No. SPK</td><td>${h.spkNo || "-"}</td></tr>
+    <tr><td>Tahun / Bulan SPK</td><td>${h.spkTahun ? `${MONTHS[(h.spkBulan || 1) - 1]} ${h.spkTahun}` : "-"}</td></tr>
+  </table>
+
+  <div class="section-title">Status</div>
+  <table>${statusRows}</table>
+
+  <div class="section-title">Harga &amp; Margin</div>
+  <table>
+    <tr><td>HPP per m²</td><td>${rupiah(h.hppPerM2)}${lb ? ` → Total ${rupiah(hppTotal(h))}` : ""}</td></tr>
+    ${h.adendum && h.adendumAmount ? `<tr><td>Adendum</td><td>${rupiah(h.adendumAmount)}</td></tr>` : ""}
+    <tr><td>Harga Jual per m²</td><td>${rupiah(h.hargaJualPerM2)}${lb ? ` → Total ${rupiah(hargaJualTotal(h))}` : ""}</td></tr>
+  </table>
+  ${lb ? `<div class="margin-box"><span>Margin</span><span class="margin-pct" style="color:${marginPct(h) >= 20 ? "#3F7D58" : "#BD3B2E"}">${marginPct(h).toFixed(2)}% <span style="font-size:13px; font-weight:normal; color:#5B6673">(${rupiah(marginOf(h))})</span></span></div>` : ""}
+
+  ${h.catatan ? `<div class="section-title" style="margin-top:18px">Catatan</div><div style="font-size:13px">${h.catatan}</div>` : ""}
+  ${h.followUpDate ? `<div class="footer">Follow-up: ${new Date(h.followUpDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</div>` : ""}
+</body></html>`;
+    const w = window.open("", "_blank");
+    if (!w) { alert("Popup diblokir browser. Izinkan popup untuk situs ini lalu coba lagi."); return; }
+    w.document.write(html);
+    w.document.close();
+    w.onload = () => { w.focus(); w.print(); };
+  }
   async function exportExcel() {
     const XLSX = await import("xlsx");
     const rows = tableRows.map((h) => {
@@ -1641,6 +1717,10 @@ export default function BriaStatusBoard({ onLogout }) {
         setShowSimulasi(false);
         return;
       }
+      if (e.key === "Escape" && showRekapKontraktor) {
+        setShowRekapKontraktor(false);
+        return;
+      }
       if (mode !== "kerja" || !selectedId) return;
       const tag = (e.target.tagName || "").toLowerCase();
       const isTyping = tag === "input" || tag === "textarea" || tag === "select";
@@ -1662,7 +1742,7 @@ export default function BriaStatusBoard({ onLogout }) {
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [mode, selectedId, tableRows, actionMenuId, showWhatsNew, showSimulasi]);
+  }, [mode, selectedId, tableRows, actionMenuId, showWhatsNew, showSimulasi, showRekapKontraktor]);
   const totalRows = tableRows.length;
   const effectivePageSize = pageSize === "all" ? Math.max(totalRows, 1) : pageSize;
   const totalPages = Math.max(1, Math.ceil(totalRows / effectivePageSize));
@@ -1679,6 +1759,24 @@ export default function BriaStatusBoard({ onLogout }) {
   }
   const avgMarginPct = aggregateMarginPct(houses);
   const totalTarget = blocks.reduce((s, b) => s + (Number(b.target) || 0), 0);
+
+  const kontraktorNames = useMemo(() => {
+    const set = new Set();
+    houses.forEach((h) => { if (h.kontraktor && h.kontraktor.trim()) set.add(h.kontraktor.trim()); });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [houses]);
+
+  const rekapKontraktor = useMemo(() => {
+    const map = {};
+    houses.forEach((h) => {
+      const nama = (h.kontraktor || "").trim() || "(belum diisi)";
+      if (!map[nama]) map[nama] = { nama, unit: 0, sumHpp: 0, spkDone: 0 };
+      map[nama].unit += 1;
+      map[nama].sumHpp += hppTotal(h);
+      if (h.status.spkOrder) map[nama].spkDone += 1;
+    });
+    return Object.values(map).sort((a, b) => b.unit - a.unit);
+  }, [houses]);
 
   const marginPerTipe = useMemo(() => tipeOptions.map((t) => {
     const units = houses.filter((h) => h.tipe === t.name && luasBangunanOf(h) > 0);
@@ -1724,6 +1822,28 @@ export default function BriaStatusBoard({ onLogout }) {
     return list.sort((a, b) => (a.followUpDate < b.followUpDate ? -1 : 1));
   }, [clusters, globalHousesIndex]);
 
+  // Sama seperti homeFollowUpList tapi tanpa batas 7 hari ke depan —
+  // dipakai kalender supaya bulan lain tetap bisa menampilkan follow-up-nya.
+  const homeAllFollowUpList = useMemo(() => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const list = [];
+    clusters.forEach((c) => {
+      (globalHousesIndex[c.id] || []).forEach((h) => {
+        if (h.followUpDate) list.push({ ...h, clusterId: c.id, clusterName: c.name, overdue: h.followUpDate < todayStr });
+      });
+    });
+    return list;
+  }, [clusters, globalHousesIndex]);
+
+  const followUpsByDate = useMemo(() => {
+    const map = {};
+    homeAllFollowUpList.forEach((h) => {
+      if (!map[h.followUpDate]) map[h.followUpDate] = [];
+      map[h.followUpDate].push(h);
+    });
+    return map;
+  }, [homeAllFollowUpList]);
+
   const homeDuplicateList = useMemo(() => {
     const list = [];
     clusters.forEach((c) => {
@@ -1758,6 +1878,7 @@ export default function BriaStatusBoard({ onLogout }) {
             <div className="text-sm font-semibold" style={{ color: C.ink }}>Dashboard</div>
             <div className="flex items-center gap-2">
               <button onClick={() => setShowSimulasi(true)} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: "#fff" }}>🧮 Simulasi Harga</button>
+              <button onClick={() => setShowRekapKontraktor(true)} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: "#fff" }}>👷 Rekap Kontraktor</button>
               <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>🖨️ Cetak / Simpan sebagai PDF</button>
             </div>
           </div>
@@ -2044,10 +2165,13 @@ export default function BriaStatusBoard({ onLogout }) {
             {h.lastEditedAt && <div className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}</div>}
             <div className="text-xs" style={{ color: C.faint }}>Tips: ← → untuk pindah, Esc untuk tutup</div>
           </div>
-          <div className="flex gap-1">
-            <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: prevRow ? C.ink : C.faint }}>&lsaquo; Prev</button>
-            <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: nextRow ? C.ink : C.faint }}>Next &rsaquo;</button>
-            <button onClick={() => setSelectedId(null)} title="Tutup / hapus highlight" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>✕</button>
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex gap-1">
+              <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: prevRow ? C.ink : C.faint }}>&lsaquo; Prev</button>
+              <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: nextRow ? C.ink : C.faint }}>Next &rsaquo;</button>
+              <button onClick={() => setSelectedId(null)} title="Tutup / hapus highlight" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>✕</button>
+            </div>
+            <button onClick={() => printKavlingSummary(h)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff" }}>🖨️ Ringkasan</button>
           </div>
         </div>
 
@@ -2099,7 +2223,7 @@ export default function BriaStatusBoard({ onLogout }) {
         <div className="pt-2" style={{ borderTop: `1px solid ${C.line}` }}>
           {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
             <Field label="Kontraktor">
-              <input autoFocus={textEditingKey === `${h.id}:kontraktor`} style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
+              <input autoFocus={textEditingKey === `${h.id}:kontraktor`} list="kontraktor-options" style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
             </Field>
           ) : (
             <div className="mb-2">
@@ -2252,6 +2376,10 @@ export default function BriaStatusBoard({ onLogout }) {
           .inspector-panel-col { flex-basis: 100% !important; min-width: 0 !important; padding-left: 0 !important; }
         }
       `}</style>
+
+      <datalist id="kontraktor-options">
+        {kontraktorNames.map((n) => <option key={n} value={n} />)}
+      </datalist>
 
       {isOffline && (
         <div
@@ -2411,6 +2539,39 @@ export default function BriaStatusBoard({ onLogout }) {
         );
       })()}
 
+      {currentClusterId && showRekapKontraktor && (
+        <div onClick={() => setShowRekapKontraktor(false)} style={{ position: "fixed", inset: 0, background: "rgba(27,42,60,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 560, maxHeight: "85vh", display: "flex", flexDirection: "column", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, boxShadow: "0 12px 32px rgba(0,0,0,0.25)", overflow: "hidden" }}>
+            <div className="flex items-center justify-between" style={{ padding: "20px 24px 16px", borderBottom: `1px solid ${C.line}`, flexShrink: 0 }}>
+              <div className="text-lg font-semibold" style={{ color: C.ink }}>👷 Rekap Kontraktor</div>
+              <button onClick={() => setShowRekapKontraktor(false)} aria-label="Tutup" style={{ border: "none", background: "transparent", color: C.steel, fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ overflowY: "auto", padding: "16px 24px 24px" }}>
+              <p className="text-xs mb-4" style={{ color: C.steel }}>
+                Dikelompokkan berdasarkan teks yang diketik di kolom Kontraktor — kalau nama yang sama ditulis beda-beda (mis. "PT Jaya" vs "PT. Jaya"), akan muncul sebagai baris terpisah di bawah ini.
+              </p>
+              <div style={{ border: `1px solid ${C.line}`, borderRadius: 10, overflow: "hidden" }}>
+                <div className="grid text-xs font-semibold p-2" style={{ gridTemplateColumns: "1.6fr 0.7fr 1fr 1fr", background: C.paper, color: C.steel, gap: 8 }}>
+                  <div>Kontraktor</div><div className="text-right">Unit</div><div className="text-right">Total HPP</div><div className="text-right">Order SPK</div>
+                </div>
+                {rekapKontraktor.map((r) => (
+                  <div key={r.nama} className="grid text-xs p-2" style={{ gridTemplateColumns: "1.6fr 0.7fr 1fr 1fr", gap: 8, borderTop: `1px solid ${C.line}`, alignItems: "center" }}>
+                    <div style={{ color: r.nama === "(belum diisi)" ? C.faint : C.ink, fontStyle: r.nama === "(belum diisi)" ? "italic" : "normal" }}>{r.nama}</div>
+                    <div className="text-right" style={{ fontFamily: "IBM Plex Mono, monospace", color: C.ink }}>{r.unit}</div>
+                    <div className="text-right" style={{ fontFamily: "IBM Plex Mono, monospace", color: C.ink }}>{rupiah(r.sumHpp)}</div>
+                    <div className="text-right" style={{ fontFamily: "IBM Plex Mono, monospace", color: C.steel }}>{r.spkDone} / {r.unit}</div>
+                  </div>
+                ))}
+                {rekapKontraktor.length === 0 && (
+                  <div className="text-xs p-3" style={{ color: C.steel }}>Belum ada kavling di cluster ini.</div>
+                )}
+              </div>
+              <button onClick={() => setShowRekapKontraktor(false)} className="text-sm w-full px-3 py-2 rounded-lg mt-4" style={{ background: C.accent, color: "#fff" }}>Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {!currentClusterId ? (
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <div className="mb-6">
@@ -2503,22 +2664,98 @@ export default function BriaStatusBoard({ onLogout }) {
             )}
           </div>
 
-          {homeFollowUpList.length > 0 && (
+          {homeAllFollowUpList.length > 0 && (
             <div className="mb-4 p-3 rounded-lg" style={{ background: "#FFF7E8", border: `1px solid ${C.amber}` }}>
-              <div className="text-sm font-semibold mb-2" style={{ color: C.ink }}>⏰ Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
-              <div className="flex flex-col gap-1">
-                {homeFollowUpList.slice(0, 8).map((h) => (
-                  <div key={h.id} className="flex items-center justify-between text-xs">
-                    <span onClick={() => openKavlingFromSearch(h.clusterId, h.id)} style={{ color: C.ink, cursor: "pointer", textDecoration: "underline" }}>
-                      {h.clusterName} · {h.blok}-{h.noKavling}
-                    </span>
-                    <span style={{ color: h.overdue ? C.red : C.steel, fontFamily: "IBM Plex Mono, monospace" }}>
-                      {h.overdue ? "Lewat tenggat — " : ""}{new Date(h.followUpDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
-                    </span>
-                  </div>
-                ))}
-                {homeFollowUpList.length > 8 && <div className="text-xs" style={{ color: C.steel }}>+{homeFollowUpList.length - 8} lainnya</div>}
+              <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                <div className="text-sm font-semibold" style={{ color: C.ink }}>⏰ Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
+                <div className="flex gap-1">
+                  <button onClick={() => setFollowUpView("list")} className="text-xs px-2 py-1 rounded-lg" style={{ background: followUpView === "list" ? C.amber : "#fff", color: followUpView === "list" ? "#fff" : C.steel, border: `1px solid ${C.amber}` }}>Daftar</button>
+                  <button onClick={() => setFollowUpView("kalender")} className="text-xs px-2 py-1 rounded-lg" style={{ background: followUpView === "kalender" ? C.amber : "#fff", color: followUpView === "kalender" ? "#fff" : C.steel, border: `1px solid ${C.amber}` }}>📅 Kalender</button>
+                </div>
               </div>
+
+              {followUpView === "list" ? (
+                homeFollowUpList.length === 0 ? (
+                  <div className="text-xs" style={{ color: C.steel }}>Tidak ada yang jatuh tempo dalam 7 hari ke depan. Cek "📅 Kalender" untuk melihat semuanya.</div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    {homeFollowUpList.slice(0, 8).map((h) => (
+                      <div key={h.id} className="flex items-center justify-between text-xs">
+                        <span onClick={() => openKavlingFromSearch(h.clusterId, h.id)} style={{ color: C.ink, cursor: "pointer", textDecoration: "underline" }}>
+                          {h.clusterName} · {h.blok}-{h.noKavling}
+                        </span>
+                        <span style={{ color: h.overdue ? C.red : C.steel, fontFamily: "IBM Plex Mono, monospace" }}>
+                          {h.overdue ? "Lewat tenggat — " : ""}{new Date(h.followUpDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                        </span>
+                      </div>
+                    ))}
+                    {homeFollowUpList.length > 8 && <div className="text-xs" style={{ color: C.steel }}>+{homeFollowUpList.length - 8} lainnya</div>}
+                  </div>
+                )
+              ) : (() => {
+                const { y, m } = calendarMonth;
+                const cells = buildCalendarGrid(y, m);
+                const todayStr = new Date().toISOString().slice(0, 10);
+                const selectedItems = calendarSelectedDate ? (followUpsByDate[calendarSelectedDate] || []) : [];
+                return (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <button onClick={() => setCalendarMonth((s) => { const dm = new Date(s.y, s.m - 1, 1); return { y: dm.getFullYear(), m: dm.getMonth() }; })} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>&lsaquo;</button>
+                      <div className="text-xs font-semibold" style={{ color: C.ink }}>{MONTH_LABELS[m]} {y}</div>
+                      <button onClick={() => setCalendarMonth((s) => { const dm = new Date(s.y, s.m + 1, 1); return { y: dm.getFullYear(), m: dm.getMonth() }; })} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>&rsaquo;</button>
+                    </div>
+                    <div className="grid" style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: 3 }}>
+                      {WEEKDAY_LABELS.map((wd) => (
+                        <div key={wd} className="text-center" style={{ fontSize: 10, color: C.steel, fontWeight: 600 }}>{wd}</div>
+                      ))}
+                      {cells.map((dateStr, i) => {
+                        if (!dateStr) return <div key={i} />;
+                        const items = followUpsByDate[dateStr] || [];
+                        const hasOverdue = items.some((it) => it.overdue);
+                        const isToday = dateStr === todayStr;
+                        const isSelected = dateStr === calendarSelectedDate;
+                        return (
+                          <div
+                            key={i}
+                            onClick={() => items.length > 0 && setCalendarSelectedDate(isSelected ? null : dateStr)}
+                            className="flex flex-col items-center justify-center"
+                            style={{
+                              aspectRatio: "1", borderRadius: 8, fontSize: 11, cursor: items.length > 0 ? "pointer" : "default",
+                              color: items.length > 0 ? C.ink : C.faint,
+                              background: isSelected ? C.amber : isToday ? "#FFFFFF" : "transparent",
+                              border: isToday ? `1px solid ${C.amber}` : "1px solid transparent",
+                              fontWeight: items.length > 0 ? 600 : 400,
+                            }}
+                          >
+                            <span style={{ color: isSelected ? "#fff" : undefined }}>{Number(dateStr.slice(-2))}</span>
+                            {items.length > 0 && (
+                              <span style={{ width: 5, height: 5, borderRadius: "50%", marginTop: 1, background: isSelected ? "#fff" : hasOverdue ? C.red : C.amber }} />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {calendarSelectedDate && (
+                      <div className="mt-2 pt-2" style={{ borderTop: `1px solid ${C.amber}` }}>
+                        <div className="text-xs font-semibold mb-1" style={{ color: C.ink }}>
+                          {new Date(calendarSelectedDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                        </div>
+                        {selectedItems.length === 0 ? (
+                          <div className="text-xs" style={{ color: C.steel }}>Tidak ada follow-up di tanggal ini.</div>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            {selectedItems.map((h) => (
+                              <div key={h.id} onClick={() => openKavlingFromSearch(h.clusterId, h.id)} className="text-xs" style={{ color: h.overdue ? C.red : C.ink, cursor: "pointer", textDecoration: "underline" }}>
+                                {h.clusterName} · {h.blok}-{h.noKavling}{h.overdue ? " (lewat tenggat)" : ""}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           )}
 
@@ -3383,6 +3620,7 @@ export default function BriaStatusBoard({ onLogout }) {
                       {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
                         <input
                           autoFocus={textEditingKey === `${h.id}:kontraktor`}
+                          list="kontraktor-options"
                           style={{ ...cellInput, minWidth: 110 }}
                           value={h.kontraktor || ""}
                           onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }}
