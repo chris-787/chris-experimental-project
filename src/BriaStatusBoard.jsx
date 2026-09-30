@@ -1942,7 +1942,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
 
           {followUpList.length > 0 && (
-            <div className="mb-3 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
+            <div className="mb-3 p-3 rounded-2xl" style={{ background: "#FFF7E8", boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <IconChip name="clock" bg="#FCEFD6" color={C.amber} size={30} />
@@ -2736,7 +2736,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               onChange={(e) => setKavlingSearch(e.target.value)}
               placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
               className="text-sm px-4 py-3 rounded-full w-full kavling-search-input"
-              style={{ border: "none", color: C.ink, background: "#EAF0FA" }}
+              style={{ border: "none", color: C.ink, background: "#ECECEE" }}
             />
             {kavlingSearch.trim() && (
               <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
