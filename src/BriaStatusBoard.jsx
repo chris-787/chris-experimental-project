@@ -2729,7 +2729,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             )}
           </div>
 
-          <div className="mb-4 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
+          <div className="mb-6 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
             <div className="flex items-center gap-3 mb-2">
               <IconChip name="search" bg="#EAF0FA" color={C.accent2} size={34} />
               <div className="text-sm font-semibold" style={{ color: C.ink }}>Pencarian Blok</div>
@@ -2768,7 +2768,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
 
           {homeAllFollowUpList.length > 0 && (
-            <div className="mb-4 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
+            <div className="mb-6 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div className="flex items-center gap-3">
                   <span style={{ width: 34, height: 34, borderRadius: 10, background: "#FCEFD6", display: "flex", alignItems: "center", justifyContent: "center", color: C.amber, flexShrink: 0 }}>
@@ -2868,7 +2868,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           )}
 
           {homeDuplicateList.length > 0 && (
-            <div className="mb-4 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
+            <div className="mb-6 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
               <div className="flex items-center gap-3 mb-3">
                 <span style={{ width: 34, height: 34, borderRadius: 10, background: "#FBEDEA", display: "flex", alignItems: "center", justifyContent: "center", color: C.red, flexShrink: 0 }}>
                   <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4" /><path d="M12 17h.01" /></svg>
