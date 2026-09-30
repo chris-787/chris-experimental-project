@@ -34,6 +34,9 @@ const WHATS_NEW_GROUPS = [
   {
     date: "30 September 2026",
     items: [
+      { icon: "🎨", title: "Desain Baru", desc: "Tampilan Home, Mode Kalibrasi/Kerja/Pengaturan, dan Login dirombak: kartu putih berbayang lembut, tombol berbentuk pil, ikon pengganti emoji, dan label tombol lebih ringkas (Export to Excel, Backup (JSON), Restore (JSON), Print)." },
+      { icon: "👋", title: "Sapaan Personal di Home", desc: "Home sekarang menyapa sesuai waktu (Selamat Pagi/Siang/Sore/Malam) beserta nama Anda, di atas jam dan tanggal." },
+      { icon: "🔍", title: "Pencarian Blok Dipindah ke Atas", desc: "Kotak Pencarian Blok di Home sekarang jadi bagian paling atas (sebelum kartu notifikasi), supaya lebih cepat dipakai." },
       { icon: "📅", title: "Kalender Follow-up di Home", desc: "Kartu \"Perlu Ditindaklanjuti\" sekarang punya tampilan kalender bulanan, bukan cuma daftar. Titik merah = lewat tenggat, kuning = akan datang. Klik tanggalnya untuk lihat & langsung buka kavlingnya." },
       { icon: "🖨️", title: "Ringkasan Kavling (PDF)", desc: "Tombol \"Ringkasan\" di panel detail kavling (Mode Kerja) mencetak satu halaman berisi data, status, kontraktor, harga, dan margin kavling itu — cocok dilampirkan ke berkas atau dikirim ke atasan." },
       { icon: "👷", title: "Rekap Kontraktor", desc: "Tombol di Dashboard cluster menampilkan rekap jumlah unit, total HPP, dan progres Order SPK per kontraktor." },
@@ -1937,7 +1940,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div className="flex items-center gap-2 flex-wrap">
               <button onClick={() => setShowSimulasi(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: "#F1EEE4" }}><Ic name="calculator" size={14} /> Simulasi Harga</button>
               <button onClick={() => setShowRekapKontraktor(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: "#F1EEE4" }}><Ic name="hardhat" size={14} /> Rekap Kontraktor</button>
-              <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={14} /> Cetak / Simpan sebagai PDF</button>
+              <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={14} /> Print</button>
             </div>
           </div>
 
@@ -2677,13 +2680,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
             {clusters.length > 0 && (
               <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <button onClick={exportAllExcel} disabled={exportingExcelAll} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.green, background: "#F1EEE4" }}>
-                  {exportingExcelAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Export ke Excel
+                  {exportingExcelAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Export to Excel
                 </button>
                 <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.accent, background: "#F1EEE4" }}>
                   {exportingBackupAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Backup (JSON)
                 </button>
                 <label className="text-xs px-3 py-1.5 rounded-full cursor-pointer flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: "#F1EEE4" }}>
-                  <Ic name="upload" size={14} /> Pulihkan (JSON)
+                  <Ic name="upload" size={14} /> Restore (JSON)
                   <input type="file" accept=".json" onChange={handleRestoreAllFile} style={{ display: "none" }} />
                 </label>
                 <button onClick={() => setShowWhatsNew(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: "#F1EEE4" }}>
