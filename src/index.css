@@ -8,5 +8,10 @@ html, body, #root {
 
 body {
   margin: 0;
-  background: #F5F2EA;
+  /* Harus sama dengan C.paper di theme.js */
+  background: #FAFAF8;
+}
+
+@keyframes bria-spin {
+  to { transform: rotate(360deg); }
 }

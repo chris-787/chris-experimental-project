@@ -44,7 +44,12 @@ export default function App() {
 
   if (session === undefined) {
     return (
-      <div style={{ minHeight: "100vh", background: C.paper, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100vh", background: C.paper, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
+        <span style={{
+          display: "inline-block", width: 22, height: 22, borderRadius: "50%",
+          border: `3px solid ${C.line}`, borderTopColor: C.accent,
+          animation: "bria-spin 0.7s linear infinite",
+        }} />
         <span style={{ fontSize: 13, color: C.steel, fontFamily: "Inter, sans-serif" }}>Memuat...</span>
       </div>
     );
