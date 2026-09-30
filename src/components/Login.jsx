@@ -59,8 +59,8 @@ export default function Login() {
           width: "100%",
           maxWidth: 360,
           background: C.panel,
-          border: `1px solid ${C.line}`,
-          borderRadius: 16,
+          boxShadow: C.cardShadow,
+          borderRadius: 20,
           padding: 28,
         }}
       >
@@ -91,13 +91,13 @@ export default function Login() {
           placeholder="mis. admin"
           style={{
             width: "100%",
-            padding: "9px 10px",
+            padding: "10px 12px",
             fontSize: 14,
-            border: `1px solid ${C.line}`,
-            borderRadius: 8,
+            border: "none",
+            borderRadius: 10,
             marginBottom: 14,
             color: C.ink,
-            background: "#fff",
+            background: "#F1EEE4",
           }}
         />
 
@@ -110,13 +110,13 @@ export default function Login() {
           placeholder="••••••••"
           style={{
             width: "100%",
-            padding: "9px 10px",
+            padding: "10px 12px",
             fontSize: 14,
-            border: `1px solid ${C.line}`,
-            borderRadius: 8,
+            border: "none",
+            borderRadius: 10,
             marginBottom: 16,
             color: C.ink,
-            background: "#fff",
+            background: "#F1EEE4",
           }}
         />
 
@@ -141,10 +141,10 @@ export default function Login() {
           disabled={loading}
           style={{
             width: "100%",
-            padding: "10px 12px",
+            padding: "11px 12px",
             fontSize: 14,
             fontWeight: 600,
-            borderRadius: 8,
+            borderRadius: 999,
             border: "none",
             background: C.accent,
             color: "#fff",
