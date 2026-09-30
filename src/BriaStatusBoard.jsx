@@ -2707,18 +2707,18 @@ export default function BriaStatusBoard({ onLogout }) {
                 const todayStr = new Date().toISOString().slice(0, 10);
                 const selectedItems = calendarSelectedDate ? (followUpsByDate[calendarSelectedDate] || []) : [];
                 return (
-                  <div>
+                  <div style={{ maxWidth: 280, margin: "0 auto" }}>
                     <div className="flex items-center justify-between mb-2">
-                      <button onClick={() => setCalendarMonth((s) => { const dm = new Date(s.y, s.m - 1, 1); return { y: dm.getFullYear(), m: dm.getMonth() }; })} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>&lsaquo;</button>
+                      <button onClick={() => setCalendarMonth((s) => { const dm = new Date(s.y, s.m - 1, 1); return { y: dm.getFullYear(), m: dm.getMonth() }; })} style={{ width: 22, height: 22, lineHeight: "20px", textAlign: "center", border: `1px solid ${C.line}`, borderRadius: 6, color: C.ink, background: "#fff", fontSize: 12 }}>&lsaquo;</button>
                       <div className="text-xs font-semibold" style={{ color: C.ink }}>{MONTH_LABELS[m]} {y}</div>
-                      <button onClick={() => setCalendarMonth((s) => { const dm = new Date(s.y, s.m + 1, 1); return { y: dm.getFullYear(), m: dm.getMonth() }; })} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.ink, background: "#fff" }}>&rsaquo;</button>
+                      <button onClick={() => setCalendarMonth((s) => { const dm = new Date(s.y, s.m + 1, 1); return { y: dm.getFullYear(), m: dm.getMonth() }; })} style={{ width: 22, height: 22, lineHeight: "20px", textAlign: "center", border: `1px solid ${C.line}`, borderRadius: 6, color: C.ink, background: "#fff", fontSize: 12 }}>&rsaquo;</button>
                     </div>
-                    <div className="grid" style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: 3 }}>
+                    <div className="grid" style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
                       {WEEKDAY_LABELS.map((wd) => (
-                        <div key={wd} className="text-center" style={{ fontSize: 10, color: C.steel, fontWeight: 600 }}>{wd}</div>
+                        <div key={wd} className="text-center" style={{ fontSize: 9, color: C.steel, fontWeight: 600 }}>{wd}</div>
                       ))}
                       {cells.map((dateStr, i) => {
-                        if (!dateStr) return <div key={i} />;
+                        if (!dateStr) return <div key={i} style={{ height: 30 }} />;
                         const items = followUpsByDate[dateStr] || [];
                         const hasOverdue = items.some((it) => it.overdue);
                         const isToday = dateStr === todayStr;
@@ -2729,7 +2729,7 @@ export default function BriaStatusBoard({ onLogout }) {
                             onClick={() => items.length > 0 && setCalendarSelectedDate(isSelected ? null : dateStr)}
                             className="flex flex-col items-center justify-center"
                             style={{
-                              aspectRatio: "1", borderRadius: 8, fontSize: 11, cursor: items.length > 0 ? "pointer" : "default",
+                              height: 30, borderRadius: 6, fontSize: 10, cursor: items.length > 0 ? "pointer" : "default",
                               color: items.length > 0 ? C.ink : C.faint,
                               background: isSelected ? C.amber : isToday ? "#FFFFFF" : "transparent",
                               border: isToday ? `1px solid ${C.amber}` : "1px solid transparent",
@@ -2738,7 +2738,7 @@ export default function BriaStatusBoard({ onLogout }) {
                           >
                             <span style={{ color: isSelected ? "#fff" : undefined }}>{Number(dateStr.slice(-2))}</span>
                             {items.length > 0 && (
-                              <span style={{ width: 5, height: 5, borderRadius: "50%", marginTop: 1, background: isSelected ? "#fff" : hasOverdue ? C.red : C.amber }} />
+                              <span style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 1, background: isSelected ? "#fff" : hasOverdue ? C.red : C.amber }} />
                             )}
                           </div>
                         );
