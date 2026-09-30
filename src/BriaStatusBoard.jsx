@@ -2729,7 +2729,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
 
           {homeAllFollowUpList.length > 0 && (
-            <div className="mb-6 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
+            <div className="mb-3 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div className="flex items-center gap-3">
                   <span style={{ width: 34, height: 34, borderRadius: 10, background: "#FCEFD6", display: "flex", alignItems: "center", justifyContent: "center", color: C.amber, flexShrink: 0 }}>
