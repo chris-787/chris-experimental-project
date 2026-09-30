@@ -2598,8 +2598,8 @@ export default function BriaStatusBoard({ onLogout }) {
                 {homeSaving && <SmallSpinner />}
                 {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
                 {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
-                <button onClick={saveHomeChanges} className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>
-                <button onClick={handleLogoutClick} className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ border: `1px solid ${C.red}`, color: C.red, background: "#fff" }}>Log Out</button>
+                <button onClick={saveHomeChanges} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>
+                <button onClick={handleLogoutClick} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ border: "none", color: C.red, background: "#FBEDEA" }}>Log Out</button>
               </div>
             </div>
             <div className="text-sm mt-1" style={{ color: C.steel }}>Pilih cluster untuk mulai bekerja, atau tambah cluster baru.</div>
@@ -2623,17 +2623,17 @@ export default function BriaStatusBoard({ onLogout }) {
             })()}
             {clusters.length > 0 && (
               <div className="flex items-center gap-2 mt-2 flex-wrap">
-                <button onClick={exportAllExcel} disabled={exportingExcelAll} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.green, background: "#fff" }}>
+                <button onClick={exportAllExcel} disabled={exportingExcelAll} className="text-xs px-3 py-1.5 rounded-full" style={{ border: "none", color: C.green, background: "#F1EEE4" }}>
                   {exportingExcelAll && <SmallSpinner />} Export Semua ke Excel
                 </button>
-                <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.accent, background: "#fff" }}>
+                <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-1.5 rounded-full" style={{ border: "none", color: C.accent, background: "#F1EEE4" }}>
                   {exportingBackupAll && <SmallSpinner />} Unduh Cadangan Semua Cluster (JSON)
                 </button>
-                <label className="text-xs px-2 py-1 rounded-lg border cursor-pointer" style={{ borderColor: C.line, color: C.steel, background: "#fff" }}>
+                <label className="text-xs px-3 py-1.5 rounded-full cursor-pointer" style={{ border: "none", color: C.steel, background: "#F1EEE4" }}>
                   Pulihkan dari Cadangan (JSON)
                   <input type="file" accept=".json" onChange={handleRestoreAllFile} style={{ display: "none" }} />
                 </label>
-                <button onClick={() => setShowWhatsNew(true)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.steel, background: "#fff" }}>
+                <button onClick={() => setShowWhatsNew(true)} className="text-xs px-3 py-1.5 rounded-full" style={{ border: "none", color: C.steel, background: "#F1EEE4" }}>
                   🆕 What's New
                 </button>
               </div>
@@ -2674,7 +2674,7 @@ export default function BriaStatusBoard({ onLogout }) {
           </div>
 
           {homeAllFollowUpList.length > 0 && (
-            <div className="mb-4 p-3 rounded-lg" style={{ background: "#FFF7E8", border: `1px solid ${C.amber}` }}>
+            <div className="mb-4 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                 <div className="text-sm font-semibold" style={{ color: C.ink }}>⏰ Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
                 <div className="flex gap-1">
@@ -2769,7 +2769,7 @@ export default function BriaStatusBoard({ onLogout }) {
           )}
 
           {homeDuplicateList.length > 0 && (
-            <div className="mb-4 p-3 rounded-lg" style={{ background: "#FBEAE6", border: `1px solid ${C.red}` }}>
+            <div className="mb-4 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
               <div className="text-sm font-semibold mb-2" style={{ color: C.ink }}>⚠️ Nomor Kavling Duplikat ({homeDuplicateList.length})</div>
               <div className="flex flex-col gap-1">
                 {homeDuplicateList.slice(0, 8).map((h) => (
@@ -2790,8 +2790,8 @@ export default function BriaStatusBoard({ onLogout }) {
               value={kavlingSearch}
               onChange={(e) => setKavlingSearch(e.target.value)}
               placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
-              className="text-sm px-3 py-2 rounded-lg border w-full"
-              style={{ borderColor: C.line, color: C.ink }}
+              className="text-sm px-4 py-3 rounded-full w-full"
+              style={{ border: "none", color: C.ink, background: "#F1EEE4" }}
             />
             {kavlingSearch.trim() && (
               <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
@@ -2832,7 +2832,7 @@ export default function BriaStatusBoard({ onLogout }) {
                   { label: "Total Cluster", value: `${clusters.length}` },
                   { label: "Margin Keseluruhan", value: `${overallMarginPct.toFixed(2)}%` },
                 ].map((s) => (
-                  <div key={s.label} className="p-3 rounded-xl" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
+                  <div key={s.label} className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
                     <div style={{ fontSize: 11, color: C.steel, marginBottom: 3 }}>{s.label}</div>
                     <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{s.value}</div>
                   </div>
@@ -2848,7 +2848,7 @@ export default function BriaStatusBoard({ onLogout }) {
                 .map((c) => {
                   const cs = clusterStats[c.id];
                   return (
-                    <div key={c.id} className="p-3 rounded-xl" style={{ background: C.panel, border: `1px solid ${C.line}` }}>
+                    <div key={c.id} className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
                       <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>
                         Margin {c.name} — <span style={{ fontFamily: "IBM Plex Mono, monospace" }}>{cs.marginPct.toFixed(1)}%</span>
                         <span className="text-xs" style={{ color: C.steel, fontFamily: "Inter, sans-serif", fontWeight: 400 }}> · total {cs.total} unit</span>
@@ -2885,7 +2885,7 @@ export default function BriaStatusBoard({ onLogout }) {
               .filter((c) => !clusterSearch.trim() || `${c.name} ${c.subtitle}`.toLowerCase().includes(clusterSearch.trim().toLowerCase()))
               .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
               .map((c) => (
-              <div key={c.id} className="rounded-xl p-4" style={{ background: C.panel, border: `1px solid ${c.pinned ? C.accent : C.line}` }}>
+              <div key={c.id} className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow, border: c.pinned ? `1px solid ${C.accent}` : "none" }}>
                 {clusterImages[c.id] ? (
                   <img src={clusterImages[c.id]} alt={c.name} loading="lazy" decoding="async" style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 8, marginBottom: 10, border: `1px solid ${C.line}` }} />
                 ) : (
