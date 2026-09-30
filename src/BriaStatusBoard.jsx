@@ -1932,12 +1932,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
   const dashboardJSX = (
         <div className="mb-3">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
             <div className="text-sm font-semibold" style={{ color: C.ink }}>Dashboard</div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setShowSimulasi(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.ink, background: "#F1EEE4" }}><Ic name="calculator" size={14} /> Simulasi Harga</button>
-              <button onClick={() => setShowRekapKontraktor(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.ink, background: "#F1EEE4" }}><Ic name="hardhat" size={14} /> Rekap Kontraktor</button>
-              <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={14} /> Cetak / Simpan sebagai PDF</button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button onClick={() => setShowSimulasi(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: "#F1EEE4" }}><Ic name="calculator" size={14} /> Simulasi Harga</button>
+              <button onClick={() => setShowRekapKontraktor(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: "#F1EEE4" }}><Ic name="hardhat" size={14} /> Rekap Kontraktor</button>
+              <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={14} /> Cetak / Simpan sebagai PDF</button>
             </div>
           </div>
 
@@ -2680,7 +2680,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   {exportingExcelAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Export ke Excel
                 </button>
                 <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.accent, background: "#F1EEE4" }}>
-                  {exportingBackupAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Backup Semua (JSON)
+                  {exportingBackupAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Backup (JSON)
                 </button>
                 <label className="text-xs px-3 py-1.5 rounded-full cursor-pointer flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: "#F1EEE4" }}>
                   <Ic name="upload" size={14} /> Pulihkan (JSON)
@@ -2735,7 +2735,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               value={kavlingSearch}
               onChange={(e) => setKavlingSearch(e.target.value)}
               placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
-              className="text-sm px-4 py-3 rounded-full w-full"
+              className="text-sm px-4 py-3 rounded-full w-full kavling-search-input"
               style={{ border: "none", color: C.ink, background: "#EAF0FA" }}
             />
             {kavlingSearch.trim() && (
