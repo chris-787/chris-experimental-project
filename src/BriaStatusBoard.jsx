@@ -170,7 +170,7 @@ const ICON_PATHS = {
   search: <><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></>,
   chart: <><path d="M4 20V10" /><path d="M12 20V4" /><path d="M20 20v-7" /></>,
   home: <><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></>,
-  sparkle: <><circle cx="12" cy="13" r="8" /><path d="M12 9v4l3 2" /></>,
+  sparkle: <path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3Z" />,
   printer: <><path d="M6 9V3h12v6" /><rect x="4" y="9" width="16" height="8" rx="1.5" /><path d="M6 17h12v4H6z" /></>,
   calculator: <><rect x="5" y="3" width="14" height="18" rx="1.5" /><path d="M8 7h8" /><path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01" /></>,
   hardhat: <><path d="M4 15a8 8 0 0 1 16 0" /><path d="M2 15h20" /><path d="M9 15V9" /></>,
@@ -2431,7 +2431,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
         .col-resize-handle:hover { background: ${C.accent}33; }
         .col-resize-handle:active { background: ${C.accent}55; }
         .editable-heading:hover, .editable-heading:focus { border-bottom-color: ${C.line} !important; }
-        @keyframes bria-spin { to { transform: rotate(360deg); } }
         @media (max-width: 680px) {
           .map-data-row { flex-direction: column; }
           .panel-resize-handle { display: none !important; }
@@ -2732,9 +2731,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div className="mb-3 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div className="flex items-center gap-3">
-                  <span style={{ width: 34, height: 34, borderRadius: 10, background: "#FCEFD6", display: "flex", alignItems: "center", justifyContent: "center", color: C.amber, flexShrink: 0 }}>
-                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l3 2" /></svg>
-                  </span>
+                  <IconChip name="clock" bg="#FCEFD6" color={C.amber} size={34} />
                   <div className="text-sm font-semibold" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
                 </div>
                 <div className="flex" style={{ background: "#F1EEE4", borderRadius: 10, padding: 3 }}>
@@ -2831,9 +2828,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           {homeDuplicateList.length > 0 && (
             <div className="mb-6 p-3 rounded-2xl" style={{ background: "#fff", boxShadow: C.cardShadow }}>
               <div className="flex items-center gap-3 mb-3">
-                <span style={{ width: 34, height: 34, borderRadius: 10, background: "#FBEDEA", display: "flex", alignItems: "center", justifyContent: "center", color: C.red, flexShrink: 0 }}>
-                  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4" /><path d="M12 17h.01" /></svg>
-                </span>
+                <IconChip name="warning" bg="#FBEDEA" color={C.red} size={34} />
                 <div className="text-sm font-semibold" style={{ color: C.ink }}>Nomor Kavling Duplikat ({homeDuplicateList.length})</div>
               </div>
               <div className="flex flex-col gap-1.5" style={{ paddingLeft: 46 }}>
