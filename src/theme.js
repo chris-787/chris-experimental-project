@@ -3,16 +3,18 @@
 // BriaStatusBoard.jsx dan Login.jsx supaya tampilannya konsisten.
 export const C = {
   ink: "#1B2A3C",
-  paper: "#F5F2EA",
+  paper: "#FAFAF8",
   panel: "#FFFFFF",
   steel: "#5B6673",
   faint: "#DAD4C6",
-  line: "#C9C2B2",
+  line: "#E3DFD3",
   accent: "#162C48",
+  accent2: "#33417A",
   green: "#3F7D58",
   amber: "#B8791E",
   red: "#BD3B2E",
   gold: "#C9A227",
+  cardShadow: "0 1px 2px rgba(27,42,60,.05), 0 10px 26px rgba(27,42,60,.07)",
 };
 
 export const PALETTE = [
