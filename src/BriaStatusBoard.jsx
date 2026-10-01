@@ -487,23 +487,27 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
   useEffect(() => {
     (async () => {
+      // Empat key ini saling lepas (tidak ada yang butuh hasil yang lain),
+      // jadi di-fetch paralel -- sebelumnya berurutan, total menunggu
+      // ~2.4 detik tiap kali login/buka app padahal cuma perlu ~0.7 detik
+      // (durasi yang paling lambat) kalau digabung jadi satu permintaan.
+      const [layoutRes, atRes, idxRes, lbRes] = await Promise.all([
+        storage.get(TABLE_LAYOUT_KEY, false).catch(() => null),
+        storage.get(APP_TITLE_KEY, false).catch(() => null),
+        storage.get(CLUSTERS_INDEX_KEY, false).catch(() => null),
+        storage.get(LAST_BACKUP_KEY, false).catch(() => null),
+      ]);
       try {
-        const layout = await storage.get(TABLE_LAYOUT_KEY, false);
-        if (layout && layout.value) {
-          const parsedLayout = JSON.parse(layout.value);
+        if (layoutRes && layoutRes.value) {
+          const parsedLayout = JSON.parse(layoutRes.value);
           if (parsedLayout.colWidths) setColWidths(parsedLayout.colWidths);
           if (parsedLayout.hiddenCols) setHiddenCols(parsedLayout.hiddenCols);
         }
       } catch (e) {}
       try {
-        const at = await storage.get(APP_TITLE_KEY, false);
-        if (at && at.value) setAppTitle(at.value);
+        if (atRes && atRes.value) setAppTitle(atRes.value);
       } catch (e) {}
-      let idxRaw = null;
-      try {
-        const idx = await storage.get(CLUSTERS_INDEX_KEY, false);
-        idxRaw = idx && idx.value;
-      } catch (e) { idxRaw = null; }
+      const idxRaw = idxRes && idxRes.value;
 
       let finalClusters = [];
       if (idxRaw) {
@@ -527,8 +531,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       // Sengaja tidak lagi otomatis membuka cluster terakhir di sini —
       // setiap kali login/buka aplikasi baru, selalu mulai dari Home dulu.
       try {
-        const lb = await storage.get(LAST_BACKUP_KEY, false);
-        if (lb && lb.value) setLastBackupAt(Number(lb.value));
+        if (lbRes && lbRes.value) setLastBackupAt(Number(lbRes.value));
       } catch (e) {}
       setHomeLoaded(true);
     })();
@@ -549,17 +552,22 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setEditingShapeId(null); setEditPoints(null); setSelectedRows([]);
     setDraft(null); setDrawingPoints([]); setMode("input"); setFollowUpFilterActive(false);
     setHousesUpdatedAt(null); setSaveConflict(false); setRemoteUpdateAvailable(false);
+    // Tiga fetch independen (houses, gambar, config) dijalankan paralel --
+    // sebelumnya berurutan (tiap fetch nunggu yang sebelumnya selesai dulu),
+    // bikin buka cluster kerasa lambat padahal ketiganya tidak saling butuh.
+    const [h, img, cfg] = await Promise.all([
+      storage.get(housesKeyFor(id), false).catch(() => null),
+      storage.get(imageKeyFor(id), false).catch(() => null),
+      storage.get(configKeyFor(id), false).catch(() => null),
+    ]);
     try {
-      const h = await storage.get(housesKeyFor(id), false);
       if (h && h.value) setHouses(JSON.parse(h.value));
       setHousesUpdatedAt(h ? h.updatedAt : null);
     } catch (e) {}
     try {
-      const img = await storage.get(imageKeyFor(id), false);
       if (img && img.value) setSiteImage(img.value);
     } catch (e) {}
     try {
-      const cfg = await storage.get(configKeyFor(id), false);
       if (cfg && cfg.value) {
         const parsed = JSON.parse(cfg.value);
         let migratedBlocks = parsed.blocks;
@@ -2464,7 +2472,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
   return (
     <div style={{ background: C.paper, minHeight: "100%", fontFamily: "Inter, sans-serif" }} className="p-5">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 3px 6px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
         table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; will-change: transform; }

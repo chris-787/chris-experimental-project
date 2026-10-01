@@ -3,6 +3,22 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        // Pisahkan library pihak ketiga (jarang berubah) dari kode aplikasi
+        // sendiri (sering berubah tiap deploy) -- supaya browser pengguna
+        // yang sudah pernah buka situsnya tidak perlu unduh ulang React dkk
+        // tiap kali ada update kecil, cuma potongan kode aplikasi yang baru.
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react") || id.includes("scheduler")) return "vendor-react";
+            if (id.includes("@supabase")) return "vendor-supabase";
+          }
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
