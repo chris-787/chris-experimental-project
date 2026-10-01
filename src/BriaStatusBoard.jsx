@@ -236,12 +236,18 @@ function resizeImageFile(file, maxDim) {
   });
 }
 
+// Akun khusus "lihat saja" (investor/atasan) -- tidak pakai sistem role
+// di database, cukup dicek dari emailnya karena cuma satu akun ini yang
+// perlu dibatasi. Tambah ke daftar ini kalau nanti ada akun viewer lain.
+const VIEWER_EMAILS = ["viewer@cluster-bintaro-jaya.local"];
+
 export default function BriaStatusBoard({ onLogout, session }) {
   const displayName = (() => {
     const email = session?.user?.email || "";
     const local = email.split("@")[0] || "";
     return local ? local.charAt(0).toUpperCase() + local.slice(1) : "";
   })();
+  const canEdit = !VIEWER_EMAILS.includes(session?.user?.email || "");
   const [showWhatsNew, setShowWhatsNew] = useState(true);
   const [showSimulasi, setShowSimulasi] = useState(false);
   const [simScope, setSimScope] = useState("all");
@@ -819,12 +825,14 @@ export default function BriaStatusBoard({ onLogout, session }) {
     onLogout();
   }
   function addCluster(name, subtitle) {
+    if (!canEdit) return;
     const id = newClusterId();
     const entry = { id, name: name || "Cluster Baru", subtitle: subtitle || "" };
     setClusters((prev) => { const next = [...prev, entry]; saveClustersIndex(next); return next; });
     openCluster(id);
   }
   function updateClusterMeta(id, patch) {
+    if (!canEdit) return;
     setClusters((prev) => { const next = prev.map((c) => (c.id === id ? { ...c, ...patch } : c)); saveClustersIndex(next); return next; });
   }
   function togglePinCluster(id) {
@@ -836,6 +844,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     updateClusterMeta(id, { archived: !(c && c.archived) });
   }
   function deleteCluster(id) {
+    if (!canEdit) return;
     setClusters((prev) => { const next = prev.filter((c) => c.id !== id); saveClustersIndex(next); return next; });
     storage.delete(housesKeyFor(id), false).catch(() => {});
     storage.delete(configKeyFor(id), false).catch(() => {});
@@ -843,9 +852,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
     if (currentClusterId === id) goHome();
   }
   function saveAppTitle(next) {
+    if (!canEdit) return;
     storage.set(APP_TITLE_KEY, next, false).catch((e) => console.error(e));
   }
   async function saveHomeChanges() {
+    if (!canEdit) return;
     setHomeSaving(true);
     try {
       await storage.set(APP_TITLE_KEY, appTitle, false);
@@ -858,6 +869,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
 
   async function saveHouses(next) {
+    if (!canEdit) return;
     setSaving(true);
     try {
       const result = await storage.set(housesKeyFor(currentClusterId), JSON.stringify(next ?? houses), housesUpdatedAt);
@@ -874,6 +886,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     finally { setSaving(false); }
   }
   async function saveConfig(next) {
+    if (!canEdit) return;
     try {
       await storage.set(configKeyFor(currentClusterId), JSON.stringify({
         blocks: next.blocks ?? blocks, tipeOptions: next.tipeOptions ?? tipeOptions,
@@ -882,8 +895,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
     } catch (e) { console.error(e); }
   }
 
-  function addHouse(record) { setHouses((prev) => { const next = [...prev, record]; saveHouses(next); return next; }); }
+  function addHouse(record) { if (!canEdit) return; setHouses((prev) => { const next = [...prev, record]; saveHouses(next); return next; }); }
   function removeHouse(id) {
+    if (!canEdit) return;
     setHouses((prev) => {
       const removed = prev.find((h) => h.id === id);
       const next = prev.filter((h) => h.id !== id);
@@ -898,12 +912,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
     if (selectedId === id) setSelectedId(null);
   }
   function undoDelete() {
-    if (!lastDeleted) return;
+    if (!canEdit || !lastDeleted) return;
     setHouses((prev) => { const next = [...prev, lastDeleted]; saveHouses(next); return next; });
     setLastDeleted(null);
     clearTimeout(undoTimerRef.current);
   }
   function startEditShape(id) {
+    if (!canEdit) return;
     const target = houses.find((h) => h.id === id);
     if (!target) return;
     setEditingShapeId(id);
@@ -942,7 +957,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
   }
-  function updateHouse(id, patch) { setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, ...patch, lastEditedAt: Date.now() } : h))); setDirty(true); }
+  function updateHouse(id, patch) {
+    if (!canEdit) return;
+    setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, ...patch, lastEditedAt: Date.now() } : h)));
+    setDirty(true);
+  }
   function timeAgo(ts) {
     if (!ts) return null;
     const diffMs = Date.now() - ts;
@@ -956,6 +975,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     return new Date(ts).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
   }
   function updateStatus(id, key, value) {
+    if (!canEdit) return;
     setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, status: { ...h.status, [key]: value }, lastEditedAt: Date.now() } : h)));
     setDirty(true);
   }
@@ -966,20 +986,23 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setSelectedRows((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
   function bulkSetKategori(kategori) {
-    if (!kategori) return;
+    if (!canEdit || !kategori) return;
     setHouses((prev) => { const next = prev.map((h) => (selectedRows.includes(h.id) ? { ...h, kategori } : h)); saveHouses(next); return next; });
   }
   function bulkSetTipe(tipe) {
-    if (!tipe) return;
+    if (!canEdit || !tipe) return;
     setHouses((prev) => { const next = prev.map((h) => (selectedRows.includes(h.id) ? { ...h, tipe } : h)); saveHouses(next); return next; });
   }
   function bulkSetStatus(key, value) {
+    if (!canEdit) return;
     setHouses((prev) => { const next = prev.map((h) => (selectedRows.includes(h.id) ? { ...h, status: { ...h.status, [key]: value } } : h)); saveHouses(next); return next; });
   }
   function bulkSetFollowUp(date) {
+    if (!canEdit) return;
     setHouses((prev) => { const next = prev.map((h) => (selectedRows.includes(h.id) ? { ...h, followUpDate: date || null } : h)); saveHouses(next); return next; });
   }
   function bulkDelete() {
+    if (!canEdit) return;
     setHouses((prev) => {
       const removed = prev.filter((h) => selectedRows.includes(h.id));
       const next = prev.filter((h) => !selectedRows.includes(h.id));
@@ -994,12 +1017,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setSelectedRows([]);
   }
   function undoBulkDelete() {
-    if (!lastDeletedBulk) return;
+    if (!canEdit || !lastDeletedBulk) return;
     setHouses((prev) => { const next = [...prev, ...lastDeletedBulk]; saveHouses(next); return next; });
     setLastDeletedBulk(null);
     clearTimeout(bulkUndoTimerRef.current);
   }
   function duplicateHouse(id) {
+    if (!canEdit) return;
     const src = houses.find((h) => h.id === id);
     if (!src) return;
     const copy = {
@@ -1015,7 +1039,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
   function newBlockId() { return `blk-${Date.now().toString(36)}${Math.random().toString(36).slice(-4)}`; }
   function addBlock() {
-    if (!newBlock.name) return;
+    if (!canEdit || !newBlock.name) return;
     if (blocks.some((b) => b.name === newBlock.name)) { setSettingsMsg(`Nama blok "${newBlock.name}" sudah dipakai.`); return; }
     const next = [...blocks, { id: newBlockId(), name: newBlock.name, target: Number(newBlock.target) || 0 }];
     setBlocks(next); saveConfig({ blocks: next }); setNewBlock({ name: "", target: "" });
@@ -1023,6 +1047,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
   const [settingsMsg, setSettingsMsg] = useState("");
   function removeBlock(id) {
+    if (!canEdit) return;
     const target = blocks.find((b) => b.id === id);
     if (!target) return;
     const duplicateExists = blocks.some((b) => b.id !== id && b.name === target.name);
@@ -1038,6 +1063,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setSettingsMsg("");
   }
   function renameBlock(id, newName) {
+    if (!canEdit) return;
     newName = newName.trim();
     const target = blocks.find((b) => b.id === id);
     if (!target || !newName || newName === target.name) return;
@@ -1051,11 +1077,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setSettingsMsg("");
   }
   function updateBlockTarget(id, target) {
+    if (!canEdit) return;
     const next = blocks.map((b) => (b.id === id ? { ...b, target: Number(target) || 0 } : b));
     setBlocks(next); saveConfig({ blocks: next });
   }
   function addTipe() {
-    if (!newTipe) return;
+    if (!canEdit || !newTipe) return;
     if (tipeOptions.some((t) => t.name === newTipe)) { setSettingsMsg(`Nama tipe "${newTipe}" sudah dipakai.`); return; }
     const color = PALETTE[tipeOptions.length % PALETTE.length];
     const next = [...tipeOptions, { id: `tp-${Date.now().toString(36)}${Math.random().toString(36).slice(-4)}`, name: newTipe, color, luasBangunan: Number(newTipeLuas) || 0 }];
@@ -1063,10 +1090,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setTableTipes((prev) => [...prev, newTipe]);
   }
   function updateTipeLuas(name, luas) {
+    if (!canEdit) return;
     const next = tipeOptions.map((t) => (t.name === name ? { ...t, luasBangunan: Number(luas) || 0 } : t));
     setTipeOptions(next); saveConfig({ tipeOptions: next });
   }
   function renameTipe(oldName, newName) {
+    if (!canEdit) return;
     newName = newName.trim();
     if (!newName || newName === oldName) return;
     if (tipeOptions.some((t) => t.name === newName)) { setSettingsMsg(`Nama tipe "${newName}" sudah dipakai.`); return; }
@@ -1078,6 +1107,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setSettingsMsg("");
   }
   function removeTipe(name) {
+    if (!canEdit) return;
     const target = tipeOptions.find((t) => t.name === name);
     if (!target) return;
     const inUse = houses.filter((h) => h.tipe === name).length;
@@ -1091,30 +1121,35 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setSettingsMsg("");
   }
   function refreshTipeColors() {
+    if (!canEdit) return;
     const next = tipeOptions.map((t, i) => ({ ...t, color: PALETTE[i % PALETTE.length] }));
     setTipeOptions(next); saveConfig({ tipeOptions: next });
   }
   function addStatus() {
-    if (!newStatus) return;
+    if (!canEdit || !newStatus) return;
     const key = newStatus.trim().replace(/\s+/g, "_").toLowerCase() + "_" + Date.now().toString(36).slice(-4);
     const next = [...statusFields, { key, label: newStatus, hasDetail: newStatusHasDetail }];
     setStatusFields(next); saveConfig({ statusFields: next }); setNewStatus(""); setNewStatusHasDetail(false);
   }
   function removeStatusField(key) {
+    if (!canEdit) return;
     const next = statusFields.filter((s) => s.key !== key);
     setStatusFields(next); saveConfig({ statusFields: next });
   }
   function toggleStatusDetail(key) {
+    if (!canEdit) return;
     const next = statusFields.map((s) => (s.key === key ? { ...s, hasDetail: !s.hasDetail } : s));
     setStatusFields(next); saveConfig({ statusFields: next });
   }
   function renameStatusLabel(key, newLabel) {
+    if (!canEdit) return;
     newLabel = newLabel.trim();
     if (!newLabel) return;
     const next = statusFields.map((s) => (s.key === key ? { ...s, label: newLabel } : s));
     setStatusFields(next); saveConfig({ statusFields: next });
   }
   function moveStatusField(key, dir) {
+    if (!canEdit) return;
     const idx = statusFields.findIndex((s) => s.key === key);
     const newIdx = idx + dir;
     if (newIdx < 0 || newIdx >= statusFields.length) return;
@@ -1124,16 +1159,18 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
   function getDetail(h, key) { return (h.details && h.details[key]) || ""; }
   function setDetail(houseId, key, value) {
+    if (!canEdit) return;
     setHouses((prev) => prev.map((h) => (h.id === houseId ? { ...h, details: { ...(h.details || {}), [key]: value } } : h)));
     setDirty(true);
   }
   function addKategori() {
-    if (!newKategori) return;
+    if (!canEdit || !newKategori) return;
     if (kategoriOptions.includes(newKategori)) { setSettingsMsg(`Kategori "${newKategori}" sudah ada.`); return; }
     const next = [...kategoriOptions, newKategori];
     setKategoriOptions(next); saveConfig({ kategoriOptions: next }); setNewKategori("");
   }
   function renameKategori(oldName, newName) {
+    if (!canEdit) return;
     newName = newName.trim();
     if (!newName || newName === oldName) return;
     if (kategoriOptions.includes(newName)) { setSettingsMsg(`Kategori "${newName}" sudah ada.`); return; }
@@ -1143,13 +1180,14 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setSettingsMsg("");
   }
   function removeKategori(name) {
+    if (!canEdit) return;
     const next = kategoriOptions.filter((k) => k !== name);
     setKategoriOptions(next); saveConfig({ kategoriOptions: next });
   }
 
   // ---- drawing ----
   function handleImageClick(e) {
-    if (mode !== "input" || draft || editingShapeId || actionMenuId) return;
+    if (!canEdit || mode !== "input" || draft || editingShapeId || actionMenuId) return;
     const hasValidBlock = blocks.some((b) => b.name === activeBlock);
     const hasValidTipe = tipeOptions.some((t) => t.name === activeTipe);
     if (!hasValidBlock || !hasValidTipe) return;
@@ -1179,6 +1217,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
 
   async function handleImageUpload(e) {
+    if (!canEdit) return;
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     setImgUploading(true);
@@ -1190,12 +1229,14 @@ export default function BriaStatusBoard({ onLogout, session }) {
     finally { setImgUploading(false); e.target.value = ""; }
   }
   async function resetImage() {
+    if (!canEdit) return;
     setSiteImage(currentClusterId === LEGACY_CLUSTER_ID ? SITE_IMAGE_DEFAULT : null);
     try { await storage.delete(imageKeyFor(currentClusterId), false); } catch (e) {}
   }
 
   const [importMsg, setImportMsg] = useState("");
   function importExcel(e) {
+    if (!canEdit) return;
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -1524,7 +1565,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     e.target.value = "";
   }
   async function applyRestoreAll() {
-    if (!pendingRestoreAll) return;
+    if (!canEdit || !pendingRestoreAll) return;
     setRestoringAll(true);
     const restoredNames = [];
     const failedNames = [];
@@ -1629,6 +1670,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     markBackedUp();
   }
   function importBackup(e) {
+    if (!canEdit) return;
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -2085,7 +2127,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                       style={{ pointerEvents: polygonsClickable ? "auto" : "none", cursor: "pointer" }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (mode === "input") { setActionMenuId(h.id); setSelectedId(h.id); }
+                        if (mode === "input") { if (canEdit) { setActionMenuId(h.id); setSelectedId(h.id); } }
                         else selectFromMap(h.id);
                       }}>
                       <title>{`${h.blok}-${h.noKavling}`}</title>
@@ -2641,18 +2683,20 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <input
                 value={appTitle}
+                readOnly={!canEdit}
                 onChange={(e) => { setAppTitle(e.target.value); setHomeDirty(true); }}
                 onBlur={() => saveAppTitle(appTitle)}
                 onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
                 className="text-2xl font-semibold editable-heading"
-                title="Klik untuk edit judul"
+                title={canEdit ? "Klik untuk edit judul" : undefined}
                 style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", flex: 1, minWidth: 200, padding: 0, fontFamily: "Inter, sans-serif" }}
               />
               <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
                 {homeSaving && <SmallSpinner />}
                 {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
                 {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
-                <button onClick={saveHomeChanges} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>
+                {canEdit && <button onClick={saveHomeChanges} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>}
+                {!canEdit && <span className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.pillFill, color: C.steel }}>Mode Lihat Saja</span>}
                 <button onClick={handleLogoutClick} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ border: "none", color: C.red, background: C.chipRedBg }}>Log Out</button>
                 <ThemeToggle />
               </div>
@@ -2685,10 +2729,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.accent, background: C.pillFill }}>
                   {exportingBackupAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Backup (JSON)
                 </button>
-                <label className="text-xs px-3 py-1.5 rounded-full cursor-pointer flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: C.pillFill }}>
-                  <Ic name="upload" size={14} /> Restore (JSON)
-                  <input type="file" accept=".json" onChange={handleRestoreAllFile} style={{ display: "none" }} />
-                </label>
+                {canEdit && (
+                  <label className="text-xs px-3 py-1.5 rounded-full cursor-pointer flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: C.pillFill }}>
+                    <Ic name="upload" size={14} /> Restore (JSON)
+                    <input type="file" accept=".json" onChange={handleRestoreAllFile} style={{ display: "none" }} />
+                  </label>
+                )}
                 <button onClick={() => setShowWhatsNew(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: C.pillFill }}>
                   <Ic name="sparkle" size={14} /> What's New
                 </button>
@@ -2968,6 +3014,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                     <div className="flex items-start justify-between gap-1">
                       <input
                         value={c.name}
+                        readOnly={!canEdit}
                         onChange={(e) => { setClusters((prev) => prev.map((x) => (x.id === c.id ? { ...x, name: e.target.value } : x))); setHomeDirty(true); }}
                         onBlur={(e) => updateClusterMeta(c.id, { name: e.target.value })}
                         onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
@@ -2975,10 +3022,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
                         className="text-base font-semibold editable-heading"
                         style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, marginBottom: 2, fontFamily: "Inter, sans-serif" }}
                       />
-                      <button onClick={() => togglePinCluster(c.id)} title={c.pinned ? "Lepas pin" : "Pin cluster ini"} style={{ color: c.pinned ? C.accent : C.faint, fontSize: 16, lineHeight: 1, flexShrink: 0 }}>★</button>
+                      {canEdit && <button onClick={() => togglePinCluster(c.id)} title={c.pinned ? "Lepas pin" : "Pin cluster ini"} style={{ color: c.pinned ? C.accent : C.faint, fontSize: 16, lineHeight: 1, flexShrink: 0 }}>★</button>}
                     </div>
                     <input
                       value={c.subtitle}
+                      readOnly={!canEdit}
                       onChange={(e) => { setClusters((prev) => prev.map((x) => (x.id === c.id ? { ...x, subtitle: e.target.value } : x))); setHomeDirty(true); }}
                       onBlur={(e) => updateClusterMeta(c.id, { subtitle: e.target.value })}
                       onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
@@ -2994,35 +3042,37 @@ export default function BriaStatusBoard({ onLogout, session }) {
                     )}
                     <div className="flex items-center gap-2">
                       <button onClick={() => openCluster(c.id)} className="text-xs px-3 py-1.5 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Buka Cluster</button>
-                      <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Arsip</button>
-                      <button onClick={() => setConfirmDeleteClusterId(c.id)} className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.red, background: C.panel }}>Hapus</button>
+                      {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Arsip</button>}
+                      {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.red, background: C.panel }}>Hapus</button>}
                     </div>
                   </>
                 )}
               </div>
             ))}
 
-            <div className="rounded-xl p-4 flex flex-col items-center justify-center gap-2" style={{ border: `1px dashed ${C.line}`, minHeight: 120 }}>
-              <input
-                value={newClusterName}
-                onChange={(e) => setNewClusterName(e.target.value)}
-                placeholder="Nama cluster baru..."
-                className="text-sm px-2 py-1.5 rounded-lg border w-full"
-                style={{ borderColor: C.line, color: C.ink }}
-              />
-              <input
-                value={newClusterSubtitle}
-                onChange={(e) => setNewClusterSubtitle(e.target.value)}
-                placeholder="Lokasi / catatan (opsional)..."
-                className="text-xs px-2 py-1.5 rounded-lg border w-full"
-                style={{ borderColor: C.line, color: C.ink }}
-              />
-              <button
-                onClick={() => { if (!newClusterName.trim()) return; addCluster(newClusterName.trim(), newClusterSubtitle.trim()); setNewClusterName(""); setNewClusterSubtitle(""); }}
-                className="text-xs px-3 py-1.5 rounded-lg w-full"
-                style={{ background: C.green, color: "#fff" }}
-              >+ Tambah Cluster Baru</button>
-            </div>
+            {canEdit && (
+              <div className="rounded-xl p-4 flex flex-col items-center justify-center gap-2" style={{ border: `1px dashed ${C.line}`, minHeight: 120 }}>
+                <input
+                  value={newClusterName}
+                  onChange={(e) => setNewClusterName(e.target.value)}
+                  placeholder="Nama cluster baru..."
+                  className="text-sm px-2 py-1.5 rounded-lg border w-full"
+                  style={{ borderColor: C.line, color: C.ink }}
+                />
+                <input
+                  value={newClusterSubtitle}
+                  onChange={(e) => setNewClusterSubtitle(e.target.value)}
+                  placeholder="Lokasi / catatan (opsional)..."
+                  className="text-xs px-2 py-1.5 rounded-lg border w-full"
+                  style={{ borderColor: C.line, color: C.ink }}
+                />
+                <button
+                  onClick={() => { if (!newClusterName.trim()) return; addCluster(newClusterName.trim(), newClusterSubtitle.trim()); setNewClusterName(""); setNewClusterSubtitle(""); }}
+                  className="text-xs px-3 py-1.5 rounded-lg w-full"
+                  style={{ background: C.green, color: "#fff" }}
+                >+ Tambah Cluster Baru</button>
+              </div>
+            )}
           </div>
 
           {clusters.some((c) => c.archived) && (
@@ -3064,9 +3114,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
             {saving && <SmallSpinner />}
             {!saving && dirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
             {!saving && savedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
-            <button onClick={() => saveHouses()} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
-              Simpan Perubahan
-            </button>
+            {canEdit ? (
+              <button onClick={() => saveHouses()} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
+                Simpan Perubahan
+              </button>
+            ) : (
+              <span className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.pillFill, color: C.steel }}>Mode Lihat Saja</span>
+            )}
           </div>
         </div>
       </div>
@@ -3074,21 +3128,23 @@ export default function BriaStatusBoard({ onLogout, session }) {
       <div className="mb-4">
         <input
           value={activeCluster.name}
+          readOnly={!canEdit}
           onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, name: e.target.value } : c)))}
           onBlur={(e) => updateClusterMeta(currentClusterId, { name: e.target.value })}
           onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
           className="text-lg font-semibold editable-heading"
-          title="Klik untuk edit judul"
+          title={canEdit ? "Klik untuk edit judul" : undefined}
           style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, fontFamily: "Inter, sans-serif" }}
         />
         <div className="flex items-center gap-1">
           <input
             value={activeCluster.subtitle}
+            readOnly={!canEdit}
             onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, subtitle: e.target.value } : c)))}
             onBlur={(e) => updateClusterMeta(currentClusterId, { subtitle: e.target.value })}
             onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
             className="text-sm editable-heading"
-            title="Klik untuk edit subjudul"
+            title={canEdit ? "Klik untuk edit subjudul" : undefined}
             style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", fontFamily: "Inter, sans-serif", width: subtitleWidth, flex: "0 0 auto" }}
           />
           <span className="text-sm" style={{ color: C.steel }}>· target {totalTarget} unit, {blocks.length} blok</span>
@@ -3165,6 +3221,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
       )}
 
       {/* ===================== PENGATURAN ===================== */}
+      {mode === "pengaturan" && !canEdit && (
+        <div className="mb-4 p-3 rounded-xl text-xs" style={{ background: C.infoBlueBg, border: `1px solid ${C.line}`, color: C.steel }}>
+          Mode lihat saja — pengaturan di halaman ini tidak bisa diubah dari akun ini.
+        </div>
+      )}
       {mode === "pengaturan" && (
         <div className="mb-4" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
           <div className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
@@ -3348,10 +3409,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <p className="text-xs mb-3" style={{ color: C.steel }}>Simpan salinan semua data (kavling, blok, tipe, status) ke file — supaya aman kalau ada perubahan besar pada aplikasinya. Lakukan ini sesering mungkin selagi masih sering ada pembaruan.</p>
             <div className="flex items-center gap-2 flex-wrap">
               <button onClick={exportBackup} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Unduh Cadangan (JSON)</button>
-              <label className="text-xs px-3 py-1.5 rounded-lg cursor-pointer" style={{ border: `1px solid ${C.line}`, color: C.ink }}>
-                Pulihkan dari File
-                <input type="file" accept="application/json" onChange={importBackup} style={{ display: "none" }} />
-              </label>
+              {canEdit && (
+                <label className="text-xs px-3 py-1.5 rounded-lg cursor-pointer" style={{ border: `1px solid ${C.line}`, color: C.ink }}>
+                  Pulihkan dari File
+                  <input type="file" accept="application/json" onChange={importBackup} style={{ display: "none" }} />
+                </label>
+              )}
             </div>
           </div>
         </div>
