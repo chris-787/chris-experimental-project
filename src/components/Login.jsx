@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import { C } from "../theme";
 import { dayFormatter, dateFormatter, timeFormatter, useJakartaClock, greetingFor } from "../lib/jakartaClock";
 import ThemeToggle from "./ThemeToggle";
+import InstallPrompt from "./InstallPrompt";
 
 // Supabase Auth aslinya butuh "email", tapi supaya Anda cukup ingat satu
 // username sederhana, kita tempelkan domain palsu ini di belakang layar.
@@ -38,6 +39,7 @@ export default function Login() {
         minHeight: "100vh",
         background: C.paper,
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         fontFamily: "Inter, sans-serif",
@@ -156,6 +158,7 @@ export default function Login() {
           Belum punya akun? Hubungi Admin untuk dibuatkan akses.
         </p>
       </form>
+      <InstallPrompt />
     </div>
   );
 }
