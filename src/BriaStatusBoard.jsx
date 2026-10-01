@@ -3708,7 +3708,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                             />
                           </div>
                         ) : (
-                          <span style={{ color: C.accent, fontWeight: 600, textDecoration: "underline", textDecorationColor: "transparent" }} className="kavling-link">{h.blok}-{h.noKavling}</span>
+                          <span style={{ color: C.ink, fontWeight: 600, textDecoration: "underline", textDecorationColor: "transparent" }} className="kavling-link">{h.blok}-{h.noKavling}</span>
                         )}
                       </div>
                     </td>
