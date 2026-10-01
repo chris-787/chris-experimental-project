@@ -162,7 +162,7 @@ function centroid(points) {
 function Chip({ active, onClick, children }) {
   return (
     <button onClick={onClick} className="text-xs px-3 py-1.5 rounded-full border font-medium transition-colors"
-      style={{ borderColor: active ? C.accent : C.line, background: active ? C.accent : "#fff", color: active ? "#fff" : C.steel }}>
+      style={{ borderColor: active ? C.accent : C.line, background: active ? C.accent : C.panel, color: active ? "#fff" : C.steel }}>
       {children}
     </button>
   );
@@ -2468,7 +2468,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 3px 6px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
         table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; will-change: transform; }
-        table.dataTbl tr:hover td { background: #FAF8F2; }
+        table.dataTbl tr:hover td { background: ${C.rowSelectedBg}; }
         table.dataTbl tr:hover .kavling-link { text-decoration-color: currentColor; }
         input[type=range] { accent-color: ${C.accent}; }
         .col-resize-handle:hover { background: ${C.accent}33; }
@@ -2696,7 +2696,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
                 {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
                 {canEdit && <button onClick={saveHomeChanges} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>}
-                {!canEdit && <span className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.pillFill, color: C.steel }}>Mode Lihat Saja</span>}
+                {!canEdit && <span className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.pillFill, color: C.steel }}>View Mode</span>}
                 <button onClick={handleLogoutClick} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ border: "none", color: C.red, background: C.chipRedBg }}>Log Out</button>
                 <ThemeToggle />
               </div>
@@ -3119,8 +3119,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 Simpan Perubahan
               </button>
             ) : (
-              <span className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.pillFill, color: C.steel }}>Mode Lihat Saja</span>
+              <span className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.pillFill, color: C.steel }}>View Mode</span>
             )}
+            <ThemeToggle />
           </div>
         </div>
       </div>
@@ -3223,7 +3224,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       {/* ===================== PENGATURAN ===================== */}
       {mode === "pengaturan" && !canEdit && (
         <div className="mb-4 p-3 rounded-xl text-xs" style={{ background: C.infoBlueBg, border: `1px solid ${C.line}`, color: C.steel }}>
-          Mode lihat saja — pengaturan di halaman ini tidak bisa diubah dari akun ini.
+          View Mode — pengaturan di halaman ini tidak bisa diubah dari akun ini.
         </div>
       )}
       {mode === "pengaturan" && (
