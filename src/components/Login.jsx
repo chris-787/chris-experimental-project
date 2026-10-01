@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { C } from "../theme";
 import { dayFormatter, dateFormatter, timeFormatter, useJakartaClock, greetingFor } from "../lib/jakartaClock";
+import ThemeToggle from "./ThemeToggle";
 
 // Supabase Auth aslinya butuh "email", tapi supaya Anda cukup ingat satu
 // username sederhana, kita tempelkan domain palsu ini di belakang layar.
@@ -54,13 +55,16 @@ export default function Login() {
           padding: 28,
         }}
       >
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 18, fontWeight: 600, color: C.ink, marginBottom: 2 }}>
-            {greetingFor(now)}
+        <div className="flex items-start justify-between gap-3" style={{ marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 600, color: C.ink, marginBottom: 2 }}>
+              {greetingFor(now)}
+            </div>
+            <div style={{ fontSize: 12, fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>
+              {dayFormatter.format(now)}, {dateFormatter.format(now)} {timeFormatter.format(now)} WIB
+            </div>
           </div>
-          <div style={{ fontSize: 12, fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}>
-            {dayFormatter.format(now)}, {dateFormatter.format(now)} {timeFormatter.format(now)} WIB
-          </div>
+          <ThemeToggle />
         </div>
 
         <div style={{ borderTop: `1px solid ${C.line}`, marginBottom: 14 }} />
@@ -87,7 +91,7 @@ export default function Login() {
             borderRadius: 10,
             marginBottom: 14,
             color: C.ink,
-            background: "#F1EEE4",
+            background: C.pillFill,
           }}
         />
 
@@ -106,7 +110,7 @@ export default function Login() {
             borderRadius: 10,
             marginBottom: 16,
             color: C.ink,
-            background: "#F1EEE4",
+            background: C.pillFill,
           }}
         />
 
@@ -115,7 +119,7 @@ export default function Login() {
             style={{
               fontSize: 12,
               color: C.red,
-              background: "#FBEAE6",
+              background: C.alertRedBg,
               border: `1px solid ${C.red}`,
               borderRadius: 8,
               padding: "8px 10px",

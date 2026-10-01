@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cluster Bintaro Jaya [Experimental Project]</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Terapkan tema tersimpan sebelum CSS pertama dicat, supaya tidak
+      // ada kedipan terang->gelap sesaat saat halaman dimuat.
+      (function () {
+        try {
+          var saved = localStorage.getItem("bria-theme");
+          var mode = saved === "dark" || saved === "light"
+            ? saved
+            : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          document.documentElement.setAttribute("data-theme", mode);
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
