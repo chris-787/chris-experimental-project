@@ -1,6 +1,16 @@
 import { C } from "../../theme";
 import { IconChip } from "../ui";
 import { WHATS_NEW_GROUPS } from "../../lib/constants";
+import { MONTH_LABELS } from "../../lib/helpers";
+
+const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+// "3 Oktober 2026" -> "Sabtu, 3 Oktober 2026" (hari dihitung otomatis dari tanggalnya)
+function withDay(dateText) {
+  const [d, bulan, y] = dateText.split(" ");
+  const m = MONTH_LABELS.indexOf(bulan);
+  if (m < 0) return dateText;
+  return `${HARI[new Date(Number(y), m, Number(d)).getDay()]}, ${dateText}`;
+}
 import { useBoard } from "./BoardContext";
 
 export default function WhatsNewModal() {
@@ -16,7 +26,7 @@ export default function WhatsNewModal() {
             <div style={{ overflowY: "auto", padding: "16px 24px 24px" }}>
               {WHATS_NEW_GROUPS.map((group, gi) => (
                 <div key={gi} className="mb-3">
-                  <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.gold, textTransform: "uppercase" }}>{group.date}</div>
+                  <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.gold, textTransform: "uppercase" }}>{withDay(group.date)}</div>
                   <div className="flex flex-col gap-2.5">
                     {group.items.map((it, i) => (
                       <div key={i} className="flex gap-2.5">
