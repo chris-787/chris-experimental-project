@@ -39,7 +39,7 @@ export default function DataTable() {
               <button onClick={undoBulkDelete} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.amber, color: "#fff" }}>Undo</button>
             </div>
           )}
-          {selectedRows.length > 0 && (
+          {canEdit && selectedRows.length > 0 && (
             <div className="flex items-center gap-2.5 flex-wrap mb-2.5 p-2 rounded-lg" style={{ background: C.rowSelectedBg, border: `1px solid ${C.accent}` }}>
               <span className="text-xs font-semibold" style={{ color: C.ink }}>{selectedRows.length} kavling dipilih</span>
               <select onChange={(e) => { bulkSetKategori(e.target.value); e.target.value = ""; }} defaultValue="" className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
