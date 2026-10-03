@@ -2,7 +2,9 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontSize: { xs: ["11px", "16px"] },
+    },
   },
   plugins: [],
 };

@@ -219,6 +219,32 @@ function StatusRow({ label, value, onToggle }) {
     </label>
   );
 }
+const MONO = "'IBM Plex Mono', monospace";
+// Gaya tombol bersama: secondary (berbingkai) dan primary (terisi).
+const BTN_PILL = "text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1.5 whitespace-nowrap";
+const btnSecondary = { border: `1px solid ${C.line}`, background: C.panel, color: C.ink };
+const btnPrimary = { border: "1px solid transparent", background: C.accent, color: "#fff" };
+const tint = (color, pct = 16) => `color-mix(in srgb, ${color} ${pct}%, transparent)`;
+function ProgressBar({ pct, color }) {
+  return (
+    <div style={{ height: 4, borderRadius: 4, background: C.line, overflow: "hidden", marginTop: 6 }}>
+      <div style={{ width: `${Math.min(100, Math.max(0, pct || 0))}%`, height: "100%", background: color, borderRadius: 4 }} />
+    </div>
+  );
+}
+function KpiCard({ label, value, sub, pct, color }) {
+  return (
+    <div className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: `inset 0 3px 0 ${color}, ${C.cardShadow}` }}>
+      <div style={{ fontSize: 11, color: C.steel }}>{label}</div>
+      <div className="font-semibold" style={{ fontSize: 16, lineHeight: 1.25, color: C.ink, fontFamily: MONO, overflowWrap: "anywhere" }}>{value}</div>
+      {pct != null && <ProgressBar pct={pct} color={color} />}
+      {sub && <div style={{ fontSize: 11, color: C.steel, marginTop: 4 }}>{sub}</div>}
+    </div>
+  );
+}
+function Pill({ children, color }) {
+  return <span style={{ fontSize: 11, padding: "1px 8px", borderRadius: 999, background: tint(color), color, fontWeight: 500, whiteSpace: "nowrap" }}>{children}</span>;
+}
 const cellInput = { width: "100%", minWidth: 80, padding: "2px 6px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
 const formInput = { width: "100%", padding: "5px 8px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
 
@@ -347,6 +373,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [mode, setMode] = useState("kerja"); // kerja (Main Mode) | data | pengaturan (Settings)
   const [editMap, setEditMap] = useState(false);
   const [dashboardPos, setDashboardPos] = useState("kanan"); // "kanan" | "bawah"
+  const [showCharts, setShowCharts] = useState(() => { try { return localStorage.getItem("bria-show-charts") !== "0"; } catch (e) { return true; } });
+  useEffect(() => { try { localStorage.setItem("bria-show-charts", showCharts ? "1" : "0"); } catch (e) {} }, [showCharts]);
   const calibrating = mode === "kerja" && editMap && canEdit;
   const [activeBlock, setActiveBlock] = useState(DEFAULT_BLOCKS[0].name);
   const [activeTipe, setActiveTipe] = useState(DEFAULT_TIPE[0].name);
@@ -2027,9 +2055,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
           <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
             <div className="text-sm font-semibold" style={{ color: C.ink }}>Dashboard</div>
             <div className="flex items-center gap-2 flex-wrap">
-              <button onClick={() => setShowSimulasi(true)} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="calculator" size={14} /> Simulasi Harga</button>
-              <button onClick={() => setShowRekapKontraktor(true)} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="hardhat" size={14} /> Rekap Kontraktor</button>
-              <button onClick={printReportPDF} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={14} /> Print</button>
+              <button onClick={() => setShowSimulasi(true)} className={BTN_PILL} style={btnSecondary}><Ic name="calculator" size={14} /> Simulasi Harga</button>
+              <button onClick={() => setShowRekapKontraktor(true)} className={BTN_PILL} style={btnSecondary}><Ic name="hardhat" size={14} /> Rekap Kontraktor</button>
+              <button onClick={printReportPDF} className={BTN_PILL} style={btnPrimary}><Ic name="printer" size={14} /> Print</button>
             </div>
           </div>
 
@@ -2059,43 +2087,64 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </div>
             </div>
           )}
-          <div className="mb-2.5" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 8 }}>
-            {[
-              { label: "Kavling Terpetakan", value: `${houses.length} / ${totalTarget}` },
-              { label: "Sudah Terjual", value: `${soldUnits.length} / ${houses.length}` },
-              ...(statusFields.some((s) => s.key === "spkOrder") ? [{ label: statusFields.find((s) => s.key === "spkOrder").label, value: `${houses.filter((h) => h.status.spkOrder).length} / ${houses.length}` }] : []),
-              ...(statusFields.some((s) => s.key === "marketingOrder") ? [{ label: statusFields.find((s) => s.key === "marketingOrder").label, value: `${houses.filter((h) => h.status.marketingOrder).length} / ${houses.length}` }] : []),
-              { label: "Total Margin", value: rupiah(totalMargin) },
-              { label: "Rata-rata Margin %", value: `${avgMarginPct.toFixed(2)}%` },
-            ].map((s) => (
-              <div key={s.label} className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-                <div style={{ fontSize: 12, color: C.steel, marginBottom: 3 }}>{s.label}</div>
-                <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace", overflowWrap: "anywhere" }}>{s.value}</div>
-              </div>
-            ))}
+          <div className="mb-2.5" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 8 }}>
+            <KpiCard label="Kavling Terpetakan" value={`${houses.length} / ${totalTarget}`} pct={totalTarget ? (houses.length / totalTarget) * 100 : 0} color={C.accent} sub={totalTarget ? `${Math.round((houses.length / totalTarget) * 100)}% dari target` : null} />
+            <KpiCard label="Sudah Terjual" value={`${soldUnits.length} / ${houses.length}`} pct={houses.length ? (soldUnits.length / houses.length) * 100 : 0} color={C.green} sub={houses.length ? `${Math.round((soldUnits.length / houses.length) * 100)}% terjual` : null} />
+            <KpiCard label="Total Margin" value={rupiah(totalMargin)} color={avgMarginPct >= 20 ? C.green : C.red} />
+            <KpiCard label="Rata-rata Margin" value={`${avgMarginPct.toFixed(2)}%`} color={avgMarginPct >= 20 ? C.green : C.red} sub="target minimal 20%" />
           </div>
 
-          {marginPerTipe.some((t) => t.n > 0) && (
-            <div className="mb-2.5" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 8 }}>
-              {marginPerTipe.filter((t) => t.n > 0).map((t) => (
-                <div key={t.tipe} className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-                  <div style={{ fontSize: 11, color: C.steel, marginBottom: 3 }}>Margin {t.tipe}</div>
-                  <div className="text-base font-semibold" style={{ color: t.margin >= 20 ? C.green : C.red, fontFamily: "IBM Plex Mono, monospace" }}>{t.margin}%</div>
-                </div>
-              ))}
+          <div className="mb-2.5" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 8 }}>
+            <div className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+              <div className="text-xs font-semibold mb-2" style={{ color: C.ink }}>Progres Status</div>
+              <div className="flex flex-col gap-2">
+                {statusFields.filter((s) => s.key !== "terjual").map((s) => {
+                  const n = houses.filter((h) => h.status[s.key]).length;
+                  return (
+                    <div key={s.key}>
+                      <div className="flex items-center justify-between" style={{ fontSize: 11 }}>
+                        <span style={{ color: C.steel }}>{s.label}</span>
+                        <span style={{ color: C.ink, fontFamily: MONO }}>{n} / {houses.length}</span>
+                      </div>
+                      <ProgressBar pct={houses.length ? (n / houses.length) * 100 : 0} color={C.accent2} />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          )}
+            {marginPerTipe.some((t) => t.n > 0) && (
+              <div className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+                <div className="text-xs font-semibold mb-2" style={{ color: C.ink }}>Margin per Tipe</div>
+                <div className="flex flex-col gap-1.5">
+                  {marginPerTipe.filter((t) => t.n > 0).map((t) => (
+                    <div key={t.tipe} className="flex items-center justify-between" style={{ fontSize: 12 }}>
+                      <span className="flex items-center gap-1.5" style={{ color: C.ink }}>
+                        <span style={{ width: 8, height: 8, borderRadius: 2, background: tipeColor(t.tipe), display: "inline-block" }} />
+                        {t.tipe} <span style={{ color: C.steel, fontSize: 11 }}>· {t.n} unit</span>
+                      </span>
+                      <Pill color={t.margin >= 20 ? C.green : C.red}>{t.margin}%</Pill>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
-          <Suspense fallback={<div style={{ minHeight: 150 }} />}>
-            <DashboardCharts
-              C={C}
-              progressPerBlok={progressPerBlok}
-              marginPerTipe={marginPerTipe}
-              statusBreakdown={statusBreakdown}
-              tipePie={tipePie}
-              tipeColor={tipeColor}
-            />
-          </Suspense>
+          <button onClick={() => setShowCharts((v) => !v)} className="text-xs flex items-center gap-1.5 mb-2 font-medium" style={{ color: C.steel, background: "transparent", border: "none", padding: 0 }}>
+            <Ic name="chart" size={14} /> Grafik {showCharts ? "▾" : "▸"}
+          </button>
+          {showCharts && (
+            <Suspense fallback={<div style={{ minHeight: 150 }} />}>
+              <DashboardCharts
+                C={C}
+                progressPerBlok={progressPerBlok}
+                marginPerTipe={marginPerTipe}
+                statusBreakdown={statusBreakdown}
+                tipePie={tipePie}
+                tipeColor={tipeColor}
+              />
+            </Suspense>
+          )}
         </div>
   );
 
@@ -2312,10 +2361,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
   function InspectorPanel() {
     if (!selectedId) {
-      return <div className="text-sm py-8 text-center" style={{ color: C.steel }}>Klik salah satu kavling di peta untuk mengisi datanya.</div>;
+      return <div className="text-sm py-2 text-center" style={{ color: C.steel }}>Klik salah satu kavling di peta untuk mengisi datanya.</div>;
     }
     const h = houses.find((x) => x.id === selectedId);
-    if (!h) return <div className="text-sm py-8 text-center" style={{ color: C.steel }}>Kavling tidak ditemukan.</div>;
+    if (!h) return <div className="text-sm py-2 text-center" style={{ color: C.steel }}>Kavling tidak ditemukan.</div>;
     const idx = tableRows.findIndex((x) => x.id === selectedId);
     const prevRow = tableRows[idx - 1];
     const nextRow = tableRows[idx + 1];
@@ -2554,6 +2603,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           .inspector-cols > div + div { border-left: none; padding-left: 0; }
         }
         table.dataTbl tr:hover td { background: ${C.rowSelectedBg} !important; }
+        table.dataTbl input[type=checkbox] { accent-color: ${C.green}; width: 14px; height: 14px; }
         table.dataTbl th { z-index: 3; }
         table.dataTbl th.frz { z-index: 4; }
         table.dataTbl td.frz { position: sticky; z-index: 2; }
@@ -2766,7 +2816,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       )}
 
       {!currentClusterId ? (
-        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1040, margin: "0 auto" }}>
           <div className="mb-4">
             <div className="flex items-start justify-between gap-2.5 flex-wrap">
               <input
@@ -3123,11 +3173,27 @@ export default function BriaStatusBoard({ onLogout, session }) {
                       className="text-xs editable-heading"
                       style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, marginBottom: 12, fontFamily: "Inter, sans-serif" }}
                     />
-                    {clusterStats[c.id] && (
-                      <div className="text-xs mb-2.5" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }}>
-                        {clusterStats[c.id].blockCount} blok · {clusterStats[c.id].marginPct.toFixed(1)}% margin
-                      </div>
-                    )}
+                    {clusterStats[c.id] && (() => {
+                      const hs = globalHousesIndex[c.id] || [];
+                      const sold = hs.filter((h) => h.status && h.status.terjual).length;
+                      const in7 = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+                      const due = hs.filter((h) => h.followUpDate && h.followUpDate <= in7).length;
+                      const mp = clusterStats[c.id].marginPct;
+                      return (
+                        <div className="mb-2.5">
+                          <div className="flex items-center justify-between" style={{ fontSize: 11, color: C.steel }}>
+                            <span>Terjual</span>
+                            <span style={{ color: C.ink, fontFamily: MONO }}>{sold} / {hs.length}{hs.length ? ` (${Math.round((sold / hs.length) * 100)}%)` : ""}</span>
+                          </div>
+                          <ProgressBar pct={hs.length ? (sold / hs.length) * 100 : 0} color={C.green} />
+                          <div className="flex items-center gap-1.5 flex-wrap" style={{ marginTop: 8 }}>
+                            <Pill color={C.steel}>{clusterStats[c.id].blockCount} blok</Pill>
+                            <Pill color={mp >= 20 ? C.green : C.red}>Margin {mp.toFixed(1)}%</Pill>
+                            {due > 0 && <Pill color={C.amber}>{due} perlu ditindaklanjuti</Pill>}
+                          </div>
+                        </div>
+                      );
+                    })()}
                     <div className="flex items-center gap-2">
                       <button onClick={() => openCluster(c.id)} className="text-xs px-2.5 py-1 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Buka Cluster</button>
                       {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Arsip</button>}
@@ -3263,16 +3329,16 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div className="flex items-center gap-2 ml-auto flex-wrap">
               <button
                 onClick={() => setDashboardPos((p) => (p === "kanan" ? "bawah" : "kanan"))}
-                className="text-xs px-2.5 py-1 rounded-full border font-medium flex items-center gap-1.5"
-                style={{ borderColor: C.line, background: C.panel, color: C.ink }}
+                className={BTN_PILL}
+                style={btnSecondary}
               >
                 <Ic name={dashboardPos === "kanan" ? "layoutBottom" : "layoutRight"} size={14} /> Move Dashboard {dashboardPos === "kanan" ? "↓" : "→"}
               </button>
               {canEdit && (
                 <button
                   onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
-                  className="text-xs px-2.5 py-1 rounded-full border font-medium flex items-center gap-1.5"
-                  style={{ borderColor: editMap ? C.amber : C.line, background: editMap ? C.alertAmberBg : C.panel, color: editMap ? C.amber : C.ink }}
+                  className={BTN_PILL}
+                  style={editMap ? { border: `1px solid ${C.amber}`, background: C.alertAmberBg, color: C.amber } : btnSecondary}
                 >
                   <Ic name="pencil" size={14} /> {editMap ? "Edit Site Plan aktif — klik untuk selesai" : "Edit Site Plan"}
                 </button>
@@ -3315,7 +3381,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <input type="range" min="10" max="100" value={opacity} onChange={(e) => setOpacity(Number(e.target.value))} style={{ width: 100 }} />
               <span className="text-xs" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }}>{opacity}%</span>
             </div>
-            <button onClick={printSitePlan} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="printer" size={13} /> Cetak Site Plan</button>
+            <button onClick={printSitePlan} className={BTN_PILL} style={btnSecondary}><Ic name="printer" size={14} /> Cetak Site Plan</button>
           </div>
         )}
       </div>
