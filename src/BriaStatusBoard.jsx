@@ -35,7 +35,7 @@ const WHATS_NEW_GROUPS = [
   {
     date: "3 Oktober 2026",
     items: [
-      { icon: "🗺️", title: "Main Mode, Data Mode, Settings", desc: "Mode Kalibrasi dan Mode Kerja digabung jadi Main Mode. Alat gambar kavling sekarang ada di tombol \"Edit Peta\" (hanya nyala kalau Anda sengaja menyalakannya, jadi lebih aman). Di Main Mode: site plan dan dashboard sebaris, detail kavling di bawahnya dibagi dua kolom, lalu tabel. Data Mode berisi tabel saja, dan Pengaturan berganti nama jadi Settings." },
+      { icon: "🗺️", title: "Main Mode, Data Mode, Settings", desc: "Mode Kalibrasi dan Mode Kerja digabung jadi Main Mode. Alat gambar kavling sekarang ada di tombol \"Edit Site Plan\" (hanya nyala kalau Anda sengaja menyalakannya, jadi lebih aman). Di Main Mode: site plan dan dashboard sebaris, detail kavling di bawahnya dibagi tiga kolom, lalu tabel. Data Mode berisi tabel saja, dan Pengaturan berganti nama jadi Settings." },
     ],
   },
   {
@@ -341,6 +341,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
   const [mode, setMode] = useState("kerja"); // kerja (Main Mode) | data | pengaturan (Settings)
   const [editMap, setEditMap] = useState(false);
+  const [dashboardPos, setDashboardPos] = useState("kanan"); // "kanan" | "bawah"
   const calibrating = mode === "kerja" && editMap && canEdit;
   const [activeBlock, setActiveBlock] = useState(DEFAULT_BLOCKS[0].name);
   const [activeTipe, setActiveTipe] = useState(DEFAULT_TIPE[0].name);
@@ -2343,8 +2344,19 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </React.Fragment>
           ))}
         </div>
-
         <div className="pt-2" style={{ borderTop: `1px solid ${C.line}` }}>
+          <Field label="Tanggal Follow-up (opsional)">
+            <input
+              type="date"
+              value={h.followUpDate || ""}
+              onChange={(e) => updateHouse(h.id, { followUpDate: e.target.value || null })}
+              style={formInput}
+            />
+          </Field>
+        </div>
+        </div>
+        <div>
+        <div>
           {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
             <Field label="Kontraktor">
               <input autoFocus={textEditingKey === `${h.id}:kontraktor`} list="kontraktor-options" style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
@@ -2387,6 +2399,17 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </div>
             </div>
           )}
+        </div>
+        <div className="pt-2 mt-2" style={{ borderTop: `1px solid ${C.line}` }}>
+          <Field label="Catatan">
+            <textarea
+              value={h.catatan || ""}
+              onChange={(e) => updateHouse(h.id, { catatan: e.target.value })}
+              placeholder="Kondisi khusus, kendala lapangan, dll..."
+              rows={2}
+              style={{ ...formInput, resize: "vertical", fontFamily: "Inter, sans-serif" }}
+            />
+          </Field>
         </div>
         </div>
         <div>
@@ -2449,25 +2472,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
         </div>
 
-        <div className="pt-2 mt-2" style={{ borderTop: `1px solid ${C.line}` }}>
-          <Field label="Catatan">
-            <textarea
-              value={h.catatan || ""}
-              onChange={(e) => updateHouse(h.id, { catatan: e.target.value })}
-              placeholder="Kondisi khusus, kendala lapangan, dll..."
-              rows={2}
-              style={{ ...formInput, resize: "vertical", fontFamily: "Inter, sans-serif" }}
-            />
-          </Field>
-          <Field label="Tanggal Follow-up (opsional)">
-            <input
-              type="date"
-              value={h.followUpDate || ""}
-              onChange={(e) => updateHouse(h.id, { followUpDate: e.target.value || null })}
-              style={formInput}
-            />
-          </Field>
-        </div>
         </div>
         </div>
 
@@ -2491,8 +2495,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 3px 6px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
         table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; will-change: transform; }
-        .inspector-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+        .inspector-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
         .inspector-cols > div + div { border-left: 1px solid ${C.line}; padding-left: 24px; }
+        @media (max-width: 1000px) {
+          .inspector-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .inspector-cols > div + div { border-left: none; padding-left: 0; }
+        }
         @media (max-width: 680px) {
           .inspector-cols { grid-template-columns: minmax(0, 1fr); gap: 0; }
           .inspector-cols > div + div { border-left: none; padding-left: 0; }
@@ -3135,7 +3143,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div>
               <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}><ClockText /></div>
               <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase" }}>
-                {mode === "kerja" ? (calibrating ? "Main Mode · Edit Peta" : "Main Mode") : mode === "data" ? "Data Mode" : "Settings"} — {activeCluster.name}
+                {mode === "kerja" ? (calibrating ? "Main Mode · Edit Site Plan" : "Main Mode") : mode === "data" ? "Data Mode" : "Settings"} — {activeCluster.name}
               </div>
             </div>
           </div>
@@ -3200,14 +3208,25 @@ export default function BriaStatusBoard({ onLogout, session }) {
           <Chip active={mode === "kerja"} onClick={() => goMode("kerja")}>Main Mode</Chip>
           <Chip active={mode === "data"} onClick={() => goMode("data")}>Data Mode</Chip>
           <Chip active={mode === "pengaturan"} onClick={() => goMode("pengaturan")}>Settings</Chip>
-          {canEdit && mode === "kerja" && (
-            <button
-              onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
-              className="text-xs px-3 py-1.5 rounded-full border font-medium flex items-center gap-1.5 ml-auto"
-              style={{ borderColor: editMap ? C.amber : C.line, background: editMap ? C.alertAmberBg : C.panel, color: editMap ? C.amber : C.ink }}
-            >
-              <i className="ti ti-pencil" aria-hidden="true" /> {editMap ? "Edit Peta aktif — klik untuk selesai" : "Edit Peta"}
-            </button>
+          {mode === "kerja" && (
+            <div className="flex items-center gap-2 ml-auto flex-wrap">
+              <button
+                onClick={() => setDashboardPos((p) => (p === "kanan" ? "bawah" : "kanan"))}
+                className="text-xs px-3 py-1.5 rounded-full border font-medium"
+                style={{ borderColor: C.line, background: C.panel, color: C.ink }}
+              >
+                Move Dashboard {dashboardPos === "kanan" ? "↓" : "→"}
+              </button>
+              {canEdit && (
+                <button
+                  onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
+                  className="text-xs px-3 py-1.5 rounded-full border font-medium flex items-center gap-1.5"
+                  style={{ borderColor: editMap ? C.amber : C.line, background: editMap ? C.alertAmberBg : C.panel, color: editMap ? C.amber : C.ink }}
+                >
+                  <i className="ti ti-pencil" aria-hidden="true" /> {editMap ? "Edit Site Plan aktif — klik untuk selesai" : "Edit Site Plan"}
+                </button>
+              )}
+            </div>
           )}
         </div>
         {calibrating && (
@@ -3463,20 +3482,27 @@ export default function BriaStatusBoard({ onLogout, session }) {
       {/* ===================== MAIN MODE: peta + dashboard sebaris, lalu detail kavling ===================== */}
       {mode === "kerja" && (
         <>
-          <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", gap: 0, marginBottom: 16 }}>
-            <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
-              {mapPanelJSX}
+          {dashboardPos === "kanan" ? (
+            <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", gap: 0, marginBottom: 16 }}>
+              <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
+                {mapPanelJSX}
+              </div>
+              <div
+                onMouseDown={startDrag}
+                title="Geser untuk mengubah lebar"
+                className="panel-resize-handle"
+                style={{ flex: "0 0 8px", cursor: "col-resize", background: C.line, borderRadius: 8, margin: "0 4px", alignSelf: "stretch", minHeight: 40 }}
+              />
+              <div className="inspector-panel-col" style={{ flex: "1 1 300px", minWidth: 300, paddingLeft: 8 }}>
+                {dashboardJSX}
+              </div>
             </div>
-            <div
-              onMouseDown={startDrag}
-              title="Geser untuk mengubah lebar"
-              className="panel-resize-handle"
-              style={{ flex: "0 0 8px", cursor: "col-resize", background: C.line, borderRadius: 8, margin: "0 4px", alignSelf: "stretch", minHeight: 40 }}
-            />
-            <div className="inspector-panel-col" style={{ flex: "1 1 300px", minWidth: 300, paddingLeft: 8 }}>
+          ) : (
+            <div style={{ marginBottom: 16 }}>
+              {mapPanelJSX}
               {dashboardJSX}
             </div>
-          </div>
+          )}
           {!calibrating && (
             <div className="rounded-xl p-4 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
               {InspectorPanel()}
@@ -3700,7 +3726,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 {pageRows.length === 0 && (
                   <tr><td colSpan={16 + statusFields.length} className="text-center py-4" style={{ color: C.steel }}>
                     {houses.length === 0
-                      ? "Belum ada data. Tambahkan lewat tombol Edit Peta di Main Mode."
+                      ? "Belum ada data. Tambahkan lewat tombol Edit Site Plan di Main Mode."
                       : totalRows === 0
                         ? "Tidak ada kavling yang cocok dengan filter Blok/Tipe/Status yang aktif. Coba klik \"Select All\" di atas."
                         : "Tidak ada data di halaman ini."}
