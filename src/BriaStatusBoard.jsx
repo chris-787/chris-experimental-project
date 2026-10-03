@@ -333,7 +333,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [confirmDeleteStatusKey, setConfirmDeleteStatusKey] = useState(null);
   const [confirmDeleteKategoriName, setConfirmDeleteKategoriName] = useState(null);
 
-  const [mode, setMode] = useState("input"); // input | kerja | dashboard | pengaturan
+  const [mode, setMode] = useState("input"); // input | kerja | data | pengaturan
   const [activeBlock, setActiveBlock] = useState(DEFAULT_BLOCKS[0].name);
   const [activeTipe, setActiveTipe] = useState(DEFAULT_TIPE[0].name);
   const [colorMode, setColorMode] = useState("terjual");
@@ -397,7 +397,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [tableZoom, setTableZoom] = useState(100);
   const [followUpFilterActive, setFollowUpFilterActive] = useState(false);
   const [duplicateFilterActive, setDuplicateFilterActive] = useState(false);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [hiddenCols, setHiddenCols] = useState([]);
   const [colWidths, setColWidths] = useState({});
@@ -3113,7 +3113,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div>
               <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}><ClockText /></div>
               <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase" }}>
-                {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : "Pengaturan"} — {activeCluster.name}
+                {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : mode === "data" ? "Mode Data" : "Pengaturan"} — {activeCluster.name}
               </div>
             </div>
           </div>
@@ -3177,6 +3177,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         <div className="flex gap-1.5 flex-wrap">
           <Chip active={mode === "input"} onClick={() => setMode("input")}>Mode Kalibrasi</Chip>
           <Chip active={mode === "kerja"} onClick={() => { setMode("kerja"); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); }}>Mode Kerja</Chip>
+          <Chip active={mode === "data"} onClick={() => { setMode("data"); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); }}>Mode Data</Chip>
           <Chip active={mode === "pengaturan"} onClick={() => setMode("pengaturan")}>Pengaturan</Chip>
         </div>
         {mode === "input" && (
@@ -3471,8 +3472,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
         </>
       )}
 
-      {/* ===================== TABLE (input & kerja) — full width below the row ===================== */}
-      {(mode === "input" || mode === "kerja") && (
+      {/* ===================== TABLE (input, kerja & data) — full width below the row ===================== */}
+      {(mode === "input" || mode === "kerja" || mode === "data") && (
         <div className="rounded-xl p-3 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
           {followUpFilterActive && (
             <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
