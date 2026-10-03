@@ -167,7 +167,7 @@ function centroid(points) {
 }
 function Chip({ active, onClick, children }) {
   return (
-    <button onClick={onClick} className="text-xs px-3 py-1.5 rounded-full border font-medium transition-colors"
+    <button onClick={onClick} className="text-xs px-2.5 py-1 rounded-full border font-medium transition-colors"
       style={{ borderColor: active ? C.accent : C.line, background: active ? C.accent : C.panel, color: active ? "#fff" : C.steel }}>
       {children}
     </button>
@@ -206,7 +206,7 @@ function Field({ label, children }) {
 }
 function StatusRow({ label, value, onToggle }) {
   return (
-    <label className="flex items-center justify-between py-1.5 cursor-pointer select-none">
+    <label className="flex items-center justify-between py-1 cursor-pointer select-none">
       <span className="text-sm" style={{ color: C.ink }}>{label}</span>
       <span onClick={onToggle} className="w-9 h-5 rounded-full relative transition-colors" style={{ background: value ? C.green : C.faint }}>
         <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all" style={{ left: value ? 18 : 2 }} />
@@ -215,7 +215,7 @@ function StatusRow({ label, value, onToggle }) {
   );
 }
 const cellInput = { width: "100%", minWidth: 80, padding: "2px 6px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
-const formInput = { width: "100%", padding: "6px 8px", fontSize: 13, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
+const formInput = { width: "100%", padding: "5px 8px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
 
 function resizeImageFile(file, maxDim) {
   return new Promise((resolve, reject) => {
@@ -1983,7 +1983,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   );
 
   const loadingScreen = (label) => (
-    <div style={{ minHeight: "100vh", background: C.paper, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
+    <div style={{ minHeight: "100vh", background: C.paper, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
       <span style={{
         display: "inline-block", width: 22, height: 22, borderRadius: "50%",
         border: `3px solid ${C.line}`, borderTopColor: C.accent,
@@ -1999,26 +1999,26 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const draftCentroid = draft ? centroid(draft.points) : null;
 
   const dashboardJSX = (
-        <div className="mb-3">
-          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+        <div className="mb-2.5">
+          <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
             <div className="text-sm font-semibold" style={{ color: C.ink }}>Dashboard</div>
             <div className="flex items-center gap-2 flex-wrap">
-              <button onClick={() => setShowSimulasi(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="calculator" size={14} /> Simulasi Harga</button>
-              <button onClick={() => setShowRekapKontraktor(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="hardhat" size={14} /> Rekap Kontraktor</button>
-              <button onClick={printReportPDF} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={14} /> Print</button>
+              <button onClick={() => setShowSimulasi(true)} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="calculator" size={14} /> Simulasi Harga</button>
+              <button onClick={() => setShowRekapKontraktor(true)} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="hardhat" size={14} /> Rekap Kontraktor</button>
+              <button onClick={printReportPDF} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={14} /> Print</button>
             </div>
           </div>
 
           {followUpList.length > 0 && (
-            <div className="mb-3 p-3 rounded-2xl" style={{ background: C.alertAmberBg, boxShadow: C.cardShadow }}>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
+            <div className="mb-2.5 p-2.5 rounded-2xl" style={{ background: C.alertAmberBg, boxShadow: C.cardShadow }}>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center gap-2.5">
                   <IconChip name="clock" bg={C.chipAmberBg} color={C.amber} size={30} />
                   <div className="text-sm font-semibold" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({followUpList.length})</div>
                 </div>
                 <button
                   onClick={() => { setFollowUpFilterActive(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  className="text-xs px-3 py-1.5 rounded-full font-semibold"
+                  className="text-xs px-2.5 py-1 rounded-full font-semibold"
                   style={{ background: C.amber, color: "#fff" }}
                 >Lihat di tabel →</button>
               </div>
@@ -2035,7 +2035,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </div>
             </div>
           )}
-          <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 10 }}>
+          <div className="mb-2.5" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 8 }}>
             {[
               { label: "Kavling Terpetakan", value: `${houses.length} / ${totalTarget}` },
               { label: "Sudah Terjual", value: `${soldUnits.length} / ${houses.length}` },
@@ -2044,7 +2044,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               { label: "Total Margin", value: rupiah(totalMargin) },
               { label: "Rata-rata Margin %", value: `${avgMarginPct.toFixed(2)}%` },
             ].map((s) => (
-              <div key={s.label} className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+              <div key={s.label} className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
                 <div style={{ fontSize: 12, color: C.steel, marginBottom: 3 }}>{s.label}</div>
                 <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace", overflowWrap: "anywhere" }}>{s.value}</div>
               </div>
@@ -2052,9 +2052,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
 
           {marginPerTipe.some((t) => t.n > 0) && (
-            <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 10 }}>
+            <div className="mb-2.5" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 8 }}>
               {marginPerTipe.filter((t) => t.n > 0).map((t) => (
-                <div key={t.tipe} className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+                <div key={t.tipe} className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
                   <div style={{ fontSize: 11, color: C.steel, marginBottom: 3 }}>Margin {t.tipe}</div>
                   <div className="text-base font-semibold" style={{ color: t.margin >= 20 ? C.green : C.red, fontFamily: "IBM Plex Mono, monospace" }}>{t.margin}%</div>
                 </div>
@@ -2076,8 +2076,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
   );
 
   const mapPanelJSX = (
-    <div className="rounded-xl p-3 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow, position: "relative" }}>
-        <div className="rounded-xl p-3 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+    <div className="rounded-xl p-2.5 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow, position: "relative" }}>
+        <div>
           <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
             <div>
               <div className="text-sm font-medium" style={{ color: C.ink }}>Site Plan</div>
@@ -2116,9 +2116,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
 
           {!siteImage ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-16" style={{ border: `1px dashed ${C.line}`, borderRadius: 8, background: C.paper }}>
+            <div className="flex flex-col items-center justify-center gap-2.5 py-16" style={{ border: `1px dashed ${C.line}`, borderRadius: 8, background: C.paper }}>
               <div className="text-sm" style={{ color: C.steel }}>Cluster ini belum punya gambar site plan.</div>
-              <label className="text-xs px-3 py-1.5 rounded-lg cursor-pointer" style={{ background: C.accent, color: "#fff" }}>
+              <label className="text-xs px-2.5 py-1 rounded-lg cursor-pointer" style={{ background: C.accent, color: "#fff" }}>
                 {imgUploading ? "Mengunggah..." : "Unggah Gambar Site Plan"}
                 <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} disabled={imgUploading} />
               </label>
@@ -2193,12 +2193,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <div className="flex gap-1.5">
-                        <button onClick={() => startEditShape(target.id)} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Edit Bentuk</button>
-                        <button onClick={() => { setConfirmDeleteId(target.id); setActionMenuId(null); }} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ border: `1px solid ${C.red}`, color: C.red }}>Hapus</button>
+                        <button onClick={() => startEditShape(target.id)} className="text-xs px-2 py-1 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Edit Bentuk</button>
+                        <button onClick={() => { setConfirmDeleteId(target.id); setActionMenuId(null); }} className="text-xs px-2 py-1 rounded-lg flex-1" style={{ border: `1px solid ${C.red}`, color: C.red }}>Hapus</button>
                       </div>
                       <div className="flex gap-1.5">
-                        <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ background: C.green, color: "#fff" }}>OK</button>
-                        <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                        <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1 rounded-lg flex-1" style={{ background: C.green, color: "#fff" }}>OK</button>
+                        <button onClick={() => setActionMenuId(null)} className="text-xs px-2 py-1 rounded-lg flex-1" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
                       </div>
                     </div>
                   </div>
@@ -2226,8 +2226,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
                     Luas Bangunan: <b style={{ color: C.ink }}>{tipeOptions.find((t) => t.name === draft.tipe)?.luasBangunan || 0} m²</b> (ikut Tipe aktif, atur di Pengaturan)
                   </div>
                   <div className="flex gap-2 mt-1">
-                    <button onClick={submitDraft} className="text-xs px-2 py-1.5 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Tambahkan</button>
-                    <button onClick={() => setDraft(null)} className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                    <button onClick={submitDraft} className="text-xs px-2 py-1 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Tambahkan</button>
+                    <button onClick={() => setDraft(null)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
                   </div>
                 </div>
               )}
@@ -2235,7 +2235,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
           )}
 
-          <div className="flex flex-wrap gap-3 mt-3 pt-3" style={{ borderTop: `1px solid ${C.line}` }}>
+          <div className="flex flex-wrap gap-2.5 mt-2.5 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
             {calibrating ? (
               tipeOptions.map((t) => (
                 <div key={t.name} className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
@@ -2285,7 +2285,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     const nextRow = tableRows[idx + 1];
     return (
       <div>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2.5">
           <div>
             <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
             {h.lastEditedAt && <div className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}</div>}
@@ -2297,7 +2297,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: nextRow ? C.ink : C.faint }}>Next &rsaquo;</button>
               <button onClick={() => setSelectedId(null)} title="Tutup / hapus highlight" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>✕</button>
             </div>
-            <button onClick={() => printKavlingSummary(h)} className="text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={13} /> Ringkasan</button>
+            <button onClick={() => printKavlingSummary(h)} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={13} /> Ringkasan</button>
           </div>
         </div>
 
@@ -2332,12 +2332,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
                         onKeyDown={(e) => { if (e.key === "Enter") setDetailEditingKey(null); }}
                         placeholder={`mis. keterangan ${s.label.toLowerCase()}`}
                       />
-                      <button onClick={() => setDetailEditingKey(null)} className="text-xs px-2 py-1.5 rounded-lg shrink-0" style={{ background: C.accent, color: "#fff" }}>Selesai</button>
+                      <button onClick={() => setDetailEditingKey(null)} className="text-xs px-2 py-1 rounded-lg shrink-0" style={{ background: C.accent, color: "#fff" }}>Selesai</button>
                     </div>
                   ) : (
                     <div
                       onClick={() => setDetailEditingKey(`${h.id}:${s.key}`)}
-                      style={{ fontSize: 13, color: getDetail(h, s.key) ? C.ink : C.steel, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}
+                      style={{ fontSize: 12, color: getDetail(h, s.key) ? C.ink : C.steel, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}
                     >
                       {getDetail(h, s.key) || `Klik untuk isi detail ${s.label.toLowerCase()}`}
                     </div>
@@ -2367,7 +2367,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           ) : (
             <div className="mb-2">
               <div className="text-xs mb-1" style={{ color: C.steel }}>Kontraktor</div>
-              <div onClick={() => setTextEditingKey(`${h.id}:kontraktor`)} style={{ fontSize: 13, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>{h.kontraktor}</div>
+              <div onClick={() => setTextEditingKey(`${h.id}:kontraktor`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>{h.kontraktor}</div>
             </div>
           )}
           {textEditingKey === `${h.id}:spkNo` || !h.spkNo ? (
@@ -2377,7 +2377,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           ) : (
             <div className="mb-2">
               <div className="text-xs mb-1" style={{ color: C.steel }}>No. SPK</div>
-              <div onClick={() => setTextEditingKey(`${h.id}:spkNo`)} style={{ fontSize: 13, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>{h.spkNo}</div>
+              <div onClick={() => setTextEditingKey(`${h.id}:spkNo`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>{h.spkNo}</div>
             </div>
           )}
           {textEditingKey === `${h.id}:spkTahun` || !h.spkTahun ? (
@@ -2387,7 +2387,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           ) : (
             <div className="mb-2">
               <div className="text-xs mb-1" style={{ color: C.steel }}>Tahun SPK</div>
-              <div onClick={() => setTextEditingKey(`${h.id}:spkTahun`)} style={{ fontSize: 13, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel, fontFamily: "IBM Plex Mono, monospace" }}>{h.spkTahun}</div>
+              <div onClick={() => setTextEditingKey(`${h.id}:spkTahun`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel, fontFamily: "IBM Plex Mono, monospace" }}>{h.spkTahun}</div>
             </div>
           )}
           {monthEditingKey === h.id || !h.spkBulan ? (
@@ -2397,7 +2397,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           ) : (
             <div className="mb-2">
               <div className="text-xs mb-1" style={{ color: C.steel }}>Bulan SPK</div>
-              <div onClick={() => setMonthEditingKey(h.id)} style={{ fontSize: 13, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>
+              <div onClick={() => setMonthEditingKey(h.id)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>
                 {MONTHS[h.spkBulan - 1]}
               </div>
             </div>
@@ -2427,9 +2427,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <input autoFocus={priceEditingKey === `${h.id}:hpp`} type="number" min="0" style={formInput} value={h.hppPerM2 || ""} onChange={(e) => { setPriceEditingKey(`${h.id}:hpp`); updateHouse(h.id, { hppPerM2: Number(e.target.value) || 0 }); }} onKeyDown={(e) => { if (e.key === "Enter") setPriceEditingKey(null); }} />
             </Field>
           ) : (
-            <div className="mb-3">
+            <div className="mb-2.5">
               <div className="text-xs mb-1" style={{ color: C.steel }}>HPP per m² (Rp)</div>
-              <div onClick={() => setPriceEditingKey(`${h.id}:hpp`)} style={{ fontSize: 13, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>
+              <div onClick={() => setPriceEditingKey(`${h.id}:hpp`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>
                 {rupiah(h.hppPerM2)}{luasBangunanOf(h) ? <> → Total: <b>{rupiah(hppTotal(h))}</b></> : <span style={{ color: C.amber }}> — atur LB Tipe ini dulu di Pengaturan</span>}
               </div>
             </div>
@@ -2446,16 +2446,16 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <input autoFocus={priceEditingKey === `${h.id}:harga`} type="number" min="0" style={formInput} value={h.hargaJualPerM2 || ""} onChange={(e) => { setPriceEditingKey(`${h.id}:harga`); updateHouse(h.id, { hargaJualPerM2: Number(e.target.value) || 0 }); }} onKeyDown={(e) => { if (e.key === "Enter") setPriceEditingKey(null); }} />
             </Field>
           ) : (
-            <div className="mb-3">
+            <div className="mb-2.5">
               <div className="text-xs mb-1" style={{ color: C.steel }}>Harga Jual per m² (Rp)</div>
-              <div onClick={() => setPriceEditingKey(`${h.id}:harga`)} style={{ fontSize: 13, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>
+              <div onClick={() => setPriceEditingKey(`${h.id}:harga`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>
                 {rupiah(h.hargaJualPerM2)}{luasBangunanOf(h) ? <> → Total: <b>{rupiah(hargaJualTotal(h))}</b></> : <span style={{ color: C.amber }}> — atur LB Tipe ini dulu di Pengaturan</span>}
               </div>
             </div>
           )}
         </div>
 
-        <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${C.line}` }}>
+        <div className="mt-2.5 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
           {luasBangunanOf(h) > 0 && (
             <div className="flex justify-between text-xs mb-2" style={{ color: C.steel }}>
               <span>HPP/m² efektif {h.adendum && h.adendumAmount ? "(termasuk adendum)" : ""}</span>
@@ -2478,11 +2478,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
         </div>
         </div>
 
-        <div className="mt-4 pt-3" style={{ borderTop: `1px solid ${C.line}` }}>
+        <div className="mt-3 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
           {confirmDeleteId === h.id ? (
             <div className="flex gap-2">
-              <button onClick={() => { removeHouse(h.id); setConfirmDeleteId(null); }} className="text-xs px-3 py-1.5 rounded-lg flex-1" style={{ background: C.red, color: "#fff" }}>Ya, Hapus Kavling Ini</button>
-              <button onClick={() => setConfirmDeleteId(null)} className="text-xs px-3 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+              <button onClick={() => { removeHouse(h.id); setConfirmDeleteId(null); }} className="text-xs px-2.5 py-1 rounded-lg flex-1" style={{ background: C.red, color: "#fff" }}>Ya, Hapus Kavling Ini</button>
+              <button onClick={() => setConfirmDeleteId(null)} className="text-xs px-2.5 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
             </div>
           ) : (
             <button onClick={() => setConfirmDeleteId(h.id)} className="text-xs" style={{ color: C.red }}>Hapus Kavling Ini</button>
@@ -2502,10 +2502,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
   FROZEN_KEYS.forEach((k) => { frozenLeft[k] = frozenAcc; if (!hiddenCols.includes(k)) frozenAcc += colWidth(k); });
 
   return (
-    <div style={{ background: C.paper, minHeight: "100%", fontFamily: "Inter, sans-serif" }} className="p-5">
+    <div style={{ background: C.paper, minHeight: "100%", fontFamily: "Inter, sans-serif" }} className="p-4">
       <style>{`
         * { box-sizing: border-box; }
-        table.dataTbl th, table.dataTbl td { padding: 3px 6px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
+        table.dataTbl th, table.dataTbl td { padding: 2px 6px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
         table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; will-change: transform; }
         .inspector-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
         .inspector-cols > div + div { border-left: 1px solid ${C.line}; padding-left: 24px; }
@@ -2543,7 +2543,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           style={{
             position: "fixed", top: 0, left: 0, right: 0, zIndex: 101,
             background: C.amber, color: "#fff", padding: "8px 14px",
-            fontSize: 13, textAlign: "center", fontWeight: 500,
+            fontSize: 12, textAlign: "center", fontWeight: 500,
           }}
         >
           ⚠ Anda sedang offline — perubahan mungkin tidak tersimpan sampai koneksi internet kembali.
@@ -2555,7 +2555,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           style={{
             position: "fixed", bottom: 16, right: 16, zIndex: 100, maxWidth: 320,
             background: C.red, color: "#fff", padding: "10px 14px", borderRadius: 10,
-            fontSize: 13, boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+            fontSize: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
           }}
         >
           ⚠ {storageError}
@@ -2571,9 +2571,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </div>
             <div style={{ overflowY: "auto", padding: "16px 24px 24px" }}>
               {WHATS_NEW_GROUPS.map((group, gi) => (
-                <div key={gi} className="mb-4">
+                <div key={gi} className="mb-3">
                   <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.gold, textTransform: "uppercase" }}>{group.date}</div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2.5">
                     {group.items.map((it, i) => (
                       <div key={i} className="flex gap-2.5">
                         <div style={{ fontSize: 20, lineHeight: "26px" }}>{it.icon}</div>
@@ -2586,7 +2586,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   </div>
                 </div>
               ))}
-              <button onClick={() => setShowWhatsNew(false)} className="text-sm w-full px-3 py-2 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Oke, Mengerti</button>
+              <button onClick={() => setShowWhatsNew(false)} className="text-sm w-full px-2.5 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Oke, Mengerti</button>
             </div>
           </div>
         </div>
@@ -2622,7 +2622,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 <button onClick={() => setShowSimulasi(false)} aria-label="Tutup" style={{ border: "none", background: "transparent", color: C.steel, fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
               </div>
               <div style={{ overflowY: "auto", padding: "16px 24px 24px" }}>
-                <div className="text-xs mb-4 p-2 rounded-lg" style={{ background: C.infoBlueBg, border: `1px solid ${C.line}`, color: C.ink }}>
+                <div className="text-xs mb-3 p-2 rounded-lg" style={{ background: C.infoBlueBg, border: `1px solid ${C.line}`, color: C.ink }}>
                   Hanya simulasi — data asli di tabel <b>tidak berubah</b>. Menutup panel ini mengembalikan semuanya seperti semula.
                 </div>
 
@@ -2646,11 +2646,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   </div>
                 </Field>
 
-                <div className="text-xs mb-2 mt-3" style={{ color: C.steel }}>
+                <div className="text-xs mb-2 mt-2.5" style={{ color: C.steel }}>
                   {sim.counted} kavling dihitung{sim.skipped > 0 ? ` · ${sim.skipped} dilewati (luas bangunan, HPP, atau harga jual belum lengkap)` : ""}
                 </div>
                 {sim.counted === 0 ? (
-                  <div className="text-sm p-3 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}`, color: C.ink }}>
+                  <div className="text-sm p-2.5 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}`, color: C.ink }}>
                     Belum ada kavling dengan data lengkap di pilihan ini, jadi belum ada yang bisa disimulasikan. Isi dulu Luas Bangunan (Pengaturan), HPP, dan Harga Jual di tabel.
                   </div>
                 ) : (
@@ -2672,7 +2672,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                       })}
                     </div>
                     {sim.perTipe.length > 1 && (
-                      <div className="mt-3">
+                      <div className="mt-2.5">
                         <div className="text-xs font-semibold mb-1" style={{ color: C.steel }}>Margin per tipe</div>
                         {sim.perTipe.map((t) => (
                           <div key={t.tipe} className="flex items-center justify-between text-xs py-1" style={{ borderBottom: `1px solid ${C.line}` }}>
@@ -2682,13 +2682,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
                         ))}
                       </div>
                     )}
-                    {!changed && <div className="text-xs mt-3" style={{ color: C.steel }}>Isi salah satu kolom perubahan di atas untuk melihat hasil simulasinya.</div>}
+                    {!changed && <div className="text-xs mt-2.5" style={{ color: C.steel }}>Isi salah satu kolom perubahan di atas untuk melihat hasil simulasinya.</div>}
                   </>
                 )}
 
-                <div className="flex gap-2 mt-4">
-                  <button onClick={() => { setSimScope("all"); setSimHargaMode("persen"); setSimHargaValue(""); setSimHppMode("persen"); setSimHppValue(""); }} className="text-sm flex-1 px-3 py-2 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Reset</button>
-                  <button onClick={() => setShowSimulasi(false)} className="text-sm flex-1 px-3 py-2 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tutup</button>
+                <div className="flex gap-2 mt-3">
+                  <button onClick={() => { setSimScope("all"); setSimHargaMode("persen"); setSimHargaValue(""); setSimHppMode("persen"); setSimHppValue(""); }} className="text-sm flex-1 px-2.5 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Reset</button>
+                  <button onClick={() => setShowSimulasi(false)} className="text-sm flex-1 px-2.5 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tutup</button>
                 </div>
               </div>
             </div>
@@ -2704,7 +2704,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <button onClick={() => setShowRekapKontraktor(false)} aria-label="Tutup" style={{ border: "none", background: "transparent", color: C.steel, fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
             <div style={{ overflowY: "auto", padding: "16px 24px 24px" }}>
-              <p className="text-xs mb-4" style={{ color: C.steel }}>
+              <p className="text-xs mb-3" style={{ color: C.steel }}>
                 Dikelompokkan berdasarkan teks yang diketik di kolom Kontraktor — kalau nama yang sama ditulis beda-beda (mis. "PT Jaya" vs "PT. Jaya"), akan muncul sebagai baris terpisah di bawah ini.
               </p>
               <div style={{ border: `1px solid ${C.line}`, borderRadius: 10, overflow: "hidden" }}>
@@ -2720,10 +2720,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   </div>
                 ))}
                 {rekapKontraktor.length === 0 && (
-                  <div className="text-xs p-3" style={{ color: C.steel }}>Belum ada kavling di cluster ini.</div>
+                  <div className="text-xs p-2.5" style={{ color: C.steel }}>Belum ada kavling di cluster ini.</div>
                 )}
               </div>
-              <button onClick={() => setShowRekapKontraktor(false)} className="text-sm w-full px-3 py-2 rounded-lg mt-4" style={{ background: C.accent, color: "#fff" }}>Tutup</button>
+              <button onClick={() => setShowRekapKontraktor(false)} className="text-sm w-full px-2.5 py-1.5 rounded-lg mt-3" style={{ background: C.accent, color: "#fff" }}>Tutup</button>
             </div>
           </div>
         </div>
@@ -2731,8 +2731,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
       {!currentClusterId ? (
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
-          <div className="mb-6">
-            <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="mb-4">
+            <div className="flex items-start justify-between gap-2.5 flex-wrap">
               <input
                 value={appTitle}
                 readOnly={!canEdit}
@@ -2747,9 +2747,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 {homeSaving && <SmallSpinner />}
                 {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
                 {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
-                {canEdit && <button onClick={saveHomeChanges} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>}
-                {!canEdit && <span className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ background: C.pillFill, color: C.steel }}>View Mode</span>}
-                <button onClick={handleLogoutClick} className="text-xs px-3 py-1.5 rounded-full font-medium" style={{ border: "none", color: C.red, background: C.chipRedBg }}>Log Out</button>
+                {canEdit && <button onClick={saveHomeChanges} className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: C.accent, color: "#fff" }}>Simpan Perubahan</button>}
+                {!canEdit && <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: C.pillFill, color: C.steel }}>View Mode</span>}
+                <button onClick={handleLogoutClick} className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ border: "none", color: C.red, background: C.chipRedBg }}>Log Out</button>
                 <ThemeToggle />
               </div>
             </div>
@@ -2775,19 +2775,19 @@ export default function BriaStatusBoard({ onLogout, session }) {
             })()}
             {clusters.length > 0 && (
               <div className="flex items-center gap-2 mt-2 flex-wrap">
-                <button onClick={exportAllExcel} disabled={exportingExcelAll} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.green, background: C.pillFill }}>
+                <button onClick={exportAllExcel} disabled={exportingExcelAll} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.green, background: C.pillFill }}>
                   {exportingExcelAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Export to Excel
                 </button>
-                <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.accent, background: C.pillFill }}>
+                <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.accent, background: C.pillFill }}>
                   {exportingBackupAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Backup (JSON)
                 </button>
                 {canEdit && (
-                  <label className="text-xs px-3 py-1.5 rounded-full cursor-pointer flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: C.pillFill }}>
+                  <label className="text-xs px-2.5 py-1 rounded-full cursor-pointer flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: C.pillFill }}>
                     <Ic name="upload" size={14} /> Restore (JSON)
                     <input type="file" accept=".json" onChange={handleRestoreAllFile} style={{ display: "none" }} />
                   </label>
                 )}
-                <button onClick={() => setShowWhatsNew(true)} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: C.pillFill }}>
+                <button onClick={() => setShowWhatsNew(true)} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.steel, background: C.pillFill }}>
                   <Ic name="sparkle" size={14} /> What's New
                 </button>
               </div>
@@ -2812,31 +2812,31 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <div className="mt-2 text-xs" style={{ color: C.amber }}>{restoreAllError}</div>
             )}
             {pendingRestoreAll && (
-              <div className="mt-2 p-3 rounded-lg text-xs" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
+              <div className="mt-2 p-2.5 rounded-lg text-xs" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
                 <div style={{ color: C.ink, marginBottom: 8 }}>
                   File ini berisi <b>{pendingRestoreAll.length} cluster</b>: {pendingRestoreAll.map((c) => c.name).join(", ")}.<br />
                   Cluster yang masih ada sekarang (dicocokkan lewat ID internal, bukan nama) akan <b>ditimpa</b> datanya. Cluster yang sudah tidak ada akan dibuat ulang sebagai cluster baru. Lanjutkan?
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={applyRestoreAll} disabled={restoringAll} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.amber, color: "#fff" }}>
+                  <button onClick={applyRestoreAll} disabled={restoringAll} className="text-xs px-2.5 py-1 rounded-lg" style={{ background: C.amber, color: "#fff" }}>
                     {restoringAll && <SmallSpinner />} Ya, Pulihkan
                   </button>
-                  <button onClick={() => setPendingRestoreAll(null)} disabled={restoringAll} className="text-xs px-3 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+                  <button onClick={() => setPendingRestoreAll(null)} disabled={restoringAll} className="text-xs px-2.5 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
                 </div>
               </div>
             )}
           </div>
 
           {homeAllFollowUpList.length > 0 && (
-            <div className="mb-3 p-3 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                <div className="flex items-center gap-3">
+            <div className="mb-2.5 p-2.5 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+              <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
+                <div className="flex items-center gap-2.5">
                   <IconChip name="clock" bg={C.chipAmberBg} color={C.amber} size={34} />
                   <div className="text-sm font-semibold" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
                 </div>
                 <div className="flex" style={{ background: C.pillFill, borderRadius: 10, padding: 3 }}>
-                  <button onClick={() => setFollowUpView("list")} className="text-xs font-semibold px-3 py-1.5" style={{ borderRadius: 8, background: followUpView === "list" ? C.accent : "transparent", color: followUpView === "list" ? "#fff" : C.steel, border: "none" }}>Daftar</button>
-                  <button onClick={() => setFollowUpView("kalender")} className="text-xs font-semibold px-3 py-1.5" style={{ borderRadius: 8, background: followUpView === "kalender" ? C.accent : "transparent", color: followUpView === "kalender" ? "#fff" : C.steel, border: "none" }}>Kalender</button>
+                  <button onClick={() => setFollowUpView("list")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "list" ? C.accent : "transparent", color: followUpView === "list" ? "#fff" : C.steel, border: "none" }}>Daftar</button>
+                  <button onClick={() => setFollowUpView("kalender")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "kalender" ? C.accent : "transparent", color: followUpView === "kalender" ? "#fff" : C.steel, border: "none" }}>Kalender</button>
                 </div>
               </div>
 
@@ -2926,8 +2926,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
           )}
 
           {homeDuplicateList.length > 0 && (
-            <div className="mb-6 p-3 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-              <div className="flex items-center gap-3 mb-3">
+            <div className="mb-4 p-2.5 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+              <div className="flex items-center gap-2.5 mb-2.5">
                 <IconChip name="warning" bg={C.chipRedBg} color={C.red} size={34} />
                 <div className="text-sm font-semibold" style={{ color: C.ink }}>Nomor Kavling Duplikat ({homeDuplicateList.length})</div>
               </div>
@@ -2944,23 +2944,23 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </div>
           )}
 
-          <div className="mb-4">
+          <div className="mb-3">
             <div className="text-base font-semibold mb-2 flex items-center gap-2" style={{ color: C.ink }}><Ic name="search" size={17} color={C.steel} /> Pencarian Blok</div>
             <input
               value={kavlingSearch}
               onChange={(e) => setKavlingSearch(e.target.value)}
               placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
-              className="text-sm px-4 py-3 rounded-full w-full kavling-search-input"
+              className="text-sm px-3 py-2.5 rounded-full w-full kavling-search-input"
               style={{ border: "none", color: C.ink, background: C.searchFill }}
             />
             {kavlingSearch.trim() && (
               <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
                 <div style={{ maxHeight: 320, overflowY: "auto" }}>
                   {kavlingSearchResults.length === 0 ? (
-                    <div className="text-xs p-3" style={{ color: C.steel }}>Tidak ditemukan.</div>
+                    <div className="text-xs p-2.5" style={{ color: C.steel }}>Tidak ditemukan.</div>
                   ) : (
                     kavlingSearchResults.map((r) => (
-                      <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-3 py-2" style={{ borderBottom: `1px solid ${C.line}` }}>
+                      <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-2.5 py-1.5" style={{ borderBottom: `1px solid ${C.line}` }}>
                         <div>
                           <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
                           <div style={{ color: C.steel }}>{r.clusterName}</div>
@@ -2971,7 +2971,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   )}
                 </div>
                 {kavlingSearchAllMatches.length > KAVLING_SEARCH_LIMIT && (
-                  <div className="text-xs px-3 py-2" style={{ color: C.steel, background: C.paper, borderTop: `1px solid ${C.line}` }}>
+                  <div className="text-xs px-2.5 py-1.5" style={{ color: C.steel, background: C.paper, borderTop: `1px solid ${C.line}` }}>
                     Menampilkan {KAVLING_SEARCH_LIMIT} dari {kavlingSearchAllMatches.length} hasil — ketik lebih spesifik untuk mempersempit.
                   </div>
                 )}
@@ -2987,12 +2987,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
             const totalSumHpp = Object.values(clusterStats).reduce((s, x) => s + (x.sumHpp || 0), 0);
             const overallMarginPct = totalSumHarga ? ((totalSumHarga - totalSumHpp) / totalSumHarga) * 100 : 0;
             return (
-              <div className="mb-4" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
+              <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 8 }}>
                 {[
                   { label: "Total Cluster", value: `${clusters.length}` },
                   { label: "Margin Keseluruhan", value: `${overallMarginPct.toFixed(2)}%` },
                 ].map((s) => (
-                  <div key={s.label} className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+                  <div key={s.label} className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
                     <div style={{ fontSize: 11, color: C.steel, marginBottom: 3 }}>{s.label}</div>
                     <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace", overflowWrap: "anywhere" }}>{s.value}</div>
                   </div>
@@ -3002,13 +3002,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
           })()}
 
           {clusters.length > 0 && Object.keys(clusterStats).length > 0 && (
-            <div className="mb-4" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+            <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10 }}>
               {clusters
                 .filter((c) => !c.archived && clusterStats[c.id] && clusterStats[c.id].marginByTipe.length > 0)
                 .map((c) => {
                   const cs = clusterStats[c.id];
                   return (
-                    <div key={c.id} className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+                    <div key={c.id} className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
                       <div className="text-sm font-medium mb-2" style={{ color: C.ink }}>
                         Margin {c.name} — <span style={{ fontFamily: "IBM Plex Mono, monospace" }}>{cs.marginPct.toFixed(1)}%</span>
                         <span className="text-xs" style={{ color: C.steel, fontFamily: "Inter, sans-serif", fontWeight: 400 }}> · total {cs.total} unit</span>
@@ -3034,18 +3034,18 @@ export default function BriaStatusBoard({ onLogout, session }) {
               value={clusterSearch}
               onChange={(e) => setClusterSearch(e.target.value)}
               placeholder="Cari cluster..."
-              className="text-sm px-3 py-2 rounded-lg border mb-3 w-full"
+              className="text-sm px-2.5 py-1.5 rounded-lg border mb-2.5 w-full"
               style={{ borderColor: C.line, color: C.ink, maxWidth: 320 }}
             />
           )}
 
-          <div className="mb-4" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
+          <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 10 }}>
             {clusters
               .filter((c) => !c.archived)
               .filter((c) => !clusterSearch.trim() || `${c.name} ${c.subtitle}`.toLowerCase().includes(clusterSearch.trim().toLowerCase()))
               .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
               .map((c) => (
-              <div key={c.id} className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow, border: c.pinned ? `1px solid ${C.accent}` : "none" }}>
+              <div key={c.id} className="rounded-xl p-3" style={{ background: C.panel, boxShadow: C.cardShadow, border: c.pinned ? `1px solid ${C.accent}` : "none" }}>
                 {clusterImages[c.id] ? (
                   <img src={clusterImages[c.id]} alt={c.name} loading="lazy" decoding="async" style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 8, marginBottom: 10, border: `1px solid ${C.line}` }} />
                 ) : (
@@ -3088,14 +3088,14 @@ export default function BriaStatusBoard({ onLogout, session }) {
                       style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, marginBottom: 12, fontFamily: "Inter, sans-serif" }}
                     />
                     {clusterStats[c.id] && (
-                      <div className="text-xs mb-3" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }}>
+                      <div className="text-xs mb-2.5" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }}>
                         {clusterStats[c.id].blockCount} blok · {clusterStats[c.id].marginPct.toFixed(1)}% margin
                       </div>
                     )}
                     <div className="flex items-center gap-2">
-                      <button onClick={() => openCluster(c.id)} className="text-xs px-3 py-1.5 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Buka Cluster</button>
-                      {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Arsip</button>}
-                      {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} className="text-xs px-2 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.red, background: C.panel }}>Hapus</button>}
+                      <button onClick={() => openCluster(c.id)} className="text-xs px-2.5 py-1 rounded-lg flex-1" style={{ background: C.accent, color: "#fff" }}>Buka Cluster</button>
+                      {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Arsip</button>}
+                      {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.red, background: C.panel }}>Hapus</button>}
                     </div>
                   </>
                 )}
@@ -3103,24 +3103,24 @@ export default function BriaStatusBoard({ onLogout, session }) {
             ))}
 
             {canEdit && (
-              <div className="rounded-xl p-4 flex flex-col items-center justify-center gap-2" style={{ border: `1px dashed ${C.line}`, minHeight: 120 }}>
+              <div className="rounded-xl p-3 flex flex-col items-center justify-center gap-2" style={{ border: `1px dashed ${C.line}`, minHeight: 120 }}>
                 <input
                   value={newClusterName}
                   onChange={(e) => setNewClusterName(e.target.value)}
                   placeholder="Nama cluster baru..."
-                  className="text-sm px-2 py-1.5 rounded-lg border w-full"
+                  className="text-sm px-2 py-1 rounded-lg border w-full"
                   style={{ borderColor: C.line, color: C.ink }}
                 />
                 <input
                   value={newClusterSubtitle}
                   onChange={(e) => setNewClusterSubtitle(e.target.value)}
                   placeholder="Lokasi / catatan (opsional)..."
-                  className="text-xs px-2 py-1.5 rounded-lg border w-full"
+                  className="text-xs px-2 py-1 rounded-lg border w-full"
                   style={{ borderColor: C.line, color: C.ink }}
                 />
                 <button
                   onClick={() => { if (!newClusterName.trim()) return; addCluster(newClusterName.trim(), newClusterSubtitle.trim()); setNewClusterName(""); setNewClusterSubtitle(""); }}
-                  className="text-xs px-3 py-1.5 rounded-lg w-full"
+                  className="text-xs px-2.5 py-1 rounded-lg w-full"
                   style={{ background: C.green, color: "#fff" }}
                 >+ Tambah Cluster Baru</button>
               </div>
@@ -3133,9 +3133,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 {showArchivedClusters ? "▾" : "▸"} Cluster diarsipkan ({clusters.filter((c) => c.archived).length})
               </button>
               {showArchivedClusters && (
-                <div className="mt-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 10 }}>
+                <div className="mt-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 8 }}>
                   {clusters.filter((c) => c.archived).map((c) => (
-                    <div key={c.id} className="rounded-xl p-3 flex items-center justify-between gap-2" style={{ background: C.paper, border: `1px dashed ${C.line}` }}>
+                    <div key={c.id} className="rounded-xl p-2.5 flex items-center justify-between gap-2" style={{ background: C.paper, border: `1px dashed ${C.line}` }}>
                       <div>
                         <div className="text-sm" style={{ color: C.steel }}>{c.name}</div>
                         <div className="text-xs" style={{ color: C.faint }}>{c.subtitle}</div>
@@ -3151,10 +3151,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
       ) : (
       <>
       {/* HEADER (bar atas ini "freeze" / nempel saat di-scroll) */}
-      <div className="sticky top-0 z-30 -mx-5 -mt-5 px-5 pt-3 pb-3 mb-4" style={{ background: C.paper, borderBottom: `2px solid ${C.line}`, willChange: "transform", transform: "translateZ(0)" }}>
+      <div className="sticky top-0 z-30 -mx-4 -mt-4 px-4 pt-2.5 pb-2.5 mb-3" style={{ background: C.paper, borderBottom: `2px solid ${C.line}`, willChange: "transform", transform: "translateZ(0)" }}>
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-3">
-            <button onClick={goHome} className="text-xs px-3 py-1.5 rounded-full font-medium transition-colors flex items-center gap-1.5" style={{ border: "none", color: C.accent, background: C.pillFill }}><Ic name="back" size={13} /> Home</button>
+          <div className="flex items-center gap-2.5">
+            <button onClick={goHome} className="text-xs px-2.5 py-1 rounded-full font-medium transition-colors flex items-center gap-1.5" style={{ border: "none", color: C.accent, background: C.pillFill }}><Ic name="back" size={13} /> Home</button>
             <div>
               <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}><ClockText /></div>
               <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase" }}>
@@ -3167,18 +3167,18 @@ export default function BriaStatusBoard({ onLogout, session }) {
             {!saving && dirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
             {!saving && savedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
             {canEdit ? (
-              <button onClick={() => saveHouses()} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
+              <button onClick={() => saveHouses()} className="text-xs px-2.5 py-1 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
                 Simpan Perubahan
               </button>
             ) : (
-              <span className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.pillFill, color: C.steel }}>View Mode</span>
+              <span className="text-xs px-2.5 py-1 rounded-lg" style={{ background: C.pillFill, color: C.steel }}>View Mode</span>
             )}
             <ThemeToggle />
           </div>
         </div>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-3">
         <input
           value={activeCluster.name}
           readOnly={!canEdit}
@@ -3205,20 +3205,20 @@ export default function BriaStatusBoard({ onLogout, session }) {
       </div>
 
       {saveConflict && (
-        <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
+        <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
           <span className="text-xs" style={{ color: C.red }}>Gagal menyimpan — data ini sudah diubah oleh pengguna lain. Perubahan Anda masih ada di layar, tapi belum tersimpan.</span>
           <button onClick={reloadAfterRemoteUpdate} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.red, color: "#fff" }}>Muat Ulang</button>
         </div>
       )}
       {!saveConflict && remoteUpdateAvailable && (
-        <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
+        <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
           <span className="text-xs" style={{ color: C.amber }}>Ada pembaruan baru dari pengguna lain. Muat ulang untuk melihatnya (perubahan Anda yang belum disimpan akan hilang).</span>
           <button onClick={reloadAfterRemoteUpdate} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.amber}`, color: C.amber, background: C.panel }}>Muat Ulang</button>
         </div>
       )}
 
       {/* TABS */}
-      <div className="rounded-xl p-3 mb-4 flex flex-col gap-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+      <div className="rounded-xl p-2.5 mb-3 flex flex-col gap-2.5" style={{ background: C.panel, boxShadow: C.cardShadow }}>
         <div className="flex gap-1.5 flex-wrap">
           <Chip active={mode === "kerja"} onClick={() => goMode("kerja")}>Main Mode</Chip>
           <Chip active={mode === "data"} onClick={() => goMode("data")}>Data Mode</Chip>
@@ -3227,7 +3227,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div className="flex items-center gap-2 ml-auto flex-wrap">
               <button
                 onClick={() => setDashboardPos((p) => (p === "kanan" ? "bawah" : "kanan"))}
-                className="text-xs px-3 py-1.5 rounded-full border font-medium"
+                className="text-xs px-2.5 py-1 rounded-full border font-medium"
                 style={{ borderColor: C.line, background: C.panel, color: C.ink }}
               >
                 Move Dashboard {dashboardPos === "kanan" ? "↓" : "→"}
@@ -3235,7 +3235,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               {canEdit && (
                 <button
                   onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
-                  className="text-xs px-3 py-1.5 rounded-full border font-medium flex items-center gap-1.5"
+                  className="text-xs px-2.5 py-1 rounded-full border font-medium flex items-center gap-1.5"
                   style={{ borderColor: editMap ? C.amber : C.line, background: editMap ? C.alertAmberBg : C.panel, color: editMap ? C.amber : C.ink }}
                 >
                   <i className="ti ti-pencil" aria-hidden="true" /> {editMap ? "Edit Site Plan aktif — klik untuk selesai" : "Edit Site Plan"}
@@ -3265,7 +3265,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
         )}
         {mode === "kerja" && !calibrating && (
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-xs" style={{ color: C.steel }}>Warna peta:</span>
               <select value={colorMode} onChange={(e) => setColorMode(e.target.value)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
@@ -3279,33 +3279,33 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <input type="range" min="10" max="100" value={opacity} onChange={(e) => setOpacity(Number(e.target.value))} style={{ width: 100 }} />
               <span className="text-xs" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }}>{opacity}%</span>
             </div>
-            <button onClick={printSitePlan} className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="printer" size={13} /> Cetak Site Plan</button>
+            <button onClick={printSitePlan} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5" style={{ border: "none", color: C.ink, background: C.pillFill }}><Ic name="printer" size={13} /> Cetak Site Plan</button>
           </div>
         )}
       </div>
       {calibrating && (
         (blocks.length === 0 || tipeOptions.length === 0) ? (
-          <p className="text-xs mb-3 p-2 rounded-lg" style={{ color: C.amber, background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
+          <p className="text-xs mb-2.5 p-2 rounded-lg" style={{ color: C.amber, background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
             Cluster ini belum punya {blocks.length === 0 && tipeOptions.length === 0 ? "Blok maupun Tipe" : blocks.length === 0 ? "Blok" : "Tipe"}. Tambahkan dulu lewat menu "Settings" sebelum bisa menggambar kavling.
           </p>
         ) : (
-          <p className="text-xs mb-3" style={{ color: C.steel }}>Pilih Blok & Tipe aktif di atas, lalu klik tiap sudut kavling mengikuti bentuknya (min. 3 titik), lalu "Selesai Poligon" dan isi nomor kavlingnya. Klik bentuk yang sudah ada untuk menghapusnya.</p>
+          <p className="text-xs mb-2.5" style={{ color: C.steel }}>Pilih Blok & Tipe aktif di atas, lalu klik tiap sudut kavling mengikuti bentuknya (min. 3 titik), lalu "Selesai Poligon" dan isi nomor kavlingnya. Klik bentuk yang sudah ada untuk menghapusnya.</p>
         )
       )}
 
       {/* ===================== PENGATURAN ===================== */}
       {mode === "pengaturan" && !canEdit && (
-        <div className="mb-4 p-3 rounded-xl text-xs" style={{ background: C.infoBlueBg, border: `1px solid ${C.line}`, color: C.steel }}>
+        <div className="mb-3 p-2.5 rounded-xl text-xs" style={{ background: C.infoBlueBg, border: `1px solid ${C.line}`, color: C.steel }}>
           View Mode — pengaturan di halaman ini tidak bisa diubah dari akun ini.
         </div>
       )}
       {mode === "pengaturan" && (
-        <div className="mb-4" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-          <div className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+        <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 12 }}>
+          <div className="rounded-xl p-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
             <div className="text-sm font-medium mb-1" style={{ color: C.ink }}>Blok</div>
-            <p className="text-xs mb-3" style={{ color: C.steel }}>Ganti nama di sini akan otomatis memindahkan semua kavling yang sudah dikalibrasi — tidak perlu gambar ulang di peta.</p>
-            {settingsMsg && <div className="text-xs mb-3 p-2 rounded-lg" style={{ background: C.alertAmberBg, color: C.amber, border: `1px solid ${C.amber}` }}>{settingsMsg}</div>}
-            <div className="flex flex-col gap-2 mb-3">
+            <p className="text-xs mb-2.5" style={{ color: C.steel }}>Ganti nama di sini akan otomatis memindahkan semua kavling yang sudah dikalibrasi — tidak perlu gambar ulang di peta.</p>
+            {settingsMsg && <div className="text-xs mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, color: C.amber, border: `1px solid ${C.amber}` }}>{settingsMsg}</div>}
+            <div className="flex flex-col gap-2 mb-2.5">
               {blockProgress.map((b) => {
                 const isDuplicateName = blocks.some((x) => x.id !== b.id && x.name === b.name);
                 const canDelete = isDuplicateName || b.placed === 0;
@@ -3346,33 +3346,33 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div className="flex gap-2">
               <input placeholder="Nama blok, mis. RB/K" style={formInput} value={newBlock.name} onChange={(e) => setNewBlock({ ...newBlock, name: e.target.value })} />
               <input placeholder="Target unit" type="number" style={{ ...formInput, maxWidth: 100 }} value={newBlock.target} onChange={(e) => setNewBlock({ ...newBlock, target: e.target.value })} />
-              <button onClick={addBlock} className="text-xs px-3 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
+              <button onClick={addBlock} className="text-xs px-2.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
             </div>
           </div>
 
-          <div className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+          <div className="rounded-xl p-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
             <div className="text-sm font-medium mb-1" style={{ color: C.ink }}>Gambar Site Plan</div>
-            <p className="text-xs mb-3" style={{ color: C.steel }}>Ganti dengan revisi terbaru kapan saja. Titik-titik kavling yang sudah dikalibrasi tetap tersimpan (posisinya persentase, jadi sesuaikan lagi kalau layout gambarnya berubah total).</p>
+            <p className="text-xs mb-2.5" style={{ color: C.steel }}>Ganti dengan revisi terbaru kapan saja. Titik-titik kavling yang sudah dikalibrasi tetap tersimpan (posisinya persentase, jadi sesuaikan lagi kalau layout gambarnya berubah total).</p>
             <img src={siteImage} alt="Preview site plan" loading="lazy" decoding="async" style={{ width: "100%", maxHeight: 140, objectFit: "cover", borderRadius: 8, border: `1px solid ${C.line}`, marginBottom: 10 }} />
             <div className="flex items-center gap-2 flex-wrap">
-              <label className="text-xs px-3 py-1.5 rounded-lg cursor-pointer" style={{ background: C.accent, color: "#fff" }}>
+              <label className="text-xs px-2.5 py-1 rounded-lg cursor-pointer" style={{ background: C.accent, color: "#fff" }}>
                 {imgUploading ? "Memproses..." : "Unggah Gambar Baru"}
                 <input type="file" accept="image/*,.pdf" onChange={handleImageUpload} style={{ display: "none" }} disabled={imgUploading} />
               </label>
               {siteImage !== SITE_IMAGE_DEFAULT && (
-                <button onClick={resetImage} className="text-xs px-3 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Kembalikan Gambar Bawaan</button>
+                <button onClick={resetImage} className="text-xs px-2.5 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Kembalikan Gambar Bawaan</button>
               )}
             </div>
             <p className="text-xs mt-2" style={{ color: C.steel }}>Format gambar (JPG/PNG). Kalau file Anda masih PDF, screenshot atau export halamannya jadi gambar dulu.</p>
           </div>
 
-          <div className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+          <div className="rounded-xl p-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
             <div className="flex items-center justify-between mb-1">
               <div className="text-sm font-medium" style={{ color: C.ink }}>Tipe / Ukuran Kavling</div>
               <button onClick={refreshTipeColors} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>Segarkan Warna</button>
             </div>
-            <p className="text-xs mb-3" style={{ color: C.steel }}>Luas Bangunan diatur di sini per tipe — kavling yang pakai tipe ini otomatis ikut nilainya, tidak perlu diisi satu-satu.</p>
-            <div className="flex flex-col gap-1.5 mb-3">
+            <p className="text-xs mb-2.5" style={{ color: C.steel }}>Luas Bangunan diatur di sini per tipe — kavling yang pakai tipe ini otomatis ikut nilainya, tidak perlu diisi satu-satu.</p>
+            <div className="flex flex-col gap-1.5 mb-2.5">
               {tipeOptions.map((t) => (
                 <div key={t.id} className="flex items-center gap-2 text-sm py-1" style={{ borderBottom: `1px solid ${C.line}` }}>
                   <span className="w-3 h-3 rounded-sm inline-block shrink-0" style={{ background: t.color }} />
@@ -3403,16 +3403,16 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div className="flex gap-2">
               <input placeholder="Tipe baru, mis. Standar 8x12" style={formInput} value={newTipe} onChange={(e) => setNewTipe(e.target.value)} />
               <input placeholder="Luas Bangunan m²" type="number" min="0" style={{ ...formInput, maxWidth: 140 }} value={newTipeLuas} onChange={(e) => setNewTipeLuas(e.target.value)} />
-              <button onClick={addTipe} className="text-xs px-3 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
+              <button onClick={addTipe} className="text-xs px-2.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
             </div>
           </div>
 
-          <div className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+          <div className="rounded-xl p-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
             <div className="text-sm font-medium mb-1" style={{ color: C.ink }}>Status yang Dilacak</div>
-            <p className="text-xs mb-3" style={{ color: C.steel }}>Centang "Detail" kalau status ini butuh keterangan tambahan (kayak "Order AC" — muncul kotak isian begitu dicentang).</p>
-            <div className="flex flex-col gap-1.5 mb-3">
+            <p className="text-xs mb-2.5" style={{ color: C.steel }}>Centang "Detail" kalau status ini butuh keterangan tambahan (kayak "Order AC" — muncul kotak isian begitu dicentang).</p>
+            <div className="flex flex-col gap-1.5 mb-2.5">
               {statusFields.map((s, idx) => (
-                <div key={s.key} className="flex items-center justify-between gap-3 text-sm py-1.5" style={{ borderBottom: `1px solid ${C.line}` }}>
+                <div key={s.key} className="flex items-center justify-between gap-2.5 text-sm py-1" style={{ borderBottom: `1px solid ${C.line}` }}>
                   <div className="flex items-center gap-1.5">
                     <div className="flex flex-col">
                       <button onClick={() => moveStatusField(s.key, -1)} disabled={idx === 0} className="leading-none" style={{ color: idx === 0 ? C.faint : C.steel, fontSize: 10, cursor: idx === 0 ? "not-allowed" : "pointer" }}>▲</button>
@@ -3424,7 +3424,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                       style={{ ...cellInput, width: "auto", flex: "0 1 180px", fontWeight: 600 }}
                     />
                   </div>
-                  <div className="flex items-center gap-4 shrink-0">
+                  <div className="flex items-center gap-3 shrink-0">
                     <label className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
                       <input type="checkbox" checked={!!s.hasDetail} onChange={() => toggleStatusDetail(s.key)} /> Detail
                     </label>
@@ -3445,16 +3445,16 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <label className="flex items-center gap-1.5 text-xs whitespace-nowrap" style={{ color: C.steel }}>
                 <input type="checkbox" checked={newStatusHasDetail} onChange={(e) => setNewStatusHasDetail(e.target.checked)} /> Punya detail
               </label>
-              <button onClick={addStatus} className="text-xs px-3 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
+              <button onClick={addStatus} className="text-xs px-2.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
             </div>
             <p className="text-xs mt-2" style={{ color: C.steel }}>Kavling yang sudah ada otomatis dapat status baru = "belum", tinggal dicentang di tabel.</p>
           </div>
 
-          <div className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-            <div className="text-sm font-medium mb-3" style={{ color: C.ink }}>Kategori Rumah</div>
-            <div className="flex flex-col gap-1.5 mb-3">
+          <div className="rounded-xl p-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+            <div className="text-sm font-medium mb-2.5" style={{ color: C.ink }}>Kategori Rumah</div>
+            <div className="flex flex-col gap-1.5 mb-2.5">
               {kategoriOptions.map((k) => (
-                <div key={k} className="flex items-center justify-between gap-3 text-sm py-1" style={{ borderBottom: `1px solid ${C.line}` }}>
+                <div key={k} className="flex items-center justify-between gap-2.5 text-sm py-1" style={{ borderBottom: `1px solid ${C.line}` }}>
                   <input
                     defaultValue={k}
                     onBlur={(e) => renameKategori(k, e.target.value)}
@@ -3473,17 +3473,17 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </div>
             <div className="flex gap-2">
               <input placeholder="Kategori baru" style={formInput} value={newKategori} onChange={(e) => setNewKategori(e.target.value)} />
-              <button onClick={addKategori} className="text-xs px-3 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
+              <button onClick={addKategori} className="text-xs px-2.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
             </div>
           </div>
 
-          <div className="rounded-xl p-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+          <div className="rounded-xl p-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
             <div className="text-sm font-medium mb-1" style={{ color: C.ink }}>Cadangkan / Pulihkan Data</div>
-            <p className="text-xs mb-3" style={{ color: C.steel }}>Simpan salinan semua data (kavling, blok, tipe, status) ke file — supaya aman kalau ada perubahan besar pada aplikasinya. Lakukan ini sesering mungkin selagi masih sering ada pembaruan.</p>
+            <p className="text-xs mb-2.5" style={{ color: C.steel }}>Simpan salinan semua data (kavling, blok, tipe, status) ke file — supaya aman kalau ada perubahan besar pada aplikasinya. Lakukan ini sesering mungkin selagi masih sering ada pembaruan.</p>
             <div className="flex items-center gap-2 flex-wrap">
-              <button onClick={exportBackup} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Unduh Cadangan (JSON)</button>
+              <button onClick={exportBackup} className="text-xs px-2.5 py-1 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Unduh Cadangan (JSON)</button>
               {canEdit && (
-                <label className="text-xs px-3 py-1.5 rounded-lg cursor-pointer" style={{ border: `1px solid ${C.line}`, color: C.ink }}>
+                <label className="text-xs px-2.5 py-1 rounded-lg cursor-pointer" style={{ border: `1px solid ${C.line}`, color: C.ink }}>
                   Pulihkan dari File
                   <input type="file" accept="application/json" onChange={importBackup} style={{ display: "none" }} />
                 </label>
@@ -3498,7 +3498,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       {mode === "kerja" && (
         <>
           {dashboardPos === "kanan" ? (
-            <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", gap: 0, marginBottom: 16 }}>
+            <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", gap: 0, marginBottom: 12 }}>
               <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
                 {mapPanelJSX}
               </div>
@@ -3513,13 +3513,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </div>
             </div>
           ) : (
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 12 }}>
               {mapPanelJSX}
               {dashboardJSX}
             </div>
           )}
           {!calibrating && (
-            <div className="rounded-xl p-4 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+            <div className="rounded-xl p-3 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
               {InspectorPanel()}
             </div>
           )}
@@ -3528,38 +3528,38 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
       {/* ===================== TABLE (Main Mode & Data Mode) — full width ===================== */}
       {(mode === "kerja" || mode === "data") && (
-        <div className="rounded-xl p-3 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+        <div className="rounded-xl p-2.5 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
           {followUpFilterActive && (
-            <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
+            <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
               <span className="text-xs" style={{ color: C.amber }}>Menampilkan hanya kavling yang perlu ditindaklanjuti.</span>
               <button onClick={() => setFollowUpFilterActive(false)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.amber}`, color: C.amber, background: C.panel }}>Tampilkan Semua</button>
             </div>
           )}
           {duplicateFilterActive ? (
-            <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
+            <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
               <span className="text-xs" style={{ color: C.red }}>Menampilkan hanya kavling dengan nomor duplikat.</span>
               <button onClick={() => setDuplicateFilterActive(false)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.red}`, color: C.red, background: C.panel }}>Tampilkan Semua</button>
             </div>
           ) : clusterDuplicateCount > 0 && (
-            <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
+            <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
               <span className="text-xs flex items-center gap-1.5" style={{ color: C.red }}><Ic name="warning" size={14} /> Ada {clusterDuplicateCount} kavling dengan nomor duplikat di cluster ini.</span>
               <button onClick={() => setDuplicateFilterActive(true)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.red, color: "#fff" }}>Lihat</button>
             </div>
           )}
           {lastDeleted && (
-            <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
+            <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
               <span className="text-xs" style={{ color: C.amber }}>Kavling {lastDeleted.blok}-{lastDeleted.noKavling} dihapus.</span>
               <button onClick={undoDelete} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.amber, color: "#fff" }}>Undo</button>
             </div>
           )}
           {lastDeletedBulk && (
-            <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
+            <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
               <span className="text-xs" style={{ color: C.amber }}>{lastDeletedBulk.length} kavling dihapus.</span>
               <button onClick={undoBulkDelete} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.amber, color: "#fff" }}>Undo</button>
             </div>
           )}
           {selectedRows.length > 0 && (
-            <div className="flex items-center gap-3 flex-wrap mb-3 p-2 rounded-lg" style={{ background: C.rowSelectedBg, border: `1px solid ${C.accent}` }}>
+            <div className="flex items-center gap-2.5 flex-wrap mb-2.5 p-2 rounded-lg" style={{ background: C.rowSelectedBg, border: `1px solid ${C.accent}` }}>
               <span className="text-xs font-semibold" style={{ color: C.ink }}>{selectedRows.length} kavling dipilih</span>
               <select onChange={(e) => { bulkSetKategori(e.target.value); e.target.value = ""; }} defaultValue="" className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
                 <option value="" disabled>Set Kategori...</option>
@@ -3637,15 +3637,15 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </div>
             </div>
           )}
-          <div className="flex items-center justify-between mb-2 flex-wrap gap-3">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between mb-2 flex-wrap gap-2.5">
+            <div className="flex items-center gap-2.5">
               <div className="text-sm font-medium" style={{ color: C.ink }}>Data Blok ({tableRows.length})</div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <span className="flex items-center gap-1 text-xs" style={{ color: C.steel }}><span style={{ width: 7, height: 7, borderRadius: "50%", background: C.red, display: "inline-block" }} /> No. duplikat</span>
                 <span className="flex items-center gap-1 text-xs" style={{ color: C.steel }}><span style={{ width: 7, height: 7, borderRadius: "50%", background: C.gold, display: "inline-block" }} /> Data belum lengkap</span>
               </div>
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2.5 flex-wrap">
               <input
                 value={tableSearchQuery}
                 onChange={(e) => setTableSearchQuery(e.target.value)}
@@ -3739,7 +3739,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </thead>
               <tbody>
                 {pageRows.length === 0 && (
-                  <tr><td colSpan={16 + statusFields.length} className="text-center py-4" style={{ color: C.steel }}>
+                  <tr><td colSpan={16 + statusFields.length} className="text-center py-3" style={{ color: C.steel }}>
                     {houses.length === 0
                       ? "Belum ada data. Tambahkan lewat tombol Edit Site Plan di Main Mode."
                       : totalRows === 0
@@ -3976,7 +3976,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </table>
           </div>
 
-          <div className="flex items-center justify-between flex-wrap gap-3 mt-3 pt-3" style={{ borderTop: `1px solid ${C.line}` }}>
+          <div className="flex items-center justify-between flex-wrap gap-2.5 mt-2.5 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
             <div className="flex items-center gap-2 text-xs" style={{ color: C.steel }}>
               <span>Show</span>
               <select value={pageSize} onChange={(e) => setPageSize(e.target.value === "all" ? "all" : Number(e.target.value))} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>

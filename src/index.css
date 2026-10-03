@@ -57,6 +57,10 @@
   --chip-blue-bg: #1E2B40;
 }
 
+html {
+  font-size: 15px;
+}
+
 html, body, #root {
   height: 100%;
 }
