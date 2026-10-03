@@ -186,6 +186,11 @@ const ICON_PATHS = {
   warning: <><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4" /><path d="M12 17h.01" /></>,
   download: <><path d="M12 3v13" /><path d="m7 11 5 5 5-5" /><path d="M4 21h16" /></>,
   upload: <><path d="M12 21V8" /><path d="m7 12 5-5 5 5" /><path d="M4 21h16" /></>,
+  pencil: <><path d="M4 20h4L19 9l-4-4L4 16v4Z" /><path d="m13.5 6.5 4 4" /></>,
+  layoutBottom: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 14h18" /></>,
+  layoutRight: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M15 4v16" /></>,
+  arrowsH: <><path d="M4 12h16" /><path d="m8 8-4 4 4 4" /><path d="m16 8 4 4-4 4" /></>,
+  arrowsV: <><path d="M12 4v16" /><path d="m8 8 4-4 4 4" /><path d="m8 16 4 4 4-4" /></>,
 };
 function Ic({ name, size = 16, color }) {
   return (
@@ -465,7 +470,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
     e.preventDefault();
     e.stopPropagation();
   }
-  const [mapPct, setMapPct] = useState(62);
+  // Ukuran panel site plan (lebar % dan tinggi px; tinggi null = otomatis),
+  // diingat per perangkat lewat localStorage.
+  const [mapPct, setMapPct] = useState(() => { try { return Number(JSON.parse(localStorage.getItem("bria-map-size")).w) || 62; } catch (e) { return 62; } });
+  const [mapHeight, setMapHeight] = useState(() => { try { return Number(JSON.parse(localStorage.getItem("bria-map-size")).h) || null; } catch (e) { return null; } });
+  useEffect(() => {
+    try { localStorage.setItem("bria-map-size", JSON.stringify({ w: Math.round(mapPct), h: mapHeight })); } catch (e) {}
+  }, [mapPct, mapHeight]);
   const rowRef = useRef(null);
   const draggingRef = useRef(false);
 
@@ -2093,6 +2104,18 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   <button onClick={cancelDrawing} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Batal</button>
                 </div>
               )}
+              <div className="flex items-center gap-2.5" title="Atur ukuran panel Site Plan (klik 2x untuk kembali ke ukuran awal)">
+                {dashboardPos === "kanan" && (
+                  <label className="flex items-center gap-1 text-xs" style={{ color: C.steel }}>
+                    <Ic name="arrowsH" size={14} />
+                    <input type="range" min="30" max="78" value={Math.round(mapPct)} onChange={(e) => setMapPct(Number(e.target.value))} onDoubleClick={() => setMapPct(62)} aria-label="Lebar panel Site Plan" style={{ width: 72 }} />
+                  </label>
+                )}
+                <label className="flex items-center gap-1 text-xs" style={{ color: C.steel }}>
+                  <Ic name="arrowsV" size={14} />
+                  <input type="range" min="300" max="1000" step="20" value={mapHeight || 640} onChange={(e) => setMapHeight(Number(e.target.value))} onDoubleClick={() => setMapHeight(null)} aria-label="Tinggi panel Site Plan" style={{ width: 72 }} />
+                </label>
+              </div>
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setZoom((z) => Math.max(50, z - 20))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
                 <div className="flex items-center h-7 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel }}>
@@ -2125,7 +2148,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </div>
           ) : (
           <div
-            style={{ overflow: "auto", maxHeight: 640, border: `1px solid ${C.line}`, borderRadius: 8, touchAction: "pan-x pan-y" }}
+            style={{ overflow: "auto", ...(mapHeight ? { height: mapHeight } : { maxHeight: 640 }), border: `1px solid ${C.line}`, borderRadius: 8, touchAction: "pan-x pan-y" }}
             onWheel={handleWheelZoom}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -3227,10 +3250,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div className="flex items-center gap-2 ml-auto flex-wrap">
               <button
                 onClick={() => setDashboardPos((p) => (p === "kanan" ? "bawah" : "kanan"))}
-                className="text-xs px-2.5 py-1 rounded-full border font-medium"
+                className="text-xs px-2.5 py-1 rounded-full border font-medium flex items-center gap-1.5"
                 style={{ borderColor: C.line, background: C.panel, color: C.ink }}
               >
-                Move Dashboard {dashboardPos === "kanan" ? "↓" : "→"}
+                <Ic name={dashboardPos === "kanan" ? "layoutBottom" : "layoutRight"} size={14} /> Move Dashboard {dashboardPos === "kanan" ? "↓" : "→"}
               </button>
               {canEdit && (
                 <button
@@ -3238,7 +3261,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   className="text-xs px-2.5 py-1 rounded-full border font-medium flex items-center gap-1.5"
                   style={{ borderColor: editMap ? C.amber : C.line, background: editMap ? C.alertAmberBg : C.panel, color: editMap ? C.amber : C.ink }}
                 >
-                  <i className="ti ti-pencil" aria-hidden="true" /> {editMap ? "Edit Site Plan aktif — klik untuk selesai" : "Edit Site Plan"}
+                  <Ic name="pencil" size={14} /> {editMap ? "Edit Site Plan aktif — klik untuk selesai" : "Edit Site Plan"}
                 </button>
               )}
             </div>
