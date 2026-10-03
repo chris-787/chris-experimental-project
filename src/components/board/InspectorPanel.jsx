@@ -7,7 +7,7 @@ import { timeAgo } from "../../lib/calc";
 import { useBoard } from "./BoardContext";
 
 export default function InspectorPanel() {
-  const { confirmDeleteId, detailEditingKey, finalHppPerM2, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, luasBangunanOf, marginOf, marginPct, monthEditingKey, priceEditingKey, printKavlingSummary, removeHouse, selectFromMap, selectedId, setConfirmDeleteId, setDetail, setDetailEditingKey, setMonthEditingKey, setPriceEditingKey, setSelectedId, setTextEditingKey, statusFields, tableRows, textEditingKey, tipeOptions, updateHouse, updateStatus } = useBoard();
+  const { canEdit, confirmDeleteId, detailEditingKey, finalHppPerM2, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, luasBangunanOf, marginOf, marginPct, monthEditingKey, priceEditingKey, printKavlingSummary, removeHouse, selectFromMap, selectedId, setConfirmDeleteId, setDetail, setDetailEditingKey, setMonthEditingKey, setPriceEditingKey, setSelectedId, setTextEditingKey, statusFields, tableRows, textEditingKey, tipeOptions, updateHouse, updateStatus } = useBoard();
     if (!selectedId) {
       return <div className="text-sm py-2 text-center" style={{ color: C.steel }}>Klik salah satu kavling di peta untuk mengisi datanya.</div>;
     }
@@ -211,7 +211,7 @@ export default function InspectorPanel() {
         </div>
         </div>
 
-        <div className="mt-3 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
+        {canEdit && <div className="mt-3 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
           {confirmDeleteId === h.id ? (
             <div className="flex gap-2">
               <button onClick={() => { removeHouse(h.id); setConfirmDeleteId(null); }} className="text-xs px-2.5 py-1 rounded-lg flex-1" style={{ background: C.red, color: "#fff" }}>Ya, Hapus Kavling Ini</button>
@@ -220,7 +220,7 @@ export default function InspectorPanel() {
           ) : (
             <button onClick={() => setConfirmDeleteId(h.id)} className="text-xs" style={{ color: C.red }}>Hapus Kavling Ini</button>
           )}
-        </div>
+        </div>}
       </div>
     );
 }
