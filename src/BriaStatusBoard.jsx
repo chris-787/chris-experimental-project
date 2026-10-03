@@ -412,11 +412,14 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [colWidths, setColWidths] = useState({});
   const [showColMenu, setShowColMenu] = useState(false);
 
-  const DEFAULT_COL_WIDTH = { no: 44, select: 34, kavling: 90, tipe: 120, kategori: 140, kontraktor: 150, noSpk: 150, thSpk: 75, blnSpk: 75, luasBangunan: 90, hpp: 160, adendum: 110, hargaJual: 160, margin: 120, catatan: 160, aksi: 170 };
+  const DEFAULT_COL_WIDTH = { no: 44, select: 34, kavling: 90, tipe: 120, kategori: 140, kontraktor: 150, noSpk: 150, thSpk: 75, blnSpk: 75, luasBangunan: 90, hpp: 215, adendum: 110, hargaJual: 215, margin: 195, catatan: 160, aksi: 170 };
+  // Kolom harga & margin isinya angka panjang; lebar minimum ini menjaga
+  // isinya tetap satu baris supaya tinggi baris tabel tetap pendek.
+  const MIN_COL_WIDTH = { hpp: 215, hargaJual: 215, margin: 195 };
   function colWidth(key) {
     const w = colWidths[key] || DEFAULT_COL_WIDTH[key] || (key === "acOrder" ? 170 : 90);
     if (key === "select") return w;
-    return Math.max(60, w);
+    return Math.max(MIN_COL_WIDTH[key] || 60, w);
   }
   function resetColWidths() {
     setColWidths({});
@@ -2032,7 +2035,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </div>
             </div>
           )}
-          <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
+          <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 10 }}>
             {[
               { label: "Kavling Terpetakan", value: `${houses.length} / ${totalTarget}` },
               { label: "Sudah Terjual", value: `${soldUnits.length} / ${houses.length}` },
@@ -2043,7 +2046,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             ].map((s) => (
               <div key={s.label} className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
                 <div style={{ fontSize: 12, color: C.steel, marginBottom: 3 }}>{s.label}</div>
-                <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{s.value}</div>
+                <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace", overflowWrap: "anywhere" }}>{s.value}</div>
               </div>
             ))}
           </div>
@@ -2489,6 +2492,15 @@ export default function BriaStatusBoard({ onLogout, session }) {
     );
   }
 
+  // Kolom yang dibekukan (tetap terlihat saat tabel digeser ke samping):
+  // No, kotak centang, dan Kavling. Posisi kiri tiap kolom = jumlah lebar
+  // kolom beku sebelumnya yang sedang tampil.
+  const FROZEN_KEYS = ["no", "select", "kavling"];
+  const rowBg = (h) => (selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : C.panel);
+  const frozenLeft = {};
+  let frozenAcc = 0;
+  FROZEN_KEYS.forEach((k) => { frozenLeft[k] = frozenAcc; if (!hiddenCols.includes(k)) frozenAcc += colWidth(k); });
+
   return (
     <div style={{ background: C.paper, minHeight: "100%", fontFamily: "Inter, sans-serif" }} className="p-5">
       <style>{`
@@ -2505,7 +2517,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
           .inspector-cols { grid-template-columns: minmax(0, 1fr); gap: 0; }
           .inspector-cols > div + div { border-left: none; padding-left: 0; }
         }
-        table.dataTbl tr:hover td { background: ${C.rowSelectedBg}; }
+        table.dataTbl tr:hover td { background: ${C.rowSelectedBg} !important; }
+        table.dataTbl th { z-index: 3; }
+        table.dataTbl th.frz { z-index: 4; }
+        table.dataTbl td.frz { position: sticky; z-index: 2; }
         table.dataTbl tr:hover .kavling-link { text-decoration-color: currentColor; }
         input[type=range] { accent-color: ${C.accent}; }
         .col-resize-handle:hover { background: ${C.accent}33; }
@@ -2979,7 +2994,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 ].map((s) => (
                   <div key={s.label} className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
                     <div style={{ fontSize: 11, color: C.steel, marginBottom: 3 }}>{s.label}</div>
-                    <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{s.value}</div>
+                    <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace", overflowWrap: "anywhere" }}>{s.value}</div>
                   </div>
                 ))}
               </div>
@@ -3695,7 +3710,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
               <thead>
                 <tr>
                   {columns.map((c) => (
-                    <th key={c.key} style={{ position: "sticky", top: 0, borderRight: (c.key !== "aksi" && c.key !== "select") ? `1px solid ${C.line}` : "none" }}>
+                    <th key={c.key} className={FROZEN_KEYS.includes(c.key) ? "frz" : undefined} style={{ position: "sticky", top: 0, ...(FROZEN_KEYS.includes(c.key) ? { left: frozenLeft[c.key], boxShadow: c.key === "kavling" ? `inset -1px 0 0 ${C.line}` : undefined } : {}), borderRight: (c.key !== "aksi" && c.key !== "select") ? `1px solid ${C.line}` : "none" }}>
                       {c.key === "no" || c.key === "aksi" ? c.label : c.key === "select" ? (
                         <input
                           type="checkbox"
@@ -3734,13 +3749,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 )}
                 {pageRows.map((h, i) => (
                   <tr key={h.id} ref={(el) => (rowRefs.current[h.id] = el)} style={{ background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
-                    <td className="text-center" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }} onClick={(e) => e.stopPropagation()}>
+                    <td className="text-center frz" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", left: frozenLeft.no, background: rowBg(h) }} onClick={(e) => e.stopPropagation()}>
                       {(pageSize === "all" ? 0 : (currentPage - 1) * pageSize) + i + 1}
                     </td>
-                    <td className="text-center" onClick={(e) => e.stopPropagation()}>
+                    <td className="text-center frz" style={{ left: frozenLeft.select, background: rowBg(h) }} onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={selectedRows.includes(h.id)} onChange={() => toggleRowSelect(h.id)} />
                     </td>
-                    <td style={{ fontFamily: "IBM Plex Mono, monospace", overflow: "hidden" }} onClick={(e) => { if (calibrating) { e.stopPropagation(); setSelectedId(h.id); } }}>
+                    <td className="frz" style={{ fontFamily: "IBM Plex Mono, monospace", overflow: "hidden", left: frozenLeft.kavling, background: rowBg(h), boxShadow: `inset -1px 0 0 ${C.line}` }} onClick={(e) => { if (calibrating) { e.stopPropagation(); setSelectedId(h.id); } }}>
                       <div className="flex items-center gap-1">
                         {isDuplicateKavling(h) && <span title="Nomor kavling ini duplikat di bloknya" style={{ width: 7, height: 7, borderRadius: "50%", background: C.red, flexShrink: 0 }} />}
                         {!isDuplicateKavling(h) && isIncomplete(h) && <span title="Data harga/luas bangunan belum lengkap" style={{ width: 7, height: 7, borderRadius: "50%", background: C.gold, flexShrink: 0 }} />}
@@ -3876,7 +3891,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:hpp`); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "normal", wordBreak: "break-word" }}
+                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "nowrap" }}
                         >
                           {rupiah(h.hppPerM2)}
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hppTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
@@ -3905,18 +3920,18 @@ export default function BriaStatusBoard({ onLogout, session }) {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:harga`); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "normal", wordBreak: "break-word" }}
+                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "nowrap" }}
                         >
                           {rupiah(h.hargaJualPerM2)}
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hargaJualTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
                         </div>
                       )}
                     </td>
-                    <td style={{ fontFamily: "IBM Plex Mono, monospace", color: marginPct(h) >= 20 ? C.green : C.red, fontWeight: 600, whiteSpace: "normal", wordBreak: "break-word" }}>
+                    <td style={{ fontFamily: "IBM Plex Mono, monospace", color: marginPct(h) >= 20 ? C.green : C.red, fontWeight: 600, whiteSpace: "nowrap" }}>
                       {!luasBangunanOf(h) ? <span style={{ color: C.steel, fontWeight: 400, fontSize: 11 }}>atur LB Tipe</span> : (
                         <>
                           {marginPct(h).toFixed(2)}%
-                          <div style={{ fontSize: 10, fontWeight: 400, color: C.steel }}>{rupiah(marginOf(h))}</div>
+                          <span style={{ fontSize: 10, fontWeight: 400, color: C.steel, marginLeft: 6 }}>{rupiah(marginOf(h))}</span>
                           {h.adendum && h.adendumAmount ? <div style={{ fontSize: 9, fontWeight: 400, color: C.steel }}>HPP/m² efektif: {rupiah(Math.round(finalHppPerM2(h)))}</div> : null}
                         </>
                       )}
