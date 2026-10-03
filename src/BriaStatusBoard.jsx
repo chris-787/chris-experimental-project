@@ -33,6 +33,12 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "
 
 const WHATS_NEW_GROUPS = [
   {
+    date: "3 Oktober 2026",
+    items: [
+      { icon: "🗺️", title: "Main Mode, Data Mode, Settings", desc: "Mode Kalibrasi dan Mode Kerja digabung jadi Main Mode. Alat gambar kavling sekarang ada di tombol \"Edit Peta\" (hanya nyala kalau Anda sengaja menyalakannya, jadi lebih aman). Di Main Mode: site plan dan dashboard sebaris, detail kavling di bawahnya dibagi dua kolom, lalu tabel. Data Mode berisi tabel saja, dan Pengaturan berganti nama jadi Settings." },
+    ],
+  },
+  {
     date: "30 September 2026",
     items: [
       { icon: "🎨", title: "Desain Baru", desc: "Tampilan Home, Mode Kalibrasi/Kerja/Pengaturan, dan Login dirombak: kartu putih berbayang lembut, tombol berbentuk pil, ikon pengganti emoji, dan label tombol lebih ringkas (Export to Excel, Backup (JSON), Restore (JSON), Print)." },
@@ -333,7 +339,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [confirmDeleteStatusKey, setConfirmDeleteStatusKey] = useState(null);
   const [confirmDeleteKategoriName, setConfirmDeleteKategoriName] = useState(null);
 
-  const [mode, setMode] = useState("input"); // input | kerja | data | pengaturan
+  const [mode, setMode] = useState("kerja"); // kerja (Main Mode) | data | pengaturan (Settings)
+  const [editMap, setEditMap] = useState(false);
+  const calibrating = mode === "kerja" && editMap && canEdit;
   const [activeBlock, setActiveBlock] = useState(DEFAULT_BLOCKS[0].name);
   const [activeTipe, setActiveTipe] = useState(DEFAULT_TIPE[0].name);
   const [colorMode, setColorMode] = useState("terjual");
@@ -454,7 +462,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
     e.stopPropagation();
   }
   const [mapPct, setMapPct] = useState(62);
-  const [dashboardPos, setDashboardPos] = useState("bawah"); // "bawah" | "kanan" — hanya berlaku di Mode Kalibrasi
   const rowRef = useRef(null);
   const draggingRef = useRef(false);
 
@@ -550,7 +557,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setTableStatusFilter("semua");
     setSelectedId(null); setConfirmDeleteId(null); setActionMenuId(null);
     setEditingShapeId(null); setEditPoints(null); setSelectedRows([]);
-    setDraft(null); setDrawingPoints([]); setMode("input"); setFollowUpFilterActive(false);
+    setDraft(null); setDrawingPoints([]); setMode("kerja"); setEditMap(false); setFollowUpFilterActive(false);
     setHousesUpdatedAt(null); setSaveConflict(false); setRemoteUpdateAvailable(false);
     // Tiga fetch independen (houses, gambar, config) dijalankan paralel --
     // sebelumnya berurutan (tiap fetch nunggu yang sebelumnya selesai dulu),
@@ -1194,8 +1201,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
 
   // ---- drawing ----
+  function goMode(m) {
+    setMode(m); setEditMap(false);
+    setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null);
+  }
   function handleImageClick(e) {
-    if (!canEdit || mode !== "input" || draft || editingShapeId || actionMenuId) return;
+    if (!calibrating || draft || editingShapeId || actionMenuId) return;
     const hasValidBlock = blocks.some((b) => b.name === activeBlock);
     const hasValidTipe = tipeOptions.some((t) => t.name === activeTipe);
     if (!hasValidBlock || !hasValidTipe) return;
@@ -1739,7 +1750,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   function marginOf(h) { const hj = hargaJualTotal(h); return hj - finalHpp(h); }
   function marginPct(h) { const hj = hargaJualTotal(h); return hj ? (marginOf(h) / hj) * 100 : 0; }
   function polyColor(h) {
-    if (mode === "input") return tipeColor(h.tipe);
+    if (calibrating) return tipeColor(h.tipe);
     if (colorMode === "blok") return blockColor(h.blok);
     if (colorMode === "tipe") return tipeColor(h.tipe);
     return h.status[colorMode] ? C.green : C.red;
@@ -1755,7 +1766,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
 
   const blockProgress = useMemo(() => blocks.map((b) => ({ ...b, placed: houses.filter((h) => h.blok === b.name).length })), [houses, blocks]);
-  const polygonsClickable = mode === "kerja" || (mode === "input" && drawingPoints.length === 0 && !draft && !editingShapeId);
+  const polygonsClickable = !calibrating || (drawingPoints.length === 0 && !draft && !editingShapeId);
 
   const columns = useMemo(() => ([
     { key: "no", label: "No" },
@@ -1822,7 +1833,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         setShowRekapKontraktor(false);
         return;
       }
-      if (mode !== "kerja" || !selectedId) return;
+      if (mode !== "kerja" || calibrating || !selectedId) return;
       const tag = (e.target.tagName || "").toLowerCase();
       const isTyping = tag === "input" || tag === "textarea" || tag === "select";
       if (e.key === "Escape") {
@@ -1843,7 +1854,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [mode, selectedId, tableRows, actionMenuId, showWhatsNew, showSimulasi, showRekapKontraktor]);
+  }, [mode, calibrating, selectedId, tableRows, actionMenuId, showWhatsNew, showSimulasi, showRekapKontraktor]);
   const totalRows = tableRows.length;
   const effectivePageSize = pageSize === "all" ? Math.max(totalRows, 1) : pageSize;
   const totalPages = Math.max(1, Math.ceil(totalRows / effectivePageSize));
@@ -2070,7 +2081,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </div>
             {siteImage && (
             <div className="flex items-center gap-2 flex-wrap">
-              {mode === "input" && drawingPoints.length > 0 && (
+              {calibrating && drawingPoints.length > 0 && (
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs" style={{ color: C.ink }}>{drawingPoints.length} titik</span>
                   <button onClick={undoPoint} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Undo</button>
@@ -2116,7 +2127,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <div ref={imgWrapRef} style={{ position: "relative", display: "grid", width: `${zoom}%`, cursor: mode === "input" ? "crosshair" : "default" }} onClick={handleImageClick}>
+            <div ref={imgWrapRef} style={{ position: "relative", display: "grid", width: `${zoom}%`, cursor: calibrating ? "crosshair" : "default" }} onClick={handleImageClick}>
               <img src={siteImage} alt="Site plan" style={{ gridArea: "1 / 1", width: "100%", display: "block", userSelect: "none" }} draggable={false} />
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ gridArea: "1 / 1", width: "100%", height: "100%" }}>
                 {houses.filter((h) => h.id !== editingShapeId).map((h) => (
@@ -2135,7 +2146,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                       style={{ pointerEvents: polygonsClickable ? "auto" : "none", cursor: "pointer" }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (mode === "input") { if (canEdit) { setActionMenuId(h.id); setSelectedId(h.id); } }
+                        if (calibrating) { setActionMenuId(h.id); setSelectedId(h.id); }
                         else selectFromMap(h.id);
                       }}>
                       <title>{`${h.blok}-${h.noKavling}`}</title>
@@ -2157,7 +2168,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   <polygon points={draft.points.map((p) => `${p.x},${p.y}`).join(" ")} fill={C.red} fillOpacity="0.35" stroke={C.red} strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
                 )}
               </svg>
-              {actionMenuId && mode === "input" && (() => {
+              {actionMenuId && calibrating && (() => {
                 const target = houses.find((h) => h.id === actionMenuId);
                 if (!target) return null;
                 const { cx, cy } = centroid(target.points);
@@ -2189,7 +2200,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   </div>
                 );
               })()}
-              {confirmDeleteId && mode === "input" && (() => {
+              {confirmDeleteId && calibrating && (() => {
                 const target = houses.find((h) => h.id === confirmDeleteId);
                 if (!target) return null;
                 const { cx, cy } = centroid(target.points);
@@ -2221,7 +2232,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           )}
 
           <div className="flex flex-wrap gap-3 mt-3 pt-3" style={{ borderTop: `1px solid ${C.line}` }}>
-            {mode === "input" ? (
+            {calibrating ? (
               tipeOptions.map((t) => (
                 <div key={t.name} className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
                   <span className="w-3 h-3 rounded-sm inline-block" style={{ background: t.color }} /> {t.name}
@@ -2260,9 +2271,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
   );
 
   function InspectorPanel() {
-    if (mode === "input") {
-      return null;
-    }
     if (!selectedId) {
       return <div className="text-sm py-8 text-center" style={{ color: C.steel }}>Klik salah satu kavling di peta untuk mengisi datanya.</div>;
     }
@@ -2289,6 +2297,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
         </div>
 
+        <div className="inspector-cols">
+        <div>
         <Field label="Tipe / Ukuran">
           <select style={formInput} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
             {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
@@ -2377,6 +2387,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
               </div>
             </div>
           )}
+        </div>
+        </div>
+        <div>
+        <div>
           <div className="grid grid-cols-2 gap-2">
             <div className="text-xs mb-2" style={{ color: C.steel }}>
               Luas Bangunan: <b style={{ color: C.ink }}>{luasBangunanOf(h)} m²</b> <span style={{ color: C.steel }}>(ikut Tipe "{h.tipe}", atur di Pengaturan)</span>
@@ -2454,6 +2468,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
             />
           </Field>
         </div>
+        </div>
+        </div>
 
         <div className="mt-4 pt-3" style={{ borderTop: `1px solid ${C.line}` }}>
           {confirmDeleteId === h.id ? (
@@ -2475,6 +2491,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 3px 6px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
         table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; will-change: transform; }
+        .inspector-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+        .inspector-cols > div + div { border-left: 1px solid ${C.line}; padding-left: 24px; }
+        @media (max-width: 680px) {
+          .inspector-cols { grid-template-columns: minmax(0, 1fr); gap: 0; }
+          .inspector-cols > div + div { border-left: none; padding-left: 0; }
+        }
         table.dataTbl tr:hover td { background: ${C.rowSelectedBg}; }
         table.dataTbl tr:hover .kavling-link { text-decoration-color: currentColor; }
         input[type=range] { accent-color: ${C.accent}; }
@@ -3113,7 +3135,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             <div>
               <div className="text-xs" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}><ClockText /></div>
               <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.steel, textTransform: "uppercase" }}>
-                {mode === "input" ? "Mode Kalibrasi" : mode === "kerja" ? "Mode Kerja" : mode === "data" ? "Mode Data" : "Pengaturan"} — {activeCluster.name}
+                {mode === "kerja" ? (calibrating ? "Main Mode · Edit Peta" : "Main Mode") : mode === "data" ? "Data Mode" : "Settings"} — {activeCluster.name}
               </div>
             </div>
           </div>
@@ -3175,12 +3197,20 @@ export default function BriaStatusBoard({ onLogout, session }) {
       {/* TABS */}
       <div className="rounded-xl p-3 mb-4 flex flex-col gap-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
         <div className="flex gap-1.5 flex-wrap">
-          <Chip active={mode === "input"} onClick={() => setMode("input")}>Mode Kalibrasi</Chip>
-          <Chip active={mode === "kerja"} onClick={() => { setMode("kerja"); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); }}>Mode Kerja</Chip>
-          <Chip active={mode === "data"} onClick={() => { setMode("data"); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); }}>Mode Data</Chip>
-          <Chip active={mode === "pengaturan"} onClick={() => setMode("pengaturan")}>Pengaturan</Chip>
+          <Chip active={mode === "kerja"} onClick={() => goMode("kerja")}>Main Mode</Chip>
+          <Chip active={mode === "data"} onClick={() => goMode("data")}>Data Mode</Chip>
+          <Chip active={mode === "pengaturan"} onClick={() => goMode("pengaturan")}>Settings</Chip>
+          {canEdit && mode === "kerja" && (
+            <button
+              onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
+              className="text-xs px-3 py-1.5 rounded-full border font-medium flex items-center gap-1.5 ml-auto"
+              style={{ borderColor: editMap ? C.amber : C.line, background: editMap ? C.alertAmberBg : C.panel, color: editMap ? C.amber : C.ink }}
+            >
+              <i className="ti ti-pencil" aria-hidden="true" /> {editMap ? "Edit Peta aktif — klik untuk selesai" : "Edit Peta"}
+            </button>
+          )}
         </div>
-        {mode === "input" && (
+        {calibrating && (
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs" style={{ color: C.steel }}>Blok aktif:</span>
             {blocks.map((b) => (
@@ -3190,7 +3220,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             ))}
           </div>
         )}
-        {mode === "input" && (
+        {calibrating && (
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs" style={{ color: C.steel }}>Tipe aktif:</span>
             {tipeOptions.map((t) => (
@@ -3200,7 +3230,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             ))}
           </div>
         )}
-        {mode === "kerja" && (
+        {mode === "kerja" && !calibrating && (
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-xs" style={{ color: C.steel }}>Warna peta:</span>
@@ -3219,10 +3249,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
           </div>
         )}
       </div>
-      {mode === "input" && (
+      {calibrating && (
         (blocks.length === 0 || tipeOptions.length === 0) ? (
           <p className="text-xs mb-3 p-2 rounded-lg" style={{ color: C.amber, background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
-            Cluster ini belum punya {blocks.length === 0 && tipeOptions.length === 0 ? "Blok maupun Tipe" : blocks.length === 0 ? "Blok" : "Tipe"}. Tambahkan dulu lewat menu "Pengaturan" sebelum bisa menggambar kavling.
+            Cluster ini belum punya {blocks.length === 0 && tipeOptions.length === 0 ? "Blok maupun Tipe" : blocks.length === 0 ? "Blok" : "Tipe"}. Tambahkan dulu lewat menu "Settings" sebelum bisa menggambar kavling.
           </p>
         ) : (
           <p className="text-xs mb-3" style={{ color: C.steel }}>Pilih Blok & Tipe aktif di atas, lalu klik tiap sudut kavling mengikuti bentuknya (min. 3 titik), lalu "Selesai Poligon" dan isi nomor kavlingnya. Klik bentuk yang sudah ada untuk menghapusnya.</p>
@@ -3430,50 +3460,33 @@ export default function BriaStatusBoard({ onLogout, session }) {
       )}
 
 
-      {/* ===================== MAP + DATA (resizable; stacks on narrow windows) ===================== */}
-      {(mode === "input" || mode === "kerja") && (
+      {/* ===================== MAIN MODE: peta + dashboard sebaris, lalu detail kavling ===================== */}
+      {mode === "kerja" && (
         <>
-          {mode === "input" && (
-            <div className="flex items-center justify-end mb-2">
-              <button
-                onClick={() => setDashboardPos((p) => (p === "bawah" ? "kanan" : "bawah"))}
-                className="text-xs px-3 py-1.5 rounded-lg"
-                style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}
-              >
-                Pindahkan Dashboard ke {dashboardPos === "bawah" ? "Kanan" : "Bawah"}
-              </button>
+          <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", gap: 0, marginBottom: 16 }}>
+            <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
+              {mapPanelJSX}
+            </div>
+            <div
+              onMouseDown={startDrag}
+              title="Geser untuk mengubah lebar"
+              className="panel-resize-handle"
+              style={{ flex: "0 0 8px", cursor: "col-resize", background: C.line, borderRadius: 8, margin: "0 4px", alignSelf: "stretch", minHeight: 40 }}
+            />
+            <div className="inspector-panel-col" style={{ flex: "1 1 300px", minWidth: 300, paddingLeft: 8 }}>
+              {dashboardJSX}
+            </div>
+          </div>
+          {!calibrating && (
+            <div className="rounded-xl p-4 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+              {InspectorPanel()}
             </div>
           )}
-          <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", gap: 0, marginBottom: 16 }}>
-            {mode === "kerja" || dashboardPos === "kanan" ? (
-              <>
-                <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
-                  {mapPanelJSX}
-                </div>
-                <div
-                  onMouseDown={startDrag}
-                  title="Geser untuk mengubah lebar"
-                  className="panel-resize-handle"
-                  style={{ flex: "0 0 8px", cursor: "col-resize", background: C.line, borderRadius: 8, margin: "0 4px", alignSelf: "stretch", minHeight: 40 }}
-                />
-                <div className="inspector-panel-col" style={{ flex: "1 1 300px", minWidth: 300, paddingLeft: 8 }}>
-                  {mode === "kerja" && (
-                    <div className="rounded-xl p-4 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-                      {InspectorPanel()}
-                    </div>
-                  )}
-                  {mode === "input" && dashboardPos === "kanan" && dashboardJSX}
-                </div>
-              </>
-            ) : (
-              <div style={{ width: "100%" }}>{mapPanelJSX}</div>
-            )}
-          </div>
         </>
       )}
 
-      {/* ===================== TABLE (input, kerja & data) — full width below the row ===================== */}
-      {(mode === "input" || mode === "kerja" || mode === "data") && (
+      {/* ===================== TABLE (Main Mode & Data Mode) — full width ===================== */}
+      {(mode === "kerja" || mode === "data") && (
         <div className="rounded-xl p-3 mb-4" style={{ background: C.panel, boxShadow: C.cardShadow }}>
           {followUpFilterActive && (
             <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
@@ -3687,7 +3700,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
                 {pageRows.length === 0 && (
                   <tr><td colSpan={16 + statusFields.length} className="text-center py-4" style={{ color: C.steel }}>
                     {houses.length === 0
-                      ? "Belum ada data. Tambahkan lewat Mode Kalibrasi di peta."
+                      ? "Belum ada data. Tambahkan lewat tombol Edit Peta di Main Mode."
                       : totalRows === 0
                         ? "Tidak ada kavling yang cocok dengan filter Blok/Tipe/Status yang aktif. Coba klik \"Select All\" di atas."
                         : "Tidak ada data di halaman ini."}
@@ -3701,11 +3714,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
                     <td className="text-center" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={selectedRows.includes(h.id)} onChange={() => toggleRowSelect(h.id)} />
                     </td>
-                    <td style={{ fontFamily: "IBM Plex Mono, monospace", overflow: "hidden" }} onClick={(e) => { if (mode === "input") { e.stopPropagation(); setSelectedId(h.id); } }}>
+                    <td style={{ fontFamily: "IBM Plex Mono, monospace", overflow: "hidden" }} onClick={(e) => { if (calibrating) { e.stopPropagation(); setSelectedId(h.id); } }}>
                       <div className="flex items-center gap-1">
                         {isDuplicateKavling(h) && <span title="Nomor kavling ini duplikat di bloknya" style={{ width: 7, height: 7, borderRadius: "50%", background: C.red, flexShrink: 0 }} />}
                         {!isDuplicateKavling(h) && isIncomplete(h) && <span title="Data harga/luas bangunan belum lengkap" style={{ width: 7, height: 7, borderRadius: "50%", background: C.gold, flexShrink: 0 }} />}
-                        {mode === "input" ? (
+                        {calibrating ? (
                           <div className="flex items-center gap-1" style={{ minWidth: 0 }}>
                             <span style={{ color: C.steel, flexShrink: 0, fontSize: 11 }}>{h.blok}-</span>
                             <input
@@ -3945,7 +3958,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
         </div>
       )}
 
-      {((mode === "input" && dashboardPos === "bawah") || mode === "kerja") && dashboardJSX}
 
       </>
       )}
