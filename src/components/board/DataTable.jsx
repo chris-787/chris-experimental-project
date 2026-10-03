@@ -181,7 +181,7 @@ export default function DataTable() {
             </div>
           </div>
 
-          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 960, overflowY: "auto", zoom: tableZoom / 100 }}>
+          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 750, overflowY: "auto", zoom: tableZoom / 100 }}>
             <table className="dataTbl w-full" style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
                 {columns.map((c) => (
