@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BTN_PILL, Chip, ClockText, Ic, btnSecondary } from "../../components/ui";
 import { C } from "../../theme";
 import ThemeToggle from "../../components/ThemeToggle";
@@ -5,6 +6,7 @@ import { useBoard } from "./BoardContext";
 
 export default function ClusterHeader() {
   const { SmallSpinner, activeBlock, activeCluster, activeTipe, blockProgress, blocks, calibrating, canEdit, colorMode, currentClusterId, dashboardPos, dirty, editMap, goHome, goMode, mode, opacity, printSitePlan, reloadAfterRemoteUpdate, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setActionMenuId, setActiveBlock, setActiveTipe, setClusters, setColorMode, setConfirmDeleteId, setDashboardPos, setDraft, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, statusFields, subtitleWidth, tipeOptions, totalTarget, updateClusterMeta } = useBoard();
+  const [showOpts, setShowOpts] = useState(false);
   return (
     <>
       {/* HEADER (bar atas ini "freeze" / nempel saat di-scroll) */}
@@ -24,7 +26,12 @@ export default function ClusterHeader() {
             {!saving && dirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
             {!saving && savedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
             {canEdit ? (
-              <button onClick={() => saveHouses()} className="text-xs px-2.5 py-1 rounded-lg" style={{ background: C.accent, color: "#fff" }}>
+              <button
+                onClick={() => saveHouses()}
+                className="text-xs px-2.5 py-1 rounded-lg font-medium"
+                style={dirty ? { background: C.amber, color: "#fff", border: `1px solid ${C.amber}` } : { background: C.pillFill, color: C.steel, border: `1px solid ${C.line}` }}
+                title={dirty ? "Ada perubahan yang belum tersimpan" : "Tidak ada perubahan"}
+              >
                 Simpan Perubahan
               </button>
             ) : (
@@ -132,12 +139,17 @@ export default function ClusterHeader() {
                 {statusFields.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
               </select>
             </div>
+            <button onClick={() => setShowOpts((v) => !v)} className={`opts-toggle ${BTN_PILL}`} style={btnSecondary} aria-expanded={showOpts}>
+              Opsi {showOpts ? "▴" : "▾"}
+            </button>
+            <div className={`map-opts flex items-center gap-3 flex-wrap ${showOpts ? "open" : ""}`}>
             <div className="flex items-center gap-2">
               <span className="text-xs" style={{ color: C.steel }}>Opacity warna:</span>
               <input type="range" min="10" max="100" value={opacity} onChange={(e) => setOpacity(Number(e.target.value))} style={{ width: 100 }} />
               <span className="text-xs" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace" }}>{opacity}%</span>
             </div>
             <button onClick={printSitePlan} className={BTN_PILL} style={btnSecondary}><Ic name="printer" size={14} /> Cetak Site Plan</button>
+            </div>
           </div>
         )}
       </div>

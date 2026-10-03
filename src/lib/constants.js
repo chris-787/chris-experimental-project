@@ -9,6 +9,9 @@ export const WHATS_NEW_GROUPS = [
   {
     date: "3 Oktober 2026",
     items: [
+      { icon: "🧩", title: "Tabel Ringkas / Lengkap", desc: "Di atas tabel ada tombol Ringkas (kolom inti saja: No, Kavling, Tipe, Status, Kontraktor, HPP, Harga Jual, Margin) dan Lengkap (semua kolom, bisa diatur lewat menu Kolom). Pilihan ini hanya berlaku di perangkat Anda." },
+      { icon: "🎨", title: "Warna peta per kontraktor", desc: "Pilihan baru \"Per Kontraktor\" di Warna peta, lengkap dengan legenda dan jumlah unit tiap kontraktor." },
+      { icon: "📱", title: "Lebih rapi di HP", desc: "Opacity dan Cetak Site Plan dilipat ke tombol \"Opsi\", tinggi Site Plan mengikuti gambar, dan tombol Simpan Perubahan menyala oranye hanya saat ada perubahan." },
       { icon: "🗺️", title: "Main Mode, Data Mode, Settings", desc: "Mode Kalibrasi dan Mode Kerja digabung jadi Main Mode. Alat gambar kavling sekarang ada di tombol \"Edit Site Plan\" (hanya nyala kalau Anda sengaja menyalakannya, jadi lebih aman). Di Main Mode: site plan dan dashboard sebaris, detail kavling di bawahnya dibagi tiga kolom, lalu tabel. Data Mode berisi tabel saja, dan Pengaturan berganti nama jadi Settings." },
     ],
   },

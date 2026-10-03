@@ -59,6 +59,7 @@ export default function MapPanel() {
           ) : (
           <div
             ref={planBoxRef}
+            className="plan-box"
             style={{ overflow: "auto", ...(mapHeight ? { height: mapHeight } : { maxHeight: 640 }), border: `1px solid ${C.line}`, borderRadius: 8, touchAction: "pan-x pan-y" }}
             onWheel={handleWheelZoom}
             onTouchStart={handleTouchStart}
@@ -67,7 +68,7 @@ export default function MapPanel() {
           >
             <div ref={imgWrapRef} style={{ position: "relative", display: "grid", width: `${zoom}%`, cursor: calibrating ? "crosshair" : "default" }} onClick={handleImageClick}>
               <img src={siteImage} alt="Site plan" style={{ gridArea: "1 / 1", width: "100%", display: "block", userSelect: "none" }} draggable={false} />
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ gridArea: "1 / 1", width: "100%", height: "100%" }}>
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
                 {houses.filter((h) => h.id !== editingShapeId).map((h) => (
                   <React.Fragment key={h.id}>
                     {selectedId === h.id && (

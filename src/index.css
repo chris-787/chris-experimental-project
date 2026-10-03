@@ -79,3 +79,20 @@ body {
   outline: none;
   box-shadow: 0 0 0 3px rgba(51, 65, 122, 0.25);
 }
+
+/* Kotak abu-abu berdenyut untuk layar memuat (LoadingSkeleton) */
+@keyframes bria-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.sk { background: var(--line); border-radius: 8px; animation: bria-pulse 1.4s ease-in-out infinite; }
+.skel-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; }
+.skel-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; max-width: 1040px; }
+
+/* HP: tombol opsi peta dilipat, tinggi site plan mengikuti gambar */
+.opts-toggle { display: none; }
+@media (max-width: 640px) {
+  .skel-grid { grid-template-columns: minmax(0, 1fr); }
+  .opts-toggle { display: inline-flex; }
+  .map-opts { display: none; }
+  .map-opts.open { display: flex; }
+  .plan-box { height: auto !important; max-height: 70vh !important; }
+  .panel-height-handle { display: none; }
+}

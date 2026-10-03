@@ -6,7 +6,7 @@ import { rupiah } from "../../lib/helpers";
 import { useBoard } from "./BoardContext";
 
 export default function DataTable() {
-  const { FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableSearchQuery, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableSearchQuery, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
+  const { tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableSearchQuery, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableSearchQuery, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
   return (
     <>
         <div className="rounded-xl p-2.5 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
@@ -164,7 +164,13 @@ export default function DataTable() {
                 </div>
                 <button onClick={() => setTableZoom((z) => Math.min(150, z + 10))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>+</button>
               </div>
-              <div style={{ position: "relative" }}>
+              <div className="flex items-center rounded-lg overflow-hidden" style={{ border: `1px solid ${C.line}` }} role="group" aria-label="Tampilan kolom">
+                {[["ringkas", "Ringkas"], ["lengkap", "Lengkap"]].map(([v, label]) => (
+                  <button key={v} onClick={() => { setTableView(v); setShowColMenu(false); }} className="text-xs px-2 py-1" aria-pressed={tableView === v}
+                    style={tableView === v ? { background: C.accent, color: "#fff" } : { background: C.panel, color: C.steel }}>{label}</button>
+                ))}
+              </div>
+              {tableView === "lengkap" && <div style={{ position: "relative" }}>
                 <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Kolom</button>
                 {showColMenu && (
                   <div style={{ position: "absolute", right: 0, top: "110%", zIndex: 20, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 180, maxHeight: 260, overflowY: "auto" }}>
@@ -177,7 +183,7 @@ export default function DataTable() {
                     ))}
                   </div>
                 )}
-              </div>
+              </div>}
             </div>
           </div>
 
@@ -204,7 +210,7 @@ export default function DataTable() {
                           {c.label}{sortKey === c.key ? (sortDir === "asc" ? " ▲" : " ▼") : ""}
                         </span>
                       )}
-                      {c.key !== "aksi" && c.key !== "select" && (
+                      {tableView === "lengkap" && c.key !== "aksi" && c.key !== "select" && (
                         <span
                           onMouseDown={(e) => startColResize(c.key, e)}
                           title="Geser untuk ubah lebar kolom"
