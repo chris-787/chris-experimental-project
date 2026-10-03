@@ -1,277 +1,26 @@
-import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, Suspense, lazy } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense, lazy } from "react";
 import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
 import { onStorageError } from "./lib/errorBus";
 import { simulatePrice } from "./lib/priceSimulation";
-import { formatJakartaDateTime, useJakartaClock, greetingFor } from "./lib/jakartaClock";
 import ThemeToggle from "./components/ThemeToggle";
 import { C, PALETTE } from "./theme";
+import {
+  SITE_IMAGE_DEFAULT, MAX_IMG_DIM, MONTHS, WHATS_NEW_GROUPS, DEFAULT_BLOCKS, DEFAULT_TIPE, DEFAULT_STATUS, DEFAULT_KATEGORI,
+  CONFIG_KEY_BASE, TABLE_LAYOUT_KEY, tableFilterKeyFor,
+  CLUSTERS_INDEX_KEY, APP_TITLE_KEY, LAST_CLUSTER_KEY, LAST_BACKUP_KEY, LEGACY_CLUSTER_ID, housesKeyFor, configKeyFor, imageKeyFor,
+} from "./lib/constants";
+import { makeCalc, timeAgo } from "./lib/calc";
+import { rupiah, measureTextWidth, WEEKDAY_LABELS, MONTH_LABELS, buildCalendarGrid, centroid, resizeImageFile } from "./lib/helpers";
+import {
+  ClockText, GreetingText, Chip, Ic, IconChip, Field, StatusRow, MONO, BTN_PILL, btnSecondary, btnPrimary,
+  ProgressBar, KpiCard, Pill, cellInput, formInput,
+} from "./components/ui";
 
 // Grafik dashboard (recharts) baru diunduh saat benar-benar ditampilkan,
 // bukan di awal buka aplikasi — recharts lumayan besar dan tidak semua
 // orang langsung lihat dashboard-nya.
 const DashboardCharts = lazy(() => import("./DashboardCharts"));
-
-// Komponen terpisah supaya detak jam tiap detik cuma me-render ulang
-// teks jam ini saja, bukan seluruh halaman (tabel & site plan bisa
-// sangat besar, jadi render ulang tiap detik bikin scroll patah-patah).
-function ClockText() {
-  const now = useJakartaClock();
-  return formatJakartaDateTime(now);
-}
-// Sama alasannya seperti ClockText — supaya ganti sapaan tiap jam tidak
-// ikut me-render ulang seluruh halaman.
-function GreetingText({ name }) {
-  const now = useJakartaClock();
-  return `${greetingFor(now)}${name ? `, ${name}` : ""}`;
-}
-
-const SITE_IMAGE_DEFAULT = "/default-site-plan.jpg";
-const MAX_IMG_DIM = 1600;
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-
-const WHATS_NEW_GROUPS = [
-  {
-    date: "3 Oktober 2026",
-    items: [
-      { icon: "🗺️", title: "Main Mode, Data Mode, Settings", desc: "Mode Kalibrasi dan Mode Kerja digabung jadi Main Mode. Alat gambar kavling sekarang ada di tombol \"Edit Site Plan\" (hanya nyala kalau Anda sengaja menyalakannya, jadi lebih aman). Di Main Mode: site plan dan dashboard sebaris, detail kavling di bawahnya dibagi tiga kolom, lalu tabel. Data Mode berisi tabel saja, dan Pengaturan berganti nama jadi Settings." },
-    ],
-  },
-  {
-    date: "30 September 2026",
-    items: [
-      { icon: "🎨", title: "Desain Baru", desc: "Tampilan Home, Mode Kalibrasi/Kerja/Pengaturan, dan Login dirombak: kartu putih berbayang lembut, tombol berbentuk pil, ikon pengganti emoji, dan label tombol lebih ringkas (Export to Excel, Backup (JSON), Restore (JSON), Print)." },
-      { icon: "👋", title: "Sapaan Personal di Home", desc: "Home sekarang menyapa sesuai waktu (Selamat Pagi/Siang/Sore/Malam) beserta nama Anda, di atas jam dan tanggal." },
-      { icon: "📅", title: "Kalender Follow-up di Home", desc: "Kartu \"Perlu Ditindaklanjuti\" sekarang punya tampilan kalender bulanan, bukan cuma daftar. Titik merah = lewat tenggat, kuning = akan datang. Klik tanggalnya untuk lihat & langsung buka kavlingnya." },
-      { icon: "🖨️", title: "Ringkasan Kavling (PDF)", desc: "Tombol \"Ringkasan\" di panel detail kavling (Mode Kerja) mencetak satu halaman berisi data, status, kontraktor, harga, dan margin kavling itu — cocok dilampirkan ke berkas atau dikirim ke atasan." },
-      { icon: "👷", title: "Rekap Kontraktor", desc: "Tombol di Dashboard cluster menampilkan rekap jumlah unit, total HPP, dan progres Order SPK per kontraktor." },
-      { icon: "⌨️", title: "Autocomplete Nama Kontraktor", desc: "Kolom Kontraktor (di tabel & panel detail) sekarang menyarankan nama-nama yang sudah pernah diketik di cluster itu, supaya penulisannya konsisten dan gampang direkap." },
-    ],
-  },
-  {
-    date: "19 September 2026",
-    items: [
-      { icon: "🧮", title: "Simulasi Harga", desc: "Coba-coba ubah harga jual atau HPP per m² (naik/turun persen atau ganti angka) untuk semua kavling, satu blok, atau satu tipe, lalu lihat dampaknya ke total harga, margin, dan margin per tipe. Data asli tidak berubah. Tombolnya ada di Dashboard cluster." },
-    ],
-  },
-  {
-    date: "18 September 2026",
-    items: [
-      { icon: "🆕", title: "Popup What's New di Home", desc: "Menampilkan ringkasan pembaruan tiap kali login, tidak muncul lagi kalau cuma pindah dari cluster ke Home. Bisa dibuka lagi kapan saja lewat tombol What's New di Home." },
-      { icon: "🔍", title: "Zoom Site Plan Lebih Cepat", desc: "Tombol +/− di peta Site Plan sekarang melompat 20% tiap klik (sebelumnya 5%), lebih cepat untuk memperbesar detail." },
-      { icon: "⌨️", title: "Tutup Popup Kalibrasi Pakai Esc", desc: "Selain klik ikon ×, popup edit Blok/Nomor/Tipe di Mode Kalibrasi kini bisa ditutup cukup dengan tombol Esc." },
-      { icon: "🧹", title: "Rapikan Judul Cluster", desc: "Celah kosong aneh antara subjudul cluster dan info \"target unit, blok\" sudah dihilangkan." },
-    ],
-  },
-  {
-    date: "17 September 2026",
-    items: [
-      { icon: "🔔", title: "Notifikasi Lintas-Cluster di Home", desc: "Kavling yang follow-up-nya lewat tenggat dan nomor kavling duplikat kini langsung terlihat di Home, dari semua cluster sekaligus." },
-      { icon: "⚠️", title: "Deteksi Duplikat per Cluster", desc: "Banner otomatis muncul di tabel Data Blok kalau ada nomor kavling yang sama persis di cluster yang sama, lengkap tombol filter \"Lihat\"." },
-      { icon: "✏️", title: "Edit Blok/Nomor/Tipe dari Popup Peta", desc: "Di Mode Kalibrasi, klik kavling yang sudah digambar untuk langsung ubah Blok, Nomor, dan Tipe-nya, lengkap tombol OK & Batal." },
-      { icon: "🗂️", title: "Tombol Edit Bentuk & Hapus Dirapikan", desc: "Kedua tombol kini sejajar dalam satu baris supaya popup edit kavling tidak makan tempat." },
-    ],
-  },
-  {
-    date: "16 September 2026",
-    items: [
-      { icon: "🔎", title: "Kontrol Zoom di Tabel Data Blok", desc: "Tombol perbesar, perkecil, dan reset kini tersedia khusus untuk tampilan tabel." },
-      { icon: "🔢", title: "Kolom Nomor Urut Otomatis", desc: "Kolom \"No\" ditambahkan di paling kiri tabel Data Blok supaya lebih mudah dibaca." },
-      { icon: "📌", title: "Header Tabel Benar-Benar Freeze", desc: "Perbaikan bug: header tabel sekarang benar-benar menempel di atas saat tabel discroll." },
-      { icon: "⚡", title: "Scroll Tabel Lebih Halus", desc: "Perbaikan performa besar supaya scroll tabel data yang panjang tidak lagi patah-patah." },
-      { icon: "🔍", title: "Pencarian Nomor Kavling di Tabel", desc: "Bisa langsung cari nomor kavling di dalam tabel Data Blok satu cluster." },
-    ],
-  },
-  {
-    date: "14 September 2026",
-    items: [
-      { icon: "🖨️", title: "Cetak Site Plan & Dashboard ke PDF", desc: "Site Plan berwarna dan Dashboard kini bisa langsung dicetak atau diekspor jadi PDF untuk laporan." },
-      { icon: "↩️", title: "Undo & Konfirmasi Sebelum Hapus", desc: "Ada jendela Undo dan konfirmasi tambahan sebelum data Blok, Tipe, Status, atau Kategori terhapus permanen." },
-      { icon: "📌", title: "Header Cluster Jadi Sticky", desc: "Nama cluster & jam tetap terlihat menempel di atas saat halaman discroll." },
-      { icon: "📱", title: "Perbaikan Tampilan di HP", desc: "Site Plan kini tampil penuh selebar layar di HP, tidak lagi terpotong." },
-    ],
-  },
-  {
-    date: "13 September 2026",
-    items: [
-      { icon: "🔄", title: "Sinkronisasi Real-Time", desc: "Perubahan data, pengaturan, gambar, dan daftar cluster langsung terlihat ke semua pengguna yang sedang login." },
-      { icon: "🛡️", title: "Cegah Data Tertimpa", desc: "Sistem memperingatkan kalau ada dua orang mengedit data yang sama nyaris bersamaan, supaya tidak ada yang tertimpa diam-diam." },
-      { icon: "🔍", title: "Pencarian Kavling Lintas-Cluster", desc: "Cari nomor kavling apa saja langsung dari Home, tanpa perlu buka cluster satu-satu." },
-      { icon: "📶", title: "Deteksi Offline Proaktif", desc: "Muncul notifikasi kalau koneksi internet terputus saat sedang bekerja, supaya tahu perubahan belum tersimpan." },
-    ],
-  },
-];
-
-const DEFAULT_BLOCKS = [
-  { id: "blk-a", name: "RB/A", target: 16 }, { id: "blk-b", name: "RB/B", target: 11 }, { id: "blk-c", name: "RB/C", target: 11 },
-  { id: "blk-d", name: "RB/D", target: 20 }, { id: "blk-e", name: "RB/E", target: 2 }, { id: "blk-f", name: "RB/F", target: 16 },
-  { id: "blk-g", name: "RB/G", target: 13 }, { id: "blk-h", name: "RB/H", target: 18 }, { id: "blk-i", name: "RB/I", target: 10 },
-  { id: "blk-j", name: "RB/J", target: 10 },
-];
-const DEFAULT_TIPE = [
-  { id: "tp-5x12", name: "Standar 5x12", color: "#2E6F9E", luasBangunan: 0 },
-  { id: "tp-6x12", name: "Standar 6x12", color: "#C1622D", luasBangunan: 0 },
-  { id: "tp-sudut", name: "Sudut", color: "#3D8361", luasBangunan: 0 },
-  { id: "tp-khusus", name: "Khusus", color: "#8B4F9F", luasBangunan: 0 },
-];
-const DEFAULT_STATUS = [
-  { key: "terjual", label: "Terjual", hasDetail: false }, { key: "marketingOrder", label: "Order Marketing", hasDetail: false },
-  { key: "pancang", label: "Pancang", hasDetail: false }, { key: "spkOrder", label: "Order SPK", hasDetail: false },
-  { key: "acOrder", label: "Order AC", hasDetail: true },
-];
-const DEFAULT_KATEGORI = ["Rumah Massal", "Rumah Contoh", "Kavling"];
-
-const HOUSES_KEY_BASE = "bria-houses-v2";
-const CONFIG_KEY_BASE = "bria-config-v1";
-const IMAGE_KEY_BASE = "bria-siteplan-image";
-const TABLE_LAYOUT_KEY = "bria-table-layout-v1";
-const TABLE_FILTER_KEY_BASE = "bria-table-filter-v1";
-function tableFilterKeyFor(id) { return id === LEGACY_CLUSTER_ID ? TABLE_FILTER_KEY_BASE : `${TABLE_FILTER_KEY_BASE}:${id}`; }
-const CLUSTERS_INDEX_KEY = "clusters-index-v1";
-const APP_TITLE_KEY = "app-title-v1";
-const LAST_CLUSTER_KEY = "last-cluster-v1";
-const LAST_BACKUP_KEY = "last-backup-v1";
-const LEGACY_CLUSTER_ID = "bria-legacy";
-function housesKeyFor(id) { return id === LEGACY_CLUSTER_ID ? HOUSES_KEY_BASE : `${HOUSES_KEY_BASE}:${id}`; }
-function configKeyFor(id) { return id === LEGACY_CLUSTER_ID ? CONFIG_KEY_BASE : `${CONFIG_KEY_BASE}:${id}`; }
-function imageKeyFor(id) { return id === LEGACY_CLUSTER_ID ? IMAGE_KEY_BASE : `${IMAGE_KEY_BASE}:${id}`; }
-
-const rupiah = (n) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n || 0);
-let _measureCanvas = null;
-function measureTextWidth(text, font) {
-  if (!_measureCanvas) _measureCanvas = document.createElement("canvas");
-  const ctx = _measureCanvas.getContext("2d");
-  ctx.font = font;
-  return ctx.measureText(text || "").width;
-}
-const WEEKDAY_LABELS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
-const MONTH_LABELS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-function buildCalendarGrid(year, month) {
-  const first = new Date(year, month, 1);
-  const startOffset = first.getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const cells = [];
-  for (let i = 0; i < startOffset; i++) cells.push(null);
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    cells.push(dateStr);
-  }
-  while (cells.length % 7 !== 0) cells.push(null);
-  return cells;
-}
-function centroid(points) {
-  const cx = points.reduce((s, p) => s + p.x, 0) / points.length;
-  const cy = points.reduce((s, p) => s + p.y, 0) / points.length;
-  return { cx, cy };
-}
-function Chip({ active, onClick, children }) {
-  return (
-    <button onClick={onClick} className="text-xs px-2.5 py-1 rounded-full border font-medium transition-colors"
-      style={{ borderColor: active ? C.accent : C.line, background: active ? C.accent : C.panel, color: active ? "#fff" : C.steel }}>
-      {children}
-    </button>
-  );
-}
-const ICON_PATHS = {
-  search: <><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></>,
-  chart: <><path d="M4 20V10" /><path d="M12 20V4" /><path d="M20 20v-7" /></>,
-  home: <><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></>,
-  sparkle: <path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3Z" />,
-  printer: <><path d="M6 9V3h12v6" /><rect x="4" y="9" width="16" height="8" rx="1.5" /><path d="M6 17h12v4H6z" /></>,
-  calculator: <><rect x="5" y="3" width="14" height="18" rx="1.5" /><path d="M8 7h8" /><path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01" /></>,
-  hardhat: <><path d="M4 15a8 8 0 0 1 16 0" /><path d="M2 15h20" /><path d="M9 15V9" /></>,
-  back: <><path d="M15 6l-6 6 6 6" /></>,
-  clock: <><circle cx="12" cy="13" r="8" /><path d="M12 9v4l3 2" /></>,
-  warning: <><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4" /><path d="M12 17h.01" /></>,
-  download: <><path d="M12 3v13" /><path d="m7 11 5 5 5-5" /><path d="M4 21h16" /></>,
-  upload: <><path d="M12 21V8" /><path d="m7 12 5-5 5 5" /><path d="M4 21h16" /></>,
-  pencil: <><path d="M4 20h4L19 9l-4-4L4 16v4Z" /><path d="m13.5 6.5 4 4" /></>,
-  layoutBottom: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 14h18" /></>,
-  layoutRight: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M15 4v16" /></>,
-  arrowsH: <><path d="M4 12h16" /><path d="m8 8-4 4 4 4" /><path d="m16 8 4 4-4 4" /></>,
-  arrowsV: <><path d="M12 4v16" /><path d="m8 8 4-4 4 4" /><path d="m8 16 4 4 4-4" /></>,
-};
-function Ic({ name, size = 16, color }) {
-  return (
-    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color || "currentColor"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-      {ICON_PATHS[name]}
-    </svg>
-  );
-}
-function IconChip({ name, bg, color, size = 34 }) {
-  return (
-    <span style={{ width: size, height: size, borderRadius: size >= 30 ? 10 : 8, background: bg, display: "flex", alignItems: "center", justifyContent: "center", color, flexShrink: 0 }}>
-      <Ic name={name} size={Math.round(size * 0.5)} />
-    </span>
-  );
-}
-function Field({ label, children }) {
-  return (<div className="mb-2"><div className="text-xs mb-1" style={{ color: C.steel }}>{label}</div>{children}</div>);
-}
-function StatusRow({ label, value, onToggle }) {
-  return (
-    <label className="flex items-center justify-between py-1 cursor-pointer select-none">
-      <span className="text-sm" style={{ color: C.ink }}>{label}</span>
-      <span onClick={onToggle} className="w-9 h-5 rounded-full relative transition-colors" style={{ background: value ? C.green : C.faint }}>
-        <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all" style={{ left: value ? 18 : 2 }} />
-      </span>
-    </label>
-  );
-}
-const MONO = "'IBM Plex Mono', monospace";
-// Gaya tombol bersama: secondary (berbingkai) dan primary (terisi).
-const BTN_PILL = "text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1.5 whitespace-nowrap";
-const btnSecondary = { border: `1px solid ${C.line}`, background: C.panel, color: C.ink };
-const btnPrimary = { border: "1px solid transparent", background: C.accent, color: "#fff" };
-const tint = (color, pct = 16) => `color-mix(in srgb, ${color} ${pct}%, transparent)`;
-function ProgressBar({ pct, color }) {
-  return (
-    <div style={{ height: 4, borderRadius: 4, background: C.line, overflow: "hidden", marginTop: 6 }}>
-      <div style={{ width: `${Math.min(100, Math.max(0, pct || 0))}%`, height: "100%", background: color, borderRadius: 4 }} />
-    </div>
-  );
-}
-function KpiCard({ label, value, sub, pct, color }) {
-  return (
-    <div className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: `inset 0 3px 0 ${color}, ${C.cardShadow}` }}>
-      <div style={{ fontSize: 11, color: C.steel }}>{label}</div>
-      <div className="font-semibold" style={{ fontSize: 16, lineHeight: 1.25, color: C.ink, fontFamily: MONO, overflowWrap: "anywhere" }}>{value}</div>
-      {pct != null && <ProgressBar pct={pct} color={color} />}
-      {sub && <div style={{ fontSize: 11, color: C.steel, marginTop: 4 }}>{sub}</div>}
-    </div>
-  );
-}
-function Pill({ children, color }) {
-  return <span style={{ fontSize: 11, padding: "1px 8px", borderRadius: 999, background: tint(color), color, fontWeight: 500, whiteSpace: "nowrap" }}>{children}</span>;
-}
-const cellInput = { width: "100%", minWidth: 80, padding: "2px 6px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
-const formInput = { width: "100%", padding: "5px 8px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
-
-function resizeImageFile(file, maxDim) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload = () => {
-        let { width, height } = img;
-        if (width > maxDim || height > maxDim) {
-          const scale = maxDim / Math.max(width, height);
-          width = Math.round(width * scale);
-          height = Math.round(height * scale);
-        }
-        const canvas = document.createElement("canvas");
-        canvas.width = width; canvas.height = height;
-        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", 0.82));
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
 
 // Akun khusus "lihat saja" (investor/atasan) -- tidak pakai sistem role
 // di database, cukup dicek dari emailnya karena cuma satu akun ini yang
@@ -1021,18 +770,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, ...patch, lastEditedAt: Date.now() } : h)));
     setDirty(true);
   }
-  function timeAgo(ts) {
-    if (!ts) return null;
-    const diffMs = Date.now() - ts;
-    const mins = Math.floor(diffMs / 60000);
-    if (mins < 1) return "baru saja";
-    if (mins < 60) return `${mins} menit lalu`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs} jam lalu`;
-    const days = Math.floor(hrs / 24);
-    if (days < 30) return `${days} hari lalu`;
-    return new Date(ts).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-  }
   function updateStatus(id, key, value) {
     if (!canEdit) return;
     setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, status: { ...h.status, [key]: value }, lastEditedAt: Date.now() } : h)));
@@ -1768,43 +1505,14 @@ export default function BriaStatusBoard({ onLogout, session }) {
     e.target.value = "";
   }
 
-  function blockColor(name) {
-    const idx = blocks.findIndex((b) => b.name === name);
-    return PALETTE[(idx < 0 ? 0 : idx) % PALETTE.length];
-  }
-  function tipeColor(name) { return tipeOptions.find((t) => t.name === name)?.color || C.steel; }
-  function luasBangunanOf(h) { return tipeOptions.find((t) => t.name === h.tipe)?.luasBangunan || 0; }
-  function isDuplicateKavling(h) { return houses.filter((x) => x.blok === h.blok && x.noKavling === h.noKavling).length > 1; }
-  function isIncomplete(h) { return !luasBangunanOf(h) || !h.hppPerM2 || !h.hargaJualPerM2; }
-  function getSortValue(h, key) {
-    if (statusFields.some((s) => s.key === key)) return h.status[key] ? 1 : 0;
-    switch (key) {
-      case "kavling": return `${h.blok}-${String(h.noKavling).padStart(4, "0")}`;
-      case "tipe": return h.tipe || "";
-      case "kategori": return h.kategori || "";
-      case "noSpk": return h.spkNo || "";
-      case "thSpk": return h.spkTahun || 0;
-      case "blnSpk": return h.spkBulan || 0;
-      case "luasBangunan": return luasBangunanOf(h);
-      case "hpp": return h.hppPerM2 || 0;
-      case "adendum": return h.adendumAmount || 0;
-      case "hargaJual": return h.hargaJualPerM2 || 0;
-      case "margin": return luasBangunanOf(h) ? marginPct(h) : -Infinity;
-      default: return "";
-    }
-  }
+  const { blockColor, tipeColor, luasBangunanOf, isDuplicateKavling, isIncomplete, hppTotal, hargaJualTotal, finalHppPerM2, marginOf, marginPct, aggregateMarginPct, getSortValue } =
+    useMemo(() => makeCalc({ tipeOptions, blocks, houses, statusFields }), [tipeOptions, blocks, houses, statusFields]);
   function toggleSort(key) {
     if (sortKey === key) {
       if (sortDir === "asc") setSortDir("desc");
       else { setSortKey(null); setSortDir("asc"); }
     } else { setSortKey(key); setSortDir("asc"); }
   }
-  function hppTotal(h) { const lb = luasBangunanOf(h); return (h.hppPerM2 && lb) ? h.hppPerM2 * lb : 0; }
-  function hargaJualTotal(h) { const lb = luasBangunanOf(h); return (h.hargaJualPerM2 && lb) ? h.hargaJualPerM2 * lb : 0; }
-  function finalHpp(h) { return hppTotal(h) + (h.adendum ? (h.adendumAmount || 0) : 0); }
-  function finalHppPerM2(h) { const lb = luasBangunanOf(h); return lb ? finalHpp(h) / lb : 0; }
-  function marginOf(h) { const hj = hargaJualTotal(h); return hj - finalHpp(h); }
-  function marginPct(h) { const hj = hargaJualTotal(h); return hj ? (marginOf(h) / hj) * 100 : 0; }
   function polyColor(h) {
     if (calibrating) return tipeColor(h.tipe);
     if (colorMode === "blok") return blockColor(h.blok);
@@ -1920,11 +1628,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
   const soldUnits = houses.filter((h) => h.status.terjual);
   const totalMargin = houses.reduce((s, h) => s + marginOf(h), 0);
-  function aggregateMarginPct(units) {
-    const sumHarga = units.reduce((s, h) => s + hargaJualTotal(h), 0);
-    const sumHpp = units.reduce((s, h) => s + finalHpp(h), 0);
-    return sumHarga ? ((sumHarga - sumHpp) / sumHarga) * 100 : 0;
-  }
   const avgMarginPct = aggregateMarginPct(houses);
   const totalTarget = blocks.reduce((s, b) => s + (Number(b.target) || 0), 0);
 
