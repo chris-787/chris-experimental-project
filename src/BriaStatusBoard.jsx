@@ -372,6 +372,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [zoom, setZoom] = useState(100);
   const [opacity, setOpacity] = useState(55);
   const imgWrapRef = useRef(null);
+  const planBoxRef = useRef(null);
   const pinchStateRef = useRef(null);
   function handleWheelZoom(e) {
     if (e.ctrlKey) {
@@ -1216,6 +1217,18 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
 
   // ---- drawing ----
+  // Tarik bar di tepi bawah kartu Site Plan untuk menaik-turunkan tingginya.
+  function startHeightDrag(e) {
+    const box = planBoxRef.current;
+    if (!box) return;
+    e.preventDefault();
+    const startY = e.clientY;
+    const startH = box.getBoundingClientRect().height;
+    function onMove(ev) { setMapHeight(Math.round(Math.min(1400, Math.max(240, startH + (ev.clientY - startY))))); }
+    function onUp() { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); }
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }
   function goMode(m) {
     setMode(m); setEditMap(false);
     setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null);
@@ -2087,7 +2100,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
   );
 
   const mapPanelJSX = (
-    <div className="rounded-xl p-2.5 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow, position: "relative" }}>
+    <div style={{ marginBottom: 12 }}>
+    <div className="rounded-xl p-2.5" style={{ background: C.panel, boxShadow: C.cardShadow, position: "relative" }}>
         <div>
           <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
             <div>
@@ -2104,18 +2118,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
                   <button onClick={cancelDrawing} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Batal</button>
                 </div>
               )}
-              <div className="flex items-center gap-2.5" title="Atur ukuran panel Site Plan (klik 2x untuk kembali ke ukuran awal)">
-                {dashboardPos === "kanan" && (
-                  <label className="flex items-center gap-1 text-xs" style={{ color: C.steel }}>
-                    <Ic name="arrowsH" size={14} />
-                    <input type="range" min="30" max="78" value={Math.round(mapPct)} onChange={(e) => setMapPct(Number(e.target.value))} onDoubleClick={() => setMapPct(62)} aria-label="Lebar panel Site Plan" style={{ width: 72 }} />
-                  </label>
-                )}
-                <label className="flex items-center gap-1 text-xs" style={{ color: C.steel }}>
-                  <Ic name="arrowsV" size={14} />
-                  <input type="range" min="300" max="1000" step="20" value={mapHeight || 640} onChange={(e) => setMapHeight(Number(e.target.value))} onDoubleClick={() => setMapHeight(null)} aria-label="Tinggi panel Site Plan" style={{ width: 72 }} />
-                </label>
-              </div>
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setZoom((z) => Math.max(50, z - 20))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
                 <div className="flex items-center h-7 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel }}>
@@ -2148,6 +2150,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </div>
           ) : (
           <div
+            ref={planBoxRef}
             style={{ overflow: "auto", ...(mapHeight ? { height: mapHeight } : { maxHeight: 640 }), border: `1px solid ${C.line}`, borderRadius: 8, touchAction: "pan-x pan-y" }}
             onWheel={handleWheelZoom}
             onTouchStart={handleTouchStart}
@@ -2294,6 +2297,16 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </div>
           </div>
         )}
+    </div>
+    {siteImage && (
+      <div
+        onMouseDown={startHeightDrag}
+        onDoubleClick={() => setMapHeight(null)}
+        title="Tarik ke atas/bawah untuk mengubah tinggi Site Plan (klik 2x untuk kembali ke awal)"
+        className="panel-height-handle"
+        style={{ height: 8, margin: "6px 4px 0", borderRadius: 8, background: C.faint, cursor: "row-resize", userSelect: "none" }}
+      />
+    )}
     </div>
   );
 
@@ -3521,7 +3534,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       {mode === "kerja" && (
         <>
           {dashboardPos === "kanan" ? (
-            <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", gap: 0, marginBottom: 12 }}>
+            <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", alignItems: "flex-start", gap: 0, marginBottom: 12 }}>
               <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
                 {mapPanelJSX}
               </div>
