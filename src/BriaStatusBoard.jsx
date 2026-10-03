@@ -3646,7 +3646,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
             </div>
           </div>
 
-          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "none" : 480, overflowY: mode === "data" ? "visible" : "auto", zoom: tableZoom / 100 }}>
+          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 480, overflowY: "auto", zoom: tableZoom / 100 }}>
             <table className="dataTbl w-full" style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
                 {columns.map((c) => (
