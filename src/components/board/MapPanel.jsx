@@ -5,7 +5,7 @@ import { centroid } from "../../lib/helpers";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
-  const { actionMenuId, activeBlock, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setMapHeight, setSelectedId, setZoom, siteImage, startEditShape, startHeightDrag, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
+  const { kontraktorLegend, actionMenuId, activeBlock, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setMapHeight, setSelectedId, setZoom, siteImage, startEditShape, startHeightDrag, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
   return (
     <>
     <div style={{ marginBottom: 12 }}>
@@ -186,6 +186,14 @@ export default function MapPanel() {
               tipeOptions.map((t) => (
                 <div key={t.id} className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
                   <span className="w-3 h-3 rounded-sm inline-block" style={{ background: t.color }} /> {t.name}
+                </div>
+              ))
+            ) : colorMode === "kontraktor" ? (
+              kontraktorLegend.length === 0 ? (
+                <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling.</div>
+              ) : kontraktorLegend.map((k) => (
+                <div key={k.label} className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
+                  <span className="w-3 h-3 rounded-sm inline-block" style={{ background: k.color }} /> {k.label} ({k.count})
                 </div>
               ))
             ) : (

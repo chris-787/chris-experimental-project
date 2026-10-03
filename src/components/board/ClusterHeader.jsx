@@ -128,6 +128,7 @@ export default function ClusterHeader() {
               <select value={colorMode} onChange={(e) => setColorMode(e.target.value)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
                 <option value="blok">Per Blok</option>
                 <option value="tipe">Per Tipe</option>
+                <option value="kontraktor">Per Kontraktor</option>
                 {statusFields.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
               </select>
             </div>

@@ -6,7 +6,7 @@ import { rupiah } from "../lib/helpers";
 import { storage } from "../lib/storage";
 
 export function makeReports(ctx) {
-  const { activeCluster, avgMarginPct, blockColor, blockProgress, blocks, canEdit, clusters, colorMode, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, loadHomeStats, luasBangunanOf, marginOf, marginPct, marginPerTipe, newBlockId, opacity, pendingRestoreAll, polyColor, saveClustersIndex, saveConfig, saveHouses, setBlocks, setClusters, setExportingBackupAll, setExportingExcelAll, setHouses, setImportMsg, setKategoriOptions, setLastBackupAt, setPendingRestoreAll, setRestoreAllError, setRestoreAllResult, setRestoringAll, setSettingsMsg, setStatusFields, setTableBlocks, setTipeOptions, siteImage, soldUnits, statusFields, tableRows, tipeOptions, tipePie, totalMargin, totalTarget } = ctx;
+  const { kontraktorLegend, activeCluster, avgMarginPct, blockColor, blockProgress, blocks, canEdit, clusters, colorMode, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, loadHomeStats, luasBangunanOf, marginOf, marginPct, marginPerTipe, newBlockId, opacity, pendingRestoreAll, polyColor, saveClustersIndex, saveConfig, saveHouses, setBlocks, setClusters, setExportingBackupAll, setExportingExcelAll, setHouses, setImportMsg, setKategoriOptions, setLastBackupAt, setPendingRestoreAll, setRestoreAllError, setRestoreAllResult, setRestoringAll, setSettingsMsg, setStatusFields, setTableBlocks, setTipeOptions, siteImage, soldUnits, statusFields, tableRows, tipeOptions, tipePie, totalMargin, totalTarget } = ctx;
   function importExcel(e) {
     if (!canEdit) return;
     const file = e.target.files && e.target.files[0];
@@ -164,13 +164,20 @@ export function makeReports(ctx) {
       ? blocks.map((b) => ({ label: b.name, color: blockColor(b.name) }))
       : colorMode === "tipe"
       ? tipeOptions.map((t) => ({ label: t.name, color: t.color }))
+      : colorMode === "kontraktor"
+      ? kontraktorLegend.map((k) => ({ label: `${k.label} (${k.count})`, color: k.color }))
       : [{ label: "Sudah", color: C.green }, { label: "Belum", color: C.red }];
-    const colorModeLabel = colorMode === "blok" ? "Per Blok" : colorMode === "tipe" ? "Per Tipe" : (statusFields.find((s) => s.key === colorMode)?.label || colorMode);
+    const colorModeLabel = colorMode === "blok" ? "Per Blok" : colorMode === "tipe" ? "Per Tipe" : colorMode === "kontraktor" ? "Per Kontraktor" : (statusFields.find((s) => s.key === colorMode)?.label || colorMode);
+    // Jendela cetak tidak punya variabel CSS tema, jadi "var(--green)" dst
+    // diubah dulu jadi warna asli (hex) sebelum dimasukkan ke HTML cetak.
+    const rootStyle = getComputedStyle(document.documentElement);
+    const concrete = (c) => (typeof c === "string" && c.startsWith("var(") ? rootStyle.getPropertyValue(c.slice(4, -1).trim()).trim() || "#999" : c);
+    legendItems.forEach((l) => { l.color = concrete(l.color); });
     const tanggal = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
     const imgSrc = new URL(siteImage, window.location.href).href;
     const shapesSvg = houses.map((h) => {
       const pts = h.points.map((p) => `${p.x},${p.y}`).join(" ");
-      return `<polygon points="${pts}" fill="${polyColor(h)}" fill-opacity="${opacity / 100}" stroke="#00000066" stroke-width="0.2" vector-effect="non-scaling-stroke" />`;
+      return `<polygon points="${pts}" fill="${concrete(polyColor(h))}" fill-opacity="${opacity / 100}" stroke="#00000066" stroke-width="0.2" vector-effect="non-scaling-stroke" />`;
     }).join("");
     const legendHtml = legendItems.map((l) => `<div class="legend-item"><span class="swatch" style="background-color:${l.color}"></span>${l.label}</div>`).join("");
     const html = `<!DOCTYPE html>
