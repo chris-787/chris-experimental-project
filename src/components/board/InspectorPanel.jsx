@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { Field, Ic, StatusRow, formInput } from "../../components/ui";
+import { Field, Ic, StatusRow, focusWhen, formInput } from "../../components/ui";
 import { MONTHS } from "../../lib/constants";
 import React from "react";
 import { rupiah } from "../../lib/helpers";
@@ -17,7 +17,7 @@ export default function InspectorPanel() {
     const prevRow = tableRows[idx - 1];
     const nextRow = tableRows[idx + 1];
     return (
-      <div>
+      <div data-inspector>
         <div className="flex items-center justify-between mb-2.5">
           <div>
             <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
@@ -58,7 +58,7 @@ export default function InspectorPanel() {
                   {detailEditingKey === `${h.id}:${s.key}` ? (
                     <div className="flex items-center gap-1.5">
                       <input
-                        autoFocus
+                        ref={focusWhen(true, "inspector")}
                         style={{ ...formInput, fontFamily: "Inter, sans-serif" }}
                         value={getDetail(h, s.key)}
                         onChange={(e) => setDetail(h.id, s.key, e.target.value)}
@@ -95,7 +95,7 @@ export default function InspectorPanel() {
         <div>
           {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
             <Field label="Kontraktor">
-              <input autoFocus={textEditingKey === `${h.id}:kontraktor`} list="kontraktor-options" style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
+              <input ref={focusWhen(textEditingKey === `${h.id}:kontraktor`, "inspector")} list="kontraktor-options" style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
             </Field>
           ) : (
             <div className="mb-2">
@@ -105,7 +105,7 @@ export default function InspectorPanel() {
           )}
           {textEditingKey === `${h.id}:spkNo` || !h.spkNo ? (
             <Field label="No. SPK">
-              <input autoFocus={textEditingKey === `${h.id}:spkNo`} style={formInput} value={h.spkNo || ""} onChange={(e) => { setTextEditingKey(`${h.id}:spkNo`); updateHouse(h.id, { spkNo: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
+              <input ref={focusWhen(textEditingKey === `${h.id}:spkNo`, "inspector")} style={formInput} value={h.spkNo || ""} onChange={(e) => { setTextEditingKey(`${h.id}:spkNo`); updateHouse(h.id, { spkNo: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
             </Field>
           ) : (
             <div className="mb-2">
@@ -115,7 +115,7 @@ export default function InspectorPanel() {
           )}
           {textEditingKey === `${h.id}:spkTahun` || !h.spkTahun ? (
             <Field label="Tahun SPK">
-              <input autoFocus={textEditingKey === `${h.id}:spkTahun`} type="number" style={formInput} value={h.spkTahun || ""} onChange={(e) => { setTextEditingKey(`${h.id}:spkTahun`); const v = e.target.value; updateHouse(h.id, { spkTahun: v === "" ? null : Number(v) }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
+              <input ref={focusWhen(textEditingKey === `${h.id}:spkTahun`, "inspector")} type="number" style={formInput} value={h.spkTahun || ""} onChange={(e) => { setTextEditingKey(`${h.id}:spkTahun`); const v = e.target.value; updateHouse(h.id, { spkTahun: v === "" ? null : Number(v) }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
             </Field>
           ) : (
             <div className="mb-2">
@@ -125,7 +125,7 @@ export default function InspectorPanel() {
           )}
           {monthEditingKey === h.id || !h.spkBulan ? (
             <Field label="Bulan SPK (1-12)">
-              <input autoFocus={monthEditingKey === h.id} type="number" min="1" max="12" style={formInput} value={h.spkBulan || ""} onChange={(e) => { setMonthEditingKey(h.id); const v = e.target.value; updateHouse(h.id, { spkBulan: v === "" ? null : Math.min(12, Math.max(1, Number(v))) }); }} onKeyDown={(e) => { if (e.key === "Enter") setMonthEditingKey(null); }} />
+              <input ref={focusWhen(monthEditingKey === h.id, "inspector")} type="number" min="1" max="12" style={formInput} value={h.spkBulan || ""} onChange={(e) => { setMonthEditingKey(h.id); const v = e.target.value; updateHouse(h.id, { spkBulan: v === "" ? null : Math.min(12, Math.max(1, Number(v))) }); }} onKeyDown={(e) => { if (e.key === "Enter") setMonthEditingKey(null); }} />
             </Field>
           ) : (
             <div className="mb-2">
@@ -157,7 +157,7 @@ export default function InspectorPanel() {
           </div>
           {priceEditingKey === `${h.id}:hpp` || !h.hppPerM2 ? (
             <Field label="HPP per m² (Rp)">
-              <input autoFocus={priceEditingKey === `${h.id}:hpp`} type="number" min="0" style={formInput} value={h.hppPerM2 || ""} onChange={(e) => { setPriceEditingKey(`${h.id}:hpp`); updateHouse(h.id, { hppPerM2: Number(e.target.value) || 0 }); }} onKeyDown={(e) => { if (e.key === "Enter") setPriceEditingKey(null); }} />
+              <input ref={focusWhen(priceEditingKey === `${h.id}:hpp`, "inspector")} type="number" min="0" style={formInput} value={h.hppPerM2 || ""} onChange={(e) => { setPriceEditingKey(`${h.id}:hpp`); updateHouse(h.id, { hppPerM2: Number(e.target.value) || 0 }); }} onKeyDown={(e) => { if (e.key === "Enter") setPriceEditingKey(null); }} />
             </Field>
           ) : (
             <div className="mb-2.5">
@@ -176,7 +176,7 @@ export default function InspectorPanel() {
           )}
           {priceEditingKey === `${h.id}:harga` || !h.hargaJualPerM2 ? (
             <Field label="Harga Jual per m² (Rp)">
-              <input autoFocus={priceEditingKey === `${h.id}:harga`} type="number" min="0" style={formInput} value={h.hargaJualPerM2 || ""} onChange={(e) => { setPriceEditingKey(`${h.id}:harga`); updateHouse(h.id, { hargaJualPerM2: Number(e.target.value) || 0 }); }} onKeyDown={(e) => { if (e.key === "Enter") setPriceEditingKey(null); }} />
+              <input ref={focusWhen(priceEditingKey === `${h.id}:harga`, "inspector")} type="number" min="0" style={formInput} value={h.hargaJualPerM2 || ""} onChange={(e) => { setPriceEditingKey(`${h.id}:harga`); updateHouse(h.id, { hargaJualPerM2: Number(e.target.value) || 0 }); }} onKeyDown={(e) => { if (e.key === "Enter") setPriceEditingKey(null); }} />
             </Field>
           ) : (
             <div className="mb-2.5">

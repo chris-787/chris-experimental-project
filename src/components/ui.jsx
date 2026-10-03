@@ -99,3 +99,22 @@ export function Pill({ children, color }) {
 }
 export const cellInput = { width: "100%", minWidth: 80, padding: "2px 6px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
 export const formInput = { width: "100%", padding: "5px 8px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
+
+// Kolom isian (Kontraktor, SPK, harga, dst) tampil di dua tempat sekaligus:
+// tabel dan panel detail. Tanpa ini keduanya sama-sama "merebut" kursor dan
+// halaman ikut ter-scroll ke panel detail. Jadi kursor hanya dipindahkan ke
+// isian di tempat yang barusan diklik, tanpa menggulung halaman.
+let editFrom = null;
+if (typeof document !== "undefined") {
+  document.addEventListener("mousedown", (e) => {
+    const t = e.target;
+    editFrom = t.closest?.("table") ? "table" : t.closest?.("[data-inspector]") ? "inspector" : null;
+  }, true);
+}
+export function focusWhen(active, where) {
+  return (el) => {
+    if (!el || !active) return;
+    const allowed = where === "inspector" ? editFrom === "inspector" : editFrom !== "inspector";
+    if (allowed && document.activeElement !== el) el.focus({ preventScroll: true });
+  };
+}

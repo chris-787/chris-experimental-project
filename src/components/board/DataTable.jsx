@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { Chip, Ic, cellInput } from "../../components/ui";
+import { Chip, Ic, cellInput, focusWhen } from "../../components/ui";
 import { MONTHS } from "../../lib/constants";
 import React from "react";
 import { rupiah } from "../../lib/helpers";
@@ -181,7 +181,7 @@ export default function DataTable() {
             </div>
           </div>
 
-          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 480, overflowY: "auto", zoom: tableZoom / 100 }}>
+          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 960, overflowY: "auto", zoom: tableZoom / 100 }}>
             <table className="dataTbl w-full" style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
                 {columns.map((c) => (
@@ -274,7 +274,7 @@ export default function DataTable() {
                           detailEditingKey === `${h.id}:${s.key}` ? (
                             <div className="flex items-center gap-1" style={{ marginTop: 4 }} onClick={(e) => e.stopPropagation()}>
                               <input
-                                autoFocus
+                                ref={focusWhen(true, "table")}
                                 style={{ ...cellInput, fontFamily: "Inter, sans-serif" }}
                                 value={getDetail(h, s.key)}
                                 onChange={(e) => setDetail(h.id, s.key, e.target.value)}
@@ -297,7 +297,7 @@ export default function DataTable() {
                     <td>
                       {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
                         <input
-                          autoFocus={textEditingKey === `${h.id}:kontraktor`}
+                          ref={focusWhen(textEditingKey === `${h.id}:kontraktor`, "table")}
                           list="kontraktor-options"
                           style={{ ...cellInput, minWidth: 110 }}
                           value={h.kontraktor || ""}
@@ -313,7 +313,7 @@ export default function DataTable() {
                     <td>
                       {textEditingKey === `${h.id}:spkNo` || !h.spkNo ? (
                         <input
-                          autoFocus={textEditingKey === `${h.id}:spkNo`}
+                          ref={focusWhen(textEditingKey === `${h.id}:spkNo`, "table")}
                           style={{ ...cellInput, minWidth: 110 }}
                           value={h.spkNo || ""}
                           onChange={(e) => { setTextEditingKey(`${h.id}:spkNo`); updateHouse(h.id, { spkNo: e.target.value }); }}
@@ -328,7 +328,7 @@ export default function DataTable() {
                     <td>
                       {textEditingKey === `${h.id}:spkTahun` || !h.spkTahun ? (
                         <input
-                          autoFocus={textEditingKey === `${h.id}:spkTahun`}
+                          ref={focusWhen(textEditingKey === `${h.id}:spkTahun`, "table")}
                           type="number" style={{ ...cellInput, minWidth: 64 }}
                           value={h.spkTahun || ""}
                           onChange={(e) => { setTextEditingKey(`${h.id}:spkTahun`); const v = e.target.value; updateHouse(h.id, { spkTahun: v === "" ? null : Number(v) }); }}
@@ -343,7 +343,7 @@ export default function DataTable() {
                     <td>
                       {monthEditingKey === h.id || !h.spkBulan ? (
                         <input
-                          autoFocus={monthEditingKey === h.id}
+                          ref={focusWhen(monthEditingKey === h.id, "table")}
                           type="number" min="1" max="12" style={{ ...cellInput, minWidth: 50 }}
                           value={h.spkBulan || ""}
                           onChange={(e) => { setMonthEditingKey(h.id); const v = e.target.value; updateHouse(h.id, { spkBulan: v === "" ? null : Math.min(12, Math.max(1, Number(v))) }); }}
@@ -362,7 +362,7 @@ export default function DataTable() {
                     <td>
                       {priceEditingKey === `${h.id}:hpp` || !h.hppPerM2 ? (
                         <input
-                          autoFocus={priceEditingKey === `${h.id}:hpp`}
+                          ref={focusWhen(priceEditingKey === `${h.id}:hpp`, "table")}
                           type="number" min="0" style={{ ...cellInput, minWidth: 100 }}
                           value={h.hppPerM2 || ""}
                           onChange={(e) => { setPriceEditingKey(`${h.id}:hpp`); updateHouse(h.id, { hppPerM2: Number(e.target.value) || 0 }); }}
@@ -391,7 +391,7 @@ export default function DataTable() {
                     <td>
                       {priceEditingKey === `${h.id}:harga` || !h.hargaJualPerM2 ? (
                         <input
-                          autoFocus={priceEditingKey === `${h.id}:harga`}
+                          ref={focusWhen(priceEditingKey === `${h.id}:harga`, "table")}
                           type="number" min="0" style={{ ...cellInput, minWidth: 100 }}
                           value={h.hargaJualPerM2 || ""}
                           onChange={(e) => { setPriceEditingKey(`${h.id}:harga`); updateHouse(h.id, { hargaJualPerM2: Number(e.target.value) || 0 }); }}
@@ -420,7 +420,7 @@ export default function DataTable() {
                     <td>
                       {textEditingKey === `${h.id}:catatan` || !h.catatan ? (
                         <input
-                          autoFocus={textEditingKey === `${h.id}:catatan`}
+                          ref={focusWhen(textEditingKey === `${h.id}:catatan`, "table")}
                           style={{ ...cellInput, minWidth: 110 }}
                           value={h.catatan || ""}
                           onChange={(e) => { setTextEditingKey(`${h.id}:catatan`); updateHouse(h.id, { catatan: e.target.value }); }}
