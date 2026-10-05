@@ -187,9 +187,11 @@ export function makeReports(ctx) {
   body { font-family: Arial, Helvetica, sans-serif; color: #1B2A3C; padding: 24px; margin: 0; }
   h1 { font-size: 18px; margin: 0 0 2px; }
   .sub { color: #5B6673; font-size: 12px; margin-bottom: 16px; }
-  .plan-wrap { position: relative; width: 100%; border: 1px solid #C9C2B2; }
+  .plan-wrap { position: relative; width: 100%; border: 1px solid #C9C2B2; overflow: hidden; }
   .plan-wrap img { width: 100%; display: block; }
-  .plan-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  /* Poligon tersimpan dalam ruang koordinat PERSEGI (lebar x lebar), sama seperti
+     di layar -- jangan dibuat setinggi gambar, nanti semua poligon bergeser. */
+  .plan-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: auto; aspect-ratio: 1 / 1; }
   .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 12px; }
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .swatch { width: 14px; height: 14px; border-radius: 2px; display: inline-block; border: 1px solid #00000033; flex-shrink: 0; }
