@@ -102,6 +102,7 @@ export function makeReports(ctx) {
 <style>
   body { font-family: Arial, Helvetica, sans-serif; color: #1B2A3C; padding: 32px; max-width: 900px; margin: 0 auto; }
   h1 { font-size: 20px; margin-bottom: 2px; }
+  .credit { font-size: 11px; letter-spacing: 0.5px; color: #5B6673; margin-bottom: 6px; }
   .sub { color: #5B6673; font-size: 13px; margin-bottom: 24px; }
   .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
   .card { border: 1px solid #C9C2B2; border-radius: 6px; padding: 12px; }
@@ -123,6 +124,7 @@ export function makeReports(ctx) {
   @media print { body { padding: 0; } .charts { grid-template-columns: 1fr 1fr; } }
 </style></head>
 <body>
+  <div class="credit">chrisproject.site · Created by Aditya Christiandi Sinulingga</div>
   <h1>${activeCluster.name}</h1>
   <div class="sub">${activeCluster.subtitle} · target ${totalTarget} unit, ${blocks.length} blok · dicetak ${tanggal}</div>
 
