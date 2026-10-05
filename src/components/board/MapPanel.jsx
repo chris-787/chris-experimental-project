@@ -1,7 +1,8 @@
 import { C } from "../../theme";
 import { Field, cellInput, formInput } from "../../components/ui";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { centroid } from "../../lib/helpers";
+import { buildColorGroups } from "../../lib/colorGroups";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
@@ -12,6 +13,14 @@ export default function MapPanel() {
   // karena semua poligon tersimpan di ruang koordinat itu.
   const imgRef = useRef(null);
   const [imgH, setImgH] = useState(null);
+  // Rincian kavling di bawah legenda (ikut pilihan Warna peta). Buka/tutup
+  // diingat per perangkat.
+  const [showRincian, setShowRincianState] = useState(() => { try { return localStorage.getItem("bria-rincian") !== "0"; } catch (e) { return true; } });
+  const setShowRincian = (v) => { setShowRincianState(v); try { localStorage.setItem("bria-rincian", v ? "1" : "0"); } catch (e) {} };
+  const colorGroups = useMemo(
+    () => buildColorGroups({ colorMode, houses, blocks, tipeOptions, kontraktorLegend, blockColor }),
+    [colorMode, houses, blocks, tipeOptions, kontraktorLegend]
+  );
   useEffect(() => {
     const el = imgRef.current;
     if (!el || typeof ResizeObserver === "undefined") return undefined;
@@ -217,6 +226,35 @@ export default function MapPanel() {
               </>
             )}
           </div>
+          {!calibrating && houses.length > 0 && (
+            <div className="mt-2.5 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold" style={{ color: C.ink }}>Rincian kavling</span>
+                <button onClick={() => setShowRincian(!showRincian)} className="text-xs px-2 py-0.5 rounded-full" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }} aria-expanded={showRincian}>
+                  {showRincian ? "Sembunyikan ▴" : "Tampilkan ▾"}
+                </button>
+              </div>
+              {showRincian && (
+                <div className="rincian-grid mt-2">
+                  {colorGroups.map((g) => (
+                    <div key={g.key} style={{ breakInside: "avoid" }}>
+                      <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: C.ink }}>
+                        <span className="w-3 h-3 rounded-sm inline-block shrink-0" style={{ background: g.color }} />
+                        {g.key} <span style={{ fontWeight: 400, color: C.steel }}>· {g.total} unit</span>
+                      </div>
+                      {g.perTipe.length === 0 ? (
+                        <div className="text-xs" style={{ color: C.steel, paddingLeft: 18 }}>Tidak ada kavling</div>
+                      ) : g.perTipe.map((x) => (
+                        <div key={x.tipe} className="text-xs" style={{ color: C.steel, paddingLeft: 18, lineHeight: 1.55 }}>
+                          <b style={{ color: C.ink, fontWeight: 500 }}>Tipe {x.tipe}</b> ({x.names.length} unit) : {x.names.join(", ")}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
         {editingShapeId && (
           <div style={{ position: "absolute", top: 56, right: 24, background: C.panel, border: `1px solid ${C.accent}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.2)", zIndex: 20 }}>

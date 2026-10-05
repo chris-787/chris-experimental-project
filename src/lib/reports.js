@@ -1,6 +1,6 @@
 // Laporan cetak (PDF), ekspor/impor Excel, dan backup/restore JSON.
 // Dipisah dari BriaStatusBoard; data yang dibutuhkan dikirim lewat parameter ctx.
-import { C } from "../theme";
+import { buildColorGroups } from "./colorGroups";
 import { DEFAULT_BLOCKS, DEFAULT_KATEGORI, DEFAULT_STATUS, DEFAULT_TIPE, LAST_BACKUP_KEY, LEGACY_CLUSTER_ID, MONTHS, SITE_IMAGE_DEFAULT, configKeyFor, housesKeyFor, imageKeyFor } from "../lib/constants";
 import { rupiah } from "../lib/helpers";
 import { storage } from "../lib/storage";
@@ -162,20 +162,9 @@ export function makeReports(ctx) {
     w.onload = () => { w.focus(); w.print(); };
   }
   function printSitePlan() {
-    const legendItems = colorMode === "blok"
-      ? blocks.map((b) => ({ key: b.name, label: b.name, color: blockColor(b.name) }))
-      : colorMode === "tipe"
-      ? tipeOptions.map((t) => ({ key: t.name, label: t.name, color: t.color }))
-      : colorMode === "kontraktor"
-      ? kontraktorLegend.map((k) => ({ key: k.label, label: `${k.label} (${k.count})`, color: k.color }))
-      : [{ key: "Sudah", label: "Sudah", color: C.green }, { key: "Belum", label: "Belum", color: C.red }];
-    const groupOf = (h) => (colorMode === "blok" ? h.blok
-      : colorMode === "tipe" ? h.tipe
-      : colorMode === "kontraktor" ? ((h.kontraktor || "").trim() || "(belum diisi)")
-      : (h.status[colorMode] ? "Sudah" : "Belum"));
+    const groups = buildColorGroups({ colorMode, houses, blocks, tipeOptions, kontraktorLegend, blockColor });
+    const legendItems = groups;
     const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const kavlingName = (h) => `${h.blok}-${h.noKavling}`;
-    const byKavling = (a, b) => (a.blok === b.blok ? String(a.noKavling).localeCompare(String(b.noKavling), undefined, { numeric: true }) : a.blok.localeCompare(b.blok));
     const colorModeLabel = colorMode === "blok" ? "Per Blok" : colorMode === "tipe" ? "Per Tipe" : colorMode === "kontraktor" ? "Per Kontraktor" : (statusFields.find((s) => s.key === colorMode)?.label || colorMode);
     // Jendela cetak tidak punya variabel CSS tema, jadi "var(--green)" dst
     // diubah dulu jadi warna asli (hex) sebelum dimasukkan ke HTML cetak.
@@ -191,16 +180,9 @@ export function makeReports(ctx) {
     const legendHtml = legendItems.map((l) => `<div class="legend-item"><span class="swatch" style="background-color:${l.color}"></span>${l.label}</div>`).join("");
     // Rincian di bawah legenda: untuk tiap kelompok warna, daftar kavling
     // dikelompokkan per tipe, mis. "Tipe 6x12 (2 unit) : RB/A-01, RB/A-03".
-    const tipeOrder = [...tipeOptions.map((t) => t.name), ...houses.map((h) => h.tipe).filter((t) => !tipeOptions.some((o) => o.name === t))];
-    const isStatusMode = colorMode !== "blok" && colorMode !== "tipe" && colorMode !== "kontraktor";
-    const detailHtml = legendItems.map((l) => {
-      const inGroup = houses.filter((h) => groupOf(h) === l.key);
-      if (!inGroup.length && !isStatusMode) return "";
-      const lines = [...new Set(tipeOrder)].map((tp) => {
-        const list = inGroup.filter((h) => h.tipe === tp).sort(byKavling);
-        return list.length ? `<div class="dl"><b>Tipe ${esc(tp)}</b> (${list.length} unit) : ${list.map((h) => esc(kavlingName(h))).join(", ")}</div>` : "";
-      }).join("");
-      return `<div class="dgroup"><div class="dhead"><span class="swatch" style="background-color:${l.color}"></span>${esc(l.key)} <span class="dcount">· ${inGroup.length} unit</span></div>${lines || '<div class="dl dempty">Tidak ada kavling</div>'}</div>`;
+    const detailHtml = groups.map((g) => {
+      const lines = g.perTipe.map((x) => `<div class="dl"><b>Tipe ${esc(x.tipe)}</b> (${x.names.length} unit) : ${x.names.map(esc).join(", ")}</div>`).join("");
+      return `<div class="dgroup"><div class="dhead"><span class="swatch" style="background-color:${g.color}"></span>${esc(g.key)} <span class="dcount">· ${g.total} unit</span></div>${lines || '<div class="dl dempty">Tidak ada kavling</div>'}</div>`;
     }).join("");
     const html = `<!DOCTYPE html>
 <html lang="id"><head><meta charset="UTF-8"><title>Site Plan ${activeCluster.name}</title>

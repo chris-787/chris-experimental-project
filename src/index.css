@@ -96,3 +96,6 @@ body {
   .plan-box { height: min(var(--img-h), 70vh) !important; max-height: 70vh !important; }
   .panel-height-handle { display: none; }
 }
+
+/* Rincian kavling di bawah legenda Site Plan */
+.rincian-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; }

@@ -9,6 +9,8 @@ export const WHATS_NEW_GROUPS = [
   {
     date: "3 Oktober 2026",
     items: [
+      { icon: "📋", title: "Rincian kavling di bawah legenda", desc: "Di bawah legenda Site Plan ada daftar kavling per kelompok warna yang sedang aktif (kontraktor, Sudah/Belum, blok, atau tipe), dikelompokkan per tipe, mis. \"Tipe 6x12 (4 unit) : RB/D-06, RB/D-08, ...\". Bisa disembunyikan, dan ikut tercetak di Cetak Site Plan." },
+      { icon: "©️", title: "Credit di hasil cetak", desc: "Cetak Site Plan dan cetak laporan Dashboard sekarang memuat credit chrisproject.site di atas judul." },
       { icon: "🧩", title: "Tabel Ringkas / Lengkap", desc: "Di atas tabel ada tombol Ringkas (kolom inti saja: No, Kavling, Tipe, Status, Kontraktor, HPP, Harga Jual, Margin) dan Lengkap (semua kolom, bisa diatur lewat menu Kolom). Pilihan ini hanya berlaku di perangkat Anda." },
       { icon: "🎨", title: "Warna peta per kontraktor", desc: "Pilihan baru \"Per Kontraktor\" di Warna peta, lengkap dengan legenda dan jumlah unit tiap kontraktor." },
       { icon: "📱", title: "Lebih rapi di HP", desc: "Opacity dan Cetak Site Plan dilipat ke tombol \"Opsi\", tinggi Site Plan mengikuti gambar, dan tombol Simpan Perubahan menyala oranye hanya saat ada perubahan." },
