@@ -229,7 +229,7 @@ export default function MapPanel() {
           {!calibrating && houses.length > 0 && (
             <div className="mt-2.5 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold" style={{ color: C.ink }}>Rincian kavling</span>
+                <span className="text-xs font-semibold" style={{ color: C.ink }}>Rincian kavling · Total unit : {houses.length}</span>
                 <button onClick={() => setShowRincian(!showRincian)} className="text-xs px-2 py-0.5 rounded-full" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }} aria-expanded={showRincian}>
                   {showRincian ? "Sembunyikan ▴" : "Tampilkan ▾"}
                 </button>
@@ -240,7 +240,7 @@ export default function MapPanel() {
                     <div key={g.key} style={{ breakInside: "avoid" }}>
                       <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: C.ink }}>
                         <span className="w-3 h-3 rounded-sm inline-block shrink-0" style={{ background: g.color }} />
-                        {g.key} <span style={{ fontWeight: 400, color: C.steel }}>· {g.total} unit</span>
+                        {g.key} <span style={{ fontWeight: 400, color: C.steel }}>({g.total} unit)</span>
                       </div>
                       {g.perTipe.length === 0 ? (
                         <div className="text-xs" style={{ color: C.steel, paddingLeft: 18 }}>Tidak ada kavling</div>

@@ -182,7 +182,7 @@ export function makeReports(ctx) {
     // dikelompokkan per tipe, mis. "Tipe 6x12 (2 unit) : RB/A-01, RB/A-03".
     const detailHtml = groups.map((g) => {
       const lines = g.perTipe.map((x) => `<div class="dl"><b>Tipe ${esc(x.tipe)}</b> (${x.names.length} unit) : ${x.names.map(esc).join(", ")}</div>`).join("");
-      return `<div class="dgroup"><div class="dhead"><span class="swatch" style="background-color:${g.color}"></span>${esc(g.key)} <span class="dcount">· ${g.total} unit</span></div>${lines || '<div class="dl dempty">Tidak ada kavling</div>'}</div>`;
+      return `<div class="dgroup"><div class="dhead"><span class="swatch" style="background-color:${g.color}"></span>${esc(g.key)} <span class="dcount">(${g.total} unit)</span></div>${lines || '<div class="dl dempty">Tidak ada kavling</div>'}</div>`;
     }).join("");
     const html = `<!DOCTYPE html>
 <html lang="id"><head><meta charset="UTF-8"><title>Site Plan ${activeCluster.name}</title>
@@ -201,6 +201,7 @@ export function makeReports(ctx) {
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .swatch { width: 14px; height: 14px; border-radius: 2px; display: inline-block; border: 1px solid #00000033; flex-shrink: 0; }
   .details { margin-top: 18px; padding-top: 12px; border-top: 1px solid #C9C2B2; column-count: 2; column-gap: 28px; }
+  .dtotal { column-span: all; font-size: 13px; font-weight: bold; margin-bottom: 10px; }
   .dgroup { break-inside: avoid; margin-bottom: 12px; font-size: 12px; }
   .dhead { display: flex; align-items: center; gap: 6px; font-weight: bold; margin-bottom: 3px; }
   .dcount { font-weight: normal; color: #5B6673; }
@@ -217,7 +218,7 @@ export function makeReports(ctx) {
     <svg viewBox="0 0 100 100" preserveAspectRatio="none">${shapesSvg}</svg>
   </div>
   <div class="legend">${legendHtml}</div>
-  <div class="details">${detailHtml}</div>
+  <div class="details"><div class="dtotal">Total unit : ${houses.length}</div>${detailHtml}</div>
 </body></html>`;
     const w = window.open("", "_blank");
     if (!w) { alert("Popup diblokir browser. Izinkan popup untuk situs ini lalu coba lagi."); return; }
