@@ -93,6 +93,6 @@ body {
   .opts-toggle { display: inline-flex; }
   .map-opts { display: none; }
   .map-opts.open { display: flex; }
-  .plan-box { height: auto !important; max-height: 70vh !important; }
+  .plan-box { height: min(var(--img-h), 70vh) !important; max-height: 70vh !important; }
   .panel-height-handle { display: none; }
 }

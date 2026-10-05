@@ -1,11 +1,24 @@
 import { C } from "../../theme";
 import { Field, cellInput, formInput } from "../../components/ui";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { centroid } from "../../lib/helpers";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
   const { kontraktorLegend, actionMenuId, activeBlock, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setMapHeight, setSelectedId, setZoom, siteImage, startEditShape, startHeightDrag, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
+  // Tinggi gambar yang sedang tampil. Di HP kotak Site Plan dipendekkan
+  // sampai setinggi gambar (lihat .plan-box di index.css). Koordinat poligon
+  // TIDAK disentuh: lapisan SVG tetap berbentuk persegi seperti semula,
+  // karena semua poligon tersimpan di ruang koordinat itu.
+  const imgRef = useRef(null);
+  const [imgH, setImgH] = useState(null);
+  useEffect(() => {
+    const el = imgRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(() => setImgH(Math.round(el.getBoundingClientRect().height)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [siteImage]);
   return (
     <>
     <div style={{ marginBottom: 12 }}>
@@ -60,15 +73,15 @@ export default function MapPanel() {
           <div
             ref={planBoxRef}
             className="plan-box"
-            style={{ overflow: "auto", ...(mapHeight ? { height: mapHeight } : { maxHeight: 640 }), border: `1px solid ${C.line}`, borderRadius: 8, touchAction: "pan-x pan-y" }}
+            style={{ "--img-h": imgH ? `${imgH + 2}px` : "auto", overflow: "auto", ...(mapHeight ? { height: mapHeight } : { maxHeight: 640 }), border: `1px solid ${C.line}`, borderRadius: 8, touchAction: "pan-x pan-y" }}
             onWheel={handleWheelZoom}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
             <div ref={imgWrapRef} style={{ position: "relative", display: "grid", width: `${zoom}%`, cursor: calibrating ? "crosshair" : "default" }} onClick={handleImageClick}>
-              <img src={siteImage} alt="Site plan" style={{ gridArea: "1 / 1", width: "100%", display: "block", userSelect: "none" }} draggable={false} />
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+              <img ref={imgRef} src={siteImage} alt="Site plan" style={{ gridArea: "1 / 1", width: "100%", display: "block", userSelect: "none" }} draggable={false} />
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ gridArea: "1 / 1", width: "100%", height: "100%" }}>
                 {houses.filter((h) => h.id !== editingShapeId).map((h) => (
                   <React.Fragment key={h.id}>
                     {selectedId === h.id && (
