@@ -91,7 +91,7 @@ export function ProgressBar({ pct, color }) {
 }
 export function KpiCard({ label, value, sub, pct, color }) {
   return (
-    <div className="p-2.5 rounded-xl" style={{ background: C.panel, boxShadow: `inset 0 3px 0 ${color}, ${C.cardShadow}` }}>
+    <div className="p-3 rounded-xl" style={{ background: C.panel, boxShadow: `inset 0 3px 0 ${color}, ${C.cardShadow}`, height: "100%", boxSizing: "border-box" }}>
       <div style={{ fontSize: 11, color: C.steel }}>{label}</div>
       <div className="font-semibold" style={{ fontSize: 16, lineHeight: 1.25, color: C.ink, fontFamily: MONO, overflowWrap: "anywhere" }}>{value}</div>
       {pct != null && <ProgressBar pct={pct} color={color} />}

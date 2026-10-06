@@ -107,7 +107,7 @@ export default function HomeScreen() {
               onChange={(e) => setKavlingSearch(e.target.value)}
               placeholder="Cari nomor kavling di semua cluster... (mis. RB/A-11)"
               className="text-sm px-3 py-2.5 rounded-full w-full kavling-search-input"
-              style={{ border: "none", color: C.ink, background: C.searchFill }}
+              style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}
             />
             {kavlingSearch.trim() && (
               <div className="mt-2 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
@@ -321,20 +321,20 @@ export default function HomeScreen() {
           )}
             </div>
             <aside className="flex flex-col gap-3" style={{ minWidth: 0 }}>
-          {homeAllFollowUpList.length > 0 && (
+          {(
             <div className="p-2.5 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
                 <div className="flex items-center gap-2.5">
                   <IconChip name="clock" bg={C.chipAmberBg} color={C.amber} size={34} />
                   <div className="text-sm font-semibold" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
                 </div>
-                <div className="flex" style={{ background: C.pillFill, borderRadius: 10, padding: 3 }}>
+                {homeAllFollowUpList.length > 0 && <div className="flex" style={{ background: C.pillFill, borderRadius: 10, padding: 3 }}>
                   <button onClick={() => setFollowUpView("list")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "list" ? C.accent : "transparent", color: followUpView === "list" ? "#fff" : C.steel, border: "none" }}>Daftar</button>
                   <button onClick={() => setFollowUpView("kalender")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "kalender" ? C.accent : "transparent", color: followUpView === "kalender" ? "#fff" : C.steel, border: "none" }}>Kalender</button>
-                </div>
+                </div>}
               </div>
 
-              {followUpView === "list" ? (
+              {followUpView === "list" && homeAllFollowUpList.length > 0 ? (
                 homeFollowUpList.length === 0 ? (
                   <div className="text-xs" style={{ color: C.steel, paddingLeft: 46 }}>Tidak ada yang jatuh tempo dalam 7 hari ke depan. Cek "Kalender" untuk melihat semuanya.</div>
                 ) : (
@@ -358,7 +358,7 @@ export default function HomeScreen() {
                 const todayStr = new Date().toISOString().slice(0, 10);
                 const selectedItems = calendarSelectedDate ? (followUpsByDate[calendarSelectedDate] || []) : [];
                 return (
-                  <div style={{ maxWidth: 280, margin: "0 auto" }}>
+                  <div style={{ maxWidth: 300, margin: "0 auto" }}>
                     <div className="flex items-center justify-between mb-2">
                       <button onClick={() => setCalendarMonth((s) => { const dm = new Date(s.y, s.m - 1, 1); return { y: dm.getFullYear(), m: dm.getMonth() }; })} style={{ width: 22, height: 22, lineHeight: "20px", textAlign: "center", border: `1px solid ${C.line}`, borderRadius: 6, color: C.ink, background: C.panel, fontSize: 12 }}>&lsaquo;</button>
                       <div className="text-xs font-semibold" style={{ color: C.ink }}>{MONTH_LABELS[m]} {y}</div>
@@ -366,10 +366,10 @@ export default function HomeScreen() {
                     </div>
                     <div className="grid" style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
                       {WEEKDAY_LABELS.map((wd) => (
-                        <div key={wd} className="text-center" style={{ fontSize: 9, color: C.steel, fontWeight: 600 }}>{wd}</div>
+                        <div key={wd} className="text-center" style={{ fontSize: 11, color: C.steel, fontWeight: 600, paddingBottom: 2 }}>{wd}</div>
                       ))}
                       {cells.map((dateStr, i) => {
-                        if (!dateStr) return <div key={i} style={{ height: 30 }} />;
+                        if (!dateStr) return <div key={i} style={{ height: 34 }} />;
                         const items = followUpsByDate[dateStr] || [];
                         const hasOverdue = items.some((it) => it.overdue);
                         const isToday = dateStr === todayStr;
@@ -380,7 +380,7 @@ export default function HomeScreen() {
                             onClick={() => setCalendarSelectedDate(isSelected ? null : dateStr)}
                             className="flex flex-col items-center justify-center"
                             style={{
-                              height: 30, borderRadius: 6, fontSize: 10, cursor: "pointer",
+                              height: 34, borderRadius: 8, fontSize: 12, cursor: "pointer",
                               color: items.length > 0 ? C.ink : C.steel,
                               background: isSelected ? C.amber : isToday ? C.panel : "transparent",
                               border: isToday ? `1px solid ${C.amber}` : "1px solid transparent",

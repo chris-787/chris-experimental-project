@@ -19,7 +19,7 @@
   --amber: #B8791E;
   --red: #BD3B2E;
   --gold: #C9A227;
-  --card-shadow: 0 1px 2px rgba(30,27,24,.05), 0 10px 26px rgba(30,27,24,.06);
+  --card-shadow: 0 0 0 1px var(--line), 0 1px 3px rgba(30,27,24,.05);
   --pill-fill: #EFEBE2;
   --search-fill: #F7F4EC;
   --alert-amber-bg: #FFF7E8;
@@ -45,7 +45,7 @@
   --amber: #D9A441;
   --red: #E0695C;
   --gold: #D9B84C;
-  --card-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.45);
+  --card-shadow: 0 0 0 1px var(--line), 0 1px 3px rgba(0,0,0,.35);
   --pill-fill: #2A2521;
   --search-fill: #2B2622;
   --alert-amber-bg: #3A2E14;
@@ -102,13 +102,13 @@ body {
 
 /* Kerangka aplikasi: sidebar kiri (desktop) / bar menu bawah (HP) */
 .app-shell { display: flex; min-height: 100vh; background: var(--paper); }
-.app-side { flex: 0 0 232px; position: sticky; top: 0; height: 100vh; box-sizing: border-box; background: var(--panel); border-right: 1px solid var(--line); padding: 1.1rem .8rem; display: flex; flex-direction: column; gap: 1.3rem; overflow-y: auto; overflow-x: hidden; z-index: 35; }
-.app-side.collapsed { flex-basis: 72px; padding: 1.1rem .5rem; align-items: center; }
+.app-side { flex: 0 0 204px; position: sticky; top: 0; height: 100vh; box-sizing: border-box; background: var(--panel); border-right: 1px solid var(--line); padding: .9rem .6rem; display: flex; flex-direction: column; gap: 1.1rem; overflow-y: auto; overflow-x: hidden; z-index: 35; }
+.app-side.collapsed { flex-basis: 58px; padding: .9rem .4rem; align-items: center; }
 .app-main { flex: 1 1 0; min-width: 0; padding: 1rem; }
-.side-item { display: flex; align-items: center; gap: .7rem; width: 100%; min-height: 44px; padding: 0 .75rem; border: none; border-radius: 10px; background: transparent; color: var(--steel); font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; font-family: inherit; }
+.side-item { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 38px; padding: 0 .65rem; border: none; border-radius: 10px; background: transparent; color: var(--steel); font-size: 13px; font-weight: 500; cursor: pointer; text-align: left; font-family: inherit; }
 .side-item:hover { background: var(--pill-fill); color: var(--ink); }
 .side-item[aria-current="page"] { background: var(--chip-blue-bg); color: var(--accent); font-weight: 600; }
-.app-side.collapsed .side-item { justify-content: center; padding: 0; width: 48px; }
+.app-side.collapsed .side-item { justify-content: center; padding: 0; width: 40px; min-height: 40px; }
 .app-side.collapsed .side-label, .app-side.collapsed .side-hide-collapsed { display: none; }
 .side-menu { display: flex; flex-direction: column; gap: 4px; width: 100%; }
 @media (max-width: 760px) {
@@ -134,3 +134,7 @@ body {
 .dash-tabs { scrollbar-width: none; }
 .dash-tabs::-webkit-scrollbar { display: none; }
 @media (max-width: 560px) { .kpi-wide { grid-column: span 2; } }
+
+/* Bentuk kartu mengikuti mockup: sudut lebih bulat, garis tipis */
+.rounded-xl { border-radius: 16px; }
+.rounded-2xl { border-radius: 18px; }

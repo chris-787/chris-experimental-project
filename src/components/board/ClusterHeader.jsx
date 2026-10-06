@@ -5,7 +5,7 @@ import ThemeToggle from "../../components/ThemeToggle";
 import { useBoard } from "./BoardContext";
 
 export default function ClusterHeader() {
-  const { SmallSpinner, activeBlock, activeCluster, activeTipe, blockProgress, blocks, calibrating, canEdit, currentClusterId, dirty, editMap,  mode, opacity, printSitePlan, reloadAfterRemoteUpdate, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setActionMenuId, setActiveBlock, setActiveTipe, setClusters, setConfirmDeleteId, setDraft, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, subtitleWidth, tipeOptions, totalTarget, updateClusterMeta } = useBoard();
+  const { SmallSpinner, activeBlock, activeCluster, activeTipe, blockProgress, blocks, calibrating, canEdit, currentClusterId, dashboardPos, dirty, editMap,  mode, opacity, printSitePlan, reloadAfterRemoteUpdate, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setActionMenuId, setActiveBlock, setActiveTipe, setClusters, setConfirmDeleteId, setDashboardPos, setDraft, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, subtitleWidth, tipeOptions, totalTarget, updateClusterMeta } = useBoard();
   const [showOpts, setShowOpts] = useState(false);
   return (
     <>
@@ -13,7 +13,7 @@ export default function ClusterHeader() {
       <div className="sticky top-0 z-30 -mx-4 -mt-4 px-4 pt-2.5 pb-2.5 mb-3" style={{ background: C.paper, borderBottom: `2px solid ${C.line}`, willChange: "transform", transform: "translateZ(0)" }}>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <div className="text-base font-semibold" style={{ color: C.ink }}>
+            <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.2px", color: C.ink }}>
               {mode === "kerja" ? (calibrating ? "Main Mode · Edit Site Plan" : "Main Mode") : mode === "data" ? "Data Mode" : mode === "dashboard" ? "Dashboard" : "Settings"}
             </div>
             <div className="text-xs" style={{ color: C.steel }}>{activeCluster.name}</div>
@@ -80,10 +80,17 @@ export default function ClusterHeader() {
 
       {/* TOOLBAR (Main Mode) — pindah mode lewat sidebar */}
       {mode === "kerja" && (
-      <div className="rounded-xl p-2.5 mb-3 flex flex-col gap-2.5" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-        <div className="flex gap-1.5 flex-wrap">
+      <div className="rounded-xl p-2.5 mb-3 flex flex-row flex-wrap items-center gap-2.5" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+        <div className="flex gap-1.5 flex-wrap" style={{ order: 2, marginLeft: "auto" }}>
           {mode === "kerja" && (
             <div className="flex items-center gap-2 ml-auto flex-wrap">
+              <button
+                onClick={() => setDashboardPos((p) => (p === "kanan" ? "bawah" : "kanan"))}
+                className={BTN_PILL}
+                style={btnSecondary}
+              >
+                <Ic name={dashboardPos === "kanan" ? "layoutBottom" : "layoutRight"} size={14} /> Move Dashboard {dashboardPos === "kanan" ? "↓" : "→"}
+              </button>
               {canEdit && (
                 <button
                   onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
@@ -97,7 +104,7 @@ export default function ClusterHeader() {
           )}
         </div>
         {calibrating && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap" style={{ order: 3, flexBasis: "100%" }}>
             <span className="text-xs" style={{ color: C.steel }}>Blok aktif:</span>
             {blocks.map((b) => (
               <Chip key={b.id} active={activeBlock === b.name} onClick={() => setActiveBlock(b.name)}>
@@ -107,7 +114,7 @@ export default function ClusterHeader() {
           </div>
         )}
         {calibrating && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap" style={{ order: 3, flexBasis: "100%" }}>
             <span className="text-xs" style={{ color: C.steel }}>Tipe aktif:</span>
             {tipeOptions.map((t) => (
               <Chip key={t.id} active={activeTipe === t.name} onClick={() => setActiveTipe(t.name)}>
@@ -117,7 +124,7 @@ export default function ClusterHeader() {
           </div>
         )}
         {mode === "kerja" && !calibrating && (
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap" style={{ order: 1 }}>
             <button onClick={() => setShowOpts((v) => !v)} className={`opts-toggle ${BTN_PILL}`} style={btnSecondary} aria-expanded={showOpts}>
               Opsi {showOpts ? "▴" : "▾"}
             </button>

@@ -18,7 +18,7 @@ export default function Sidebar() {
   return (
     <nav className={`app-side ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Menu utama">
       <div className="side-extra flex items-center gap-2.5" style={{ width: "100%", justifyContent: sidebarCollapsed ? "center" : "flex-start", flexDirection: sidebarCollapsed ? "column" : "row" }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>CB</div>
+        <div style={{ width: 32, height: 32, borderRadius: 9, background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 }}>CB</div>
         <div className="side-hide-collapsed" style={{ lineHeight: 1.15, flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: C.ink }}>Cluster Bintaro</div>
           <div style={{ fontSize: 12, color: C.steel }}>Jaya</div>
@@ -27,9 +27,9 @@ export default function Sidebar() {
           onClick={toggleSidebar}
           aria-label={sidebarCollapsed ? "Lebarkan sidebar" : "Lipat sidebar"}
           title={sidebarCollapsed ? "Lebarkan sidebar" : "Lipat sidebar"}
-          style={{ width: 36, height: 36, borderRadius: 10, border: `1px solid ${C.line}`, background: "transparent", color: C.steel, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+          style={{ width: 30, height: 30, borderRadius: 9, border: `1px solid ${C.line}`, background: "transparent", color: C.steel, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
         >
-          <Ic name={sidebarCollapsed ? "chevR" : "back"} size={16} />
+          <Ic name={sidebarCollapsed ? "chevR" : "back"} size={14} />
         </button>
       </div>
 
@@ -47,7 +47,7 @@ export default function Sidebar() {
               title={it.label}
               onClick={() => (it.key === "home" ? goHome() : goMode(it.key))}
             >
-              <Ic name={it.icon} size={19} />
+              <Ic name={it.icon} size={18} />
               <span className="side-label">{it.label}</span>
             </button>
           );
@@ -68,7 +68,7 @@ export default function Sidebar() {
           {lastBackupAt ? timeAgo(lastBackupAt) : "Belum pernah. Backup hanya tersimpan saat Anda menekan tombol di Home."}
         </div>
         <div className="flex items-center gap-2.5" style={{ padding: "2px 4px", flexDirection: sidebarCollapsed ? "column" : "row" }}>
-          <div title={canEdit ? "Admin" : "View Mode"} style={{ width: 34, height: 34, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 }}>{initials}</div>
+          <div title={canEdit ? "Admin" : "View Mode"} style={{ width: 30, height: 30, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>{initials}</div>
           <div className="side-hide-collapsed" style={{ lineHeight: 1.25, flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: 600, color: C.ink, fontSize: 13 }}>{displayName}</div>
             <div style={{ fontSize: 12, color: C.steel }}>{canEdit ? "Admin" : "View Mode"}</div>

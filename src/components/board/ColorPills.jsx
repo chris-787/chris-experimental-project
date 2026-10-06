@@ -19,15 +19,18 @@ export default function ColorPills() {
       <button aria-pressed={colorMode === "blok"} onClick={() => setColorMode("blok")} style={pill(colorMode === "blok")}>Per Blok</button>
       <button aria-pressed={colorMode === "tipe"} onClick={() => setColorMode("tipe")} style={pill(colorMode === "tipe")}>Per Tipe</button>
       {others.length > 0 && (
-        <select
-          aria-label="Status lain"
-          value={otherActive ? colorMode : ""}
-          onChange={(e) => e.target.value && setColorMode(e.target.value)}
-          style={{ ...pill(otherActive), appearance: "auto", outline: "none", border: otherActive ? "none" : "none", paddingRight: 8 }}
-        >
-          <option value="" disabled>Status lain ▾</option>
-          {others.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
-        </select>
+        <span style={{ position: "relative", display: "inline-flex", flexShrink: 0 }}>
+          <select
+            aria-label="Status lain"
+            value={otherActive ? colorMode : ""}
+            onChange={(e) => e.target.value && setColorMode(e.target.value)}
+            style={{ ...pill(otherActive), appearance: "none", WebkitAppearance: "none", outline: "none", paddingRight: 28 }}
+          >
+            <option value="" disabled>Status lain</option>
+            {others.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
+          </select>
+          <span aria-hidden="true" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 11, color: otherActive ? "#fff" : C.steel }}>▾</span>
+        </span>
       )}
     </div>
   );

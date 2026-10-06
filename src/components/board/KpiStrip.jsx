@@ -6,12 +6,13 @@ import { useBoard } from "./BoardContext";
 // Empat angka utama cluster (dipakai di Main Mode dan di halaman Dashboard).
 export default function KpiStrip() {
   const { avgMarginPct, houses, soldUnits, totalMargin, totalTarget } = useBoard();
+  const wrap = { height: "100%" };
   return (
-    <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
+    <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10, alignItems: "stretch" }}>
       <KpiCard label="Kavling Terpetakan" value={`${houses.length} / ${totalTarget}`} pct={totalTarget ? (houses.length / totalTarget) * 100 : 0} color={C.accent} sub={totalTarget ? `${Math.round((houses.length / totalTarget) * 100)}% dari target` : null} />
       <KpiCard label="Sudah Terjual" value={`${soldUnits.length} / ${houses.length}`} pct={houses.length ? (soldUnits.length / houses.length) * 100 : 0} color={C.green} sub={houses.length ? `${Math.round((soldUnits.length / houses.length) * 100)}% terjual` : null} />
-      <div className="kpi-wide"><KpiCard label="Total Margin" value={rupiah(totalMargin)} color={avgMarginPct >= 20 ? C.green : C.red} /></div>
-      <div className="kpi-wide"><KpiCard label="Rata-rata Margin" value={`${avgMarginPct.toFixed(2)}%`} color={avgMarginPct >= 20 ? C.green : C.red} sub="target minimal 20%" /></div>
+      <div className="kpi-wide" style={wrap}><KpiCard label="Total Margin" value={rupiah(totalMargin)} color={avgMarginPct >= 20 ? C.green : C.red} sub={`dari ${houses.length} kavling terpetakan`} /></div>
+      <div className="kpi-wide" style={wrap}><KpiCard label="Rata-rata Margin" value={`${avgMarginPct.toFixed(2)}%`} color={avgMarginPct >= 20 ? C.green : C.red} sub="target minimal 20%" /></div>
     </div>
   );
 }
