@@ -12,7 +12,7 @@ export default function MapPanel() {
   // sampai setinggi gambar (lihat .plan-box di index.css). Koordinat poligon
   // TIDAK disentuh: lapisan SVG tetap berbentuk persegi seperti semula,
   // karena semua poligon tersimpan di ruang koordinat itu.
-  const zoomBtn = { width: 34, height: 34, borderRadius: 10, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, cursor: "pointer", fontSize: 17, lineHeight: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,.08)" };
+  const zoomBtn = { width: 34, height: 30, borderRadius: 10, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, cursor: "pointer", fontSize: 15, lineHeight: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,.08)" };
   const imgRef = useRef(null);
   const [imgH, setImgH] = useState(null);
   // Rincian kavling di bawah legenda (ikut pilihan Warna peta). Buka/tutup
@@ -37,7 +37,7 @@ export default function MapPanel() {
         <div>
           <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: C.ink }}>Site Plan</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: C.ink }}>Site Plan</div>
               <div className="text-xs" style={{ color: C.steel }}>Cubit layar atau tekan Ctrl + scroll untuk zoom cepat</div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -74,6 +74,9 @@ export default function MapPanel() {
                   </div>
                 )}
               <div className="flex items-center gap-1.5">
+                <button onClick={() => setZoom((z) => Math.max(50, z - 20))} aria-label="Perkecil peta" style={zoomBtn}>−</button>
+                <button onClick={() => setZoom((z) => Math.min(400, z + 20))} aria-label="Perbesar peta" style={zoomBtn}>+</button>
+                <button onClick={() => setZoom(100)} title="Kembali ke 100%" aria-label="Setel ulang zoom" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600 }}>{zoom}%</button>
                 {selectedId && (
                   <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Clear</button>
                 )}
@@ -120,11 +123,6 @@ export default function MapPanel() {
             </div>
           ) : (
           <div style={{ position: "relative" }}>
-          <div className="flex items-center gap-2" style={{ position: "absolute", top: 10, right: 10, zIndex: 5 }}>
-            <button onClick={() => setZoom((z) => Math.max(50, z - 20))} aria-label="Perkecil peta" style={zoomBtn}>−</button>
-            <button onClick={() => setZoom((z) => Math.min(400, z + 20))} aria-label="Perbesar peta" style={zoomBtn}>+</button>
-            <button onClick={() => setZoom(100)} title="Kembali ke 100%" aria-label="Setel ulang zoom" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 12, fontWeight: 600 }}>{zoom}%</button>
-          </div>
           <div
             ref={planBoxRef}
             className="plan-box"

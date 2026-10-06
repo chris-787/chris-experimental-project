@@ -8,7 +8,7 @@ export default function ColorPills() {
   const first = statusFields[0];
   const others = statusFields.slice(1);
   const pill = (active) => ({
-    height: 34, padding: "0 14px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+    height: 30, padding: "0 14px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit",
     background: active ? C.accent : "transparent", color: active ? "#fff" : C.steel,
   });
   const otherActive = others.some((s) => s.key === colorMode);

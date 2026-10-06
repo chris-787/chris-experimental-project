@@ -106,7 +106,7 @@ body {
 .app-side { flex: 0 0 204px; position: sticky; top: 0; height: 100vh; box-sizing: border-box; background: var(--panel); border-right: 1px solid var(--line); padding: .9rem .6rem; display: flex; flex-direction: column; gap: 1.1rem; overflow-y: auto; overflow-x: hidden; z-index: 35; }
 .app-side.collapsed { flex-basis: 58px; padding: .9rem .4rem; align-items: center; }
 .app-main { flex: 1 1 0; min-width: 0; padding: 1rem; }
-.side-item { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 38px; padding: 0 .65rem; border: none; border-radius: 10px; background: transparent; color: var(--steel); font-size: 13px; font-weight: 500; cursor: pointer; text-align: left; font-family: inherit; }
+.side-item { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 38px; padding: 0 .65rem; border: none; border-radius: 10px; background: transparent; color: var(--steel); font-size: 12.5px; font-weight: 500; cursor: pointer; text-align: left; font-family: inherit; }
 .side-item:hover { background: var(--pill-fill); color: var(--ink); }
 .side-item[aria-current="page"] { background: var(--chip-blue-bg); color: var(--accent); font-weight: 600; }
 .app-side.collapsed .side-item { justify-content: center; padding: 0; width: 40px; min-height: 40px; }

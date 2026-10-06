@@ -19,15 +19,15 @@ export default function InspectorPanel() {
     return (
       <div data-inspector>
         <div className="flex items-center gap-2.5 flex-wrap mb-3.5">
-          <div style={{ fontSize: 17, fontWeight: 700, color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
           <span style={{ background: C.chipBlueBg, color: C.accent, fontWeight: 600, fontSize: 12, padding: "3px 10px", borderRadius: 999 }}>{h.tipe}</span>
           <span style={{ background: h.status.terjual ? C.pillFill : C.pillFill, color: h.status.terjual ? C.green : C.steel, fontWeight: 600, fontSize: 12, padding: "3px 10px", borderRadius: 999 }}>{h.status.terjual ? "Sudah terjual" : "Belum terjual"}</span>
           {h.lastEditedAt && <span className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}</span>}
           <span style={{ flex: 1 }} />
-          <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} style={{ height: 36, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: prevRow ? C.ink : C.faint, fontWeight: 600, fontSize: 13, cursor: prevRow ? "pointer" : "default" }} title="Kavling sebelumnya (←)">&lsaquo; Prev</button>
-          <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} style={{ height: 36, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: nextRow ? C.ink : C.faint, fontWeight: 600, fontSize: 13, cursor: nextRow ? "pointer" : "default" }} title="Kavling berikutnya (→)">Next &rsaquo;</button>
-          <button onClick={() => printKavlingSummary(h)} style={{ height: 36, padding: "0 16px", borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}><Ic name="printer" size={14} /> Ringkasan</button>
-          <button onClick={() => setSelectedId(null)} aria-label="Tutup detail" title="Tutup / hapus highlight (Esc)" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.steel, cursor: "pointer" }}>✕</button>
+          <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: prevRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: prevRow ? "pointer" : "default" }} title="Kavling sebelumnya (←)">&lsaquo; Prev</button>
+          <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: nextRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: nextRow ? "pointer" : "default" }} title="Kavling berikutnya (→)">Next &rsaquo;</button>
+          <button onClick={() => printKavlingSummary(h)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}><Ic name="printer" size={14} /> Ringkasan</button>
+          <button onClick={() => setSelectedId(null)} aria-label="Tutup detail" title="Tutup / hapus highlight (Esc)" style={{ width: 36, height: 32, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.steel, cursor: "pointer" }}>✕</button>
         </div>
 
         <div className="inspector-cols">

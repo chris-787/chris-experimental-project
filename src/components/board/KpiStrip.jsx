@@ -19,26 +19,26 @@ export default function KpiStrip() {
   return (
     <div className="mb-3.5 kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12, alignItems: "stretch" }}>
       <div style={box}>
-        <div style={{ fontSize: 12, color: C.steel }}>Kavling Terpetakan</div>
-        <div style={{ fontFamily: MONO, fontSize: 22, fontWeight: 500, marginTop: 4, color: C.ink }}>{houses.length} <span style={{ fontSize: 15, color: C.steel }}>/ {totalTarget}</span></div>
+        <div style={{ fontSize: 11, color: C.steel }}>Kavling Terpetakan</div>
+        <div style={{ fontFamily: MONO, fontSize: 19, fontWeight: 500, marginTop: 4, color: C.ink }}>{houses.length} <span style={{ fontSize: 13, color: C.steel }}>/ {totalTarget}</span></div>
         {bar(mapped, C.accent)}
         <div style={{ fontSize: 11, color: C.steel, marginTop: 6 }}>{Math.round(mapped)}% dari target</div>
       </div>
       <div style={box}>
-        <div style={{ fontSize: 12, color: C.steel }}>Sudah Terjual</div>
-        <div style={{ fontFamily: MONO, fontSize: 22, fontWeight: 500, marginTop: 4, color: C.ink }}>{soldUnits.length} <span style={{ fontSize: 15, color: C.steel }}>/ {houses.length}</span></div>
+        <div style={{ fontSize: 11, color: C.steel }}>Sudah Terjual</div>
+        <div style={{ fontFamily: MONO, fontSize: 19, fontWeight: 500, marginTop: 4, color: C.ink }}>{soldUnits.length} <span style={{ fontSize: 13, color: C.steel }}>/ {houses.length}</span></div>
         {bar(sold, C.green)}
         <div style={{ fontSize: 11, color: C.steel, marginTop: 6 }}>{Math.round(sold)}% terjual</div>
       </div>
       <div className="kpi-wide" style={box}>
-        <div style={{ fontSize: 12, color: C.steel }}>Total Margin</div>
-        <div style={{ fontFamily: MONO, fontSize: 19, fontWeight: 500, marginTop: 8, color: C.ink, overflowWrap: "anywhere" }}>{rupiah(totalMargin)}</div>
+        <div style={{ fontSize: 11, color: C.steel }}>Total Margin</div>
+        <div style={{ fontFamily: MONO, fontSize: 16, fontWeight: 500, marginTop: 8, color: C.ink, overflowWrap: "anywhere" }}>{rupiah(totalMargin)}</div>
         <div style={{ fontSize: 11, color: C.steel, marginTop: 14 }}>dari {houses.length} kavling terpetakan</div>
       </div>
       <div className="kpi-wide" style={box}>
-        <div style={{ fontSize: 12, color: C.steel }}>Rata-rata Margin</div>
+        <div style={{ fontSize: 11, color: C.steel }}>Rata-rata Margin</div>
         <div className="flex items-center gap-2" style={{ marginTop: 4 }}>
-          <span style={{ fontFamily: MONO, fontSize: 22, fontWeight: 500, color: C.ink }}>{avgMarginPct.toFixed(2)}%</span>
+          <span style={{ fontFamily: MONO, fontSize: 19, fontWeight: 500, color: C.ink }}>{avgMarginPct.toFixed(2)}%</span>
           <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 999, background: ok ? C.chipBlueBg : C.chipRedBg, color: ok ? C.green : C.red }}>{ok ? "di atas target" : "di bawah target"}</span>
         </div>
         <div style={{ fontSize: 11, color: C.steel, marginTop: 14 }}>target minimal 20%</div>

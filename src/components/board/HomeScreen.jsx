@@ -11,14 +11,14 @@ export default function HomeScreen() {
   const totalSumHpp = Object.values(clusterStats).reduce((s, x) => s + (x.sumHpp || 0), 0);
   const overallMarginPct = totalSumHarga ? ((totalSumHarga - totalSumHpp) / totalSumHarga) * 100 : 0;
   const activeClusters = clusters.filter((c) => !c.archived);
-  const pillBtn = { height: 38, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, fontSize: 13, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
+  const pillBtn = { height: 34, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
   return (
     <>
       {/* BAR ATAS (Home tidak memakai sidebar) */}
       <div style={{ margin: "-1rem -1rem 0", background: C.panel, borderBottom: `1px solid ${C.line}`, padding: "12px 24px" }}>
         <div className="flex items-center gap-3 flex-wrap" style={{ maxWidth: 1180, margin: "0 auto", position: "relative" }}>
           <div className="flex items-center gap-2.5" style={{ flex: "1 1 240px", minWidth: 0 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 }}>CB</div>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>CB</div>
             <div style={{ minWidth: 0 }}>
               <input
                 value={appTitle}
@@ -30,13 +30,13 @@ export default function HomeScreen() {
                 aria-label="Judul aplikasi"
                 title={canEdit ? "Klik untuk edit judul" : undefined}
                 size={Math.max(appTitle.length, 10)}
-                style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 15, fontWeight: 700, maxWidth: "100%", display: "block" }}
+                style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 14, fontWeight: 700, maxWidth: "100%", display: "block" }}
               />
               <div style={{ fontSize: 12, color: C.steel }}>Created by Aditya Christiandi Sinulingga. Ver 2.0</div>
             </div>
           </div>
           <div style={{ position: "relative", flex: "0 1 380px", minWidth: 200 }}>
-          <label className="flex items-center gap-2 search-pill" style={{ background: C.paper, border: `1px solid ${C.line}`, borderRadius: 999, padding: "0 14px", height: 40, color: C.steel }}>
+          <label className="flex items-center gap-2 search-pill" style={{ background: C.paper, border: `1px solid ${C.line}`, borderRadius: 999, padding: "0 14px", height: 36, color: C.steel }}>
             <Ic name="search" size={16} />
             <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>Cari kavling di semua cluster</span>
             <input
@@ -44,7 +44,7 @@ export default function HomeScreen() {
               onChange={(e) => setKavlingSearch(e.target.value)}
               placeholder="Cari blok atau kavling di semua cluster"
               className="kavling-search-input"
-              style={{ border: "none", outline: "none", background: "transparent", fontFamily: "inherit", fontSize: 13, color: C.ink, width: "100%", minWidth: 0 }}
+              style={{ border: "none", outline: "none", background: "transparent", fontFamily: "inherit", fontSize: 12, color: C.ink, width: "100%", minWidth: 0 }}
             />
           </label>
             {kavlingSearch.trim() && (
@@ -79,10 +79,10 @@ export default function HomeScreen() {
               {!homeSaving && homeDirty && "Ada perubahan belum disimpan"}
               {!homeSaving && !homeDirty && homeSavedToast && "Tersimpan ✓"}
             </div>
-            {canEdit && homeDirty && <button onClick={saveHomeChanges} style={{ ...pillBtn, height: 38, background: C.amber, color: "#fff", border: `1px solid ${C.amber}` }}>Simpan Perubahan</button>}
-            {!canEdit && <span style={{ height: 38, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 13, background: C.pillFill, color: C.steel }}>View Mode</span>}
+            {canEdit && homeDirty && <button onClick={saveHomeChanges} style={{ ...pillBtn, height: 34, background: C.amber, color: "#fff", border: `1px solid ${C.amber}` }}>Simpan Perubahan</button>}
+            {!canEdit && <span style={{ height: 34, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>}
             <ThemeToggle />
-            <div title={displayName} style={{ width: 38, height: 38, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
+            <div title={displayName} style={{ width: 38, height: 34, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
             <button onClick={handleLogoutClick} style={pillBtn}>Log Out</button>
           </div>
         </div>
@@ -92,8 +92,8 @@ export default function HomeScreen() {
         {/* SAPAAN + AKSI */}
         <div className="flex items-end justify-between gap-3 flex-wrap mb-4">
           <div>
-            <div style={{ fontSize: 13, color: C.steel }}>{todayLabel}</div>
-            <h1 style={{ margin: "2px 0 0", fontSize: 26, fontWeight: 700, letterSpacing: "-0.4px", color: C.ink }}><GreetingText name={displayName} /></h1>
+            <div style={{ fontSize: 12, color: C.steel }}>{todayLabel}</div>
+            <h1 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.4px", color: C.ink }}><GreetingText name={displayName} /></h1>
           </div>
           {clusters.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
@@ -152,7 +152,7 @@ export default function HomeScreen() {
         <div className="home-grid">
           <div style={{ minWidth: 0 }}>
             <div className="flex items-baseline justify-between gap-2 mb-3">
-              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: C.ink }}>Cluster Anda</h2>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink }}>Cluster Anda</h2>
               <span className="text-xs" style={{ color: C.steel }}>{activeClusters.length} cluster aktif{Object.keys(clusterStats).length > 0 && totalSumHarga > 0 ? ` · margin keseluruhan ${overallMarginPct.toFixed(2)}%` : ""}</span>
             </div>
 
@@ -201,7 +201,7 @@ export default function HomeScreen() {
                                 onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
                                 className="editable-heading"
                                 aria-label="Nama cluster"
-                                style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, fontFamily: "inherit", fontSize: 17, fontWeight: 700 }}
+                                style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, fontFamily: "inherit", fontSize: 15, fontWeight: 700 }}
                               />
                               <input
                                 value={c.subtitle}
@@ -212,11 +212,11 @@ export default function HomeScreen() {
                                 placeholder="Lokasi / catatan..."
                                 className="editable-heading"
                                 aria-label="Lokasi cluster"
-                                style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, fontFamily: "inherit", fontSize: 13 }}
+                                style={{ color: C.steel, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", width: "100%", padding: 0, fontFamily: "inherit", fontSize: 12 }}
                               />
                             </div>
                             {canEdit && (
-                              <button onClick={() => togglePinCluster(c.id)} title={c.pinned ? "Lepas pin" : "Pin cluster ini"} aria-label={c.pinned ? "Lepas pin" : "Pin cluster ini"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: c.pinned ? C.accent : C.steel, fontSize: 15, cursor: "pointer", flexShrink: 0 }}>★</button>
+                              <button onClick={() => togglePinCluster(c.id)} title={c.pinned ? "Lepas pin" : "Pin cluster ini"} aria-label={c.pinned ? "Lepas pin" : "Pin cluster ini"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: c.pinned ? C.accent : C.steel, fontSize: 14, cursor: "pointer", flexShrink: 0 }}>★</button>
                             )}
                           </div>
                           {cs && (
@@ -236,19 +236,19 @@ export default function HomeScreen() {
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 14 }}>
                                 <div style={{ background: C.paper, borderRadius: 12, padding: "9px 12px" }}>
                                   <div style={{ fontSize: 12, color: C.steel }}>Sudah terjual</div>
-                                  <div style={{ fontFamily: MONO, fontSize: 17, fontWeight: 500, marginTop: 2, color: C.ink }}>{sold} <span style={{ fontSize: 12, color: C.steel }}>/ {hs.length}</span></div>
+                                  <div style={{ fontFamily: MONO, fontSize: 15, fontWeight: 500, marginTop: 2, color: C.ink }}>{sold} <span style={{ fontSize: 12, color: C.steel }}>/ {hs.length}</span></div>
                                 </div>
                                 <div style={{ background: C.paper, borderRadius: 12, padding: "9px 12px" }}>
                                   <div style={{ fontSize: 12, color: C.steel }}>Order Marketing</div>
-                                  <div style={{ fontFamily: MONO, fontSize: 17, fontWeight: 500, marginTop: 2, color: C.ink }}>{om} <span style={{ fontSize: 12, color: C.steel }}>/ {hs.length}</span></div>
+                                  <div style={{ fontFamily: MONO, fontSize: 15, fontWeight: 500, marginTop: 2, color: C.ink }}>{om} <span style={{ fontSize: 12, color: C.steel }}>/ {hs.length}</span></div>
                                 </div>
                               </div>
                             </>
                           )}
                           <div className="flex items-center gap-2" style={{ marginTop: 16 }}>
-                            <button onClick={() => openCluster(c.id)} style={{ flex: 1, height: 40, borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Buka Cluster</button>
-                            {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" style={{ ...pillBtn, height: 40, color: C.steel }}>Arsip</button>}
-                            {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} style={{ ...pillBtn, height: 40, color: C.red }}>Hapus</button>}
+                            <button onClick={() => openCluster(c.id)} style={{ flex: 1, height: 36, borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Buka Cluster</button>
+                            {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" style={{ ...pillBtn, height: 36, color: C.steel }}>Arsip</button>}
+                            {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} style={{ ...pillBtn, height: 36, color: C.red }}>Hapus</button>}
                           </div>
                         </>
                       )}
