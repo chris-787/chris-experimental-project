@@ -21,7 +21,7 @@ export default function ClusterHeader() {
   const ghost = { background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 13, color: C.steel };
   return (
     <>
-      <div className="flex items-center gap-3 flex-wrap mb-3.5">
+      <div className="flex items-center gap-3 flex-wrap" style={{ marginBottom: 28 }}>
         <div style={{ flex: "1 1 240px", minWidth: 0 }}>
           <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: C.ink, lineHeight: 1.2 }}>
             {TITLES[mode]}{calibrating ? " · Edit Site Plan" : ""}
