@@ -98,7 +98,7 @@ export const tint = (color, pct = 16) => `color-mix(in srgb, ${color} ${pct}%, t
 export function ProgressBar({ pct, color }) {
   return (
     <div style={{ height: 4, borderRadius: 4, background: C.line, overflow: "hidden", marginTop: 6 }}>
-      <div style={{ width: `${Math.min(100, Math.max(0, pct || 0))}%`, height: "100%", background: color, borderRadius: 4 }} />
+      <div className="anim-x" style={{ width: `${Math.min(100, Math.max(0, pct || 0))}%`, height: "100%", background: color, borderRadius: 4 }} />
     </div>
   );
 }

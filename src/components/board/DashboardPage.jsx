@@ -16,10 +16,10 @@ const TABS = [
 const pillBtn = { height: 36, padding: "0 18px", borderRadius: 999, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
 const card = { background: C.panel, boxShadow: C.cardShadow, borderRadius: 16, padding: 16 };
 
-function Bar({ pct, color, h = 26 }) {
+function Bar({ pct, color, h = 26, i = 0 }) {
   return (
     <div style={{ height: h, borderRadius: 8, background: C.paper, overflow: "hidden" }}>
-      <div style={{ width: `${Math.max(0, Math.min(100, pct))}%`, minWidth: pct > 0 ? 4 : 0, height: "100%", background: color, borderRadius: 8 }} />
+      <div className="anim-x" style={{ "--i": i, width: `${Math.max(0, Math.min(100, pct))}%`, minWidth: pct > 0 ? 4 : 0, height: "100%", background: color, borderRadius: 8 }} />
     </div>
   );
 }
@@ -54,7 +54,7 @@ function Ringkasan() {
             {rows.map((r, i) => (
               <div key={r.key} className="dash-row">
                 <span className="text-xs flex items-center gap-1.5" style={{ color: C.ink }}><i style={{ width: 8, height: 8, borderRadius: 3, background: statusColor(i), display: "inline-block" }} />{r.label}</span>
-                <Bar pct={houses.length ? (r.n / houses.length) * 100 : 0} color={statusColor(i)} />
+                <Bar pct={houses.length ? (r.n / houses.length) * 100 : 0} color={statusColor(i)} i={i} />
                 <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right", color: r.n ? C.ink : C.steel }}>{r.n} / {houses.length}</span>
               </div>
             ))}
@@ -73,10 +73,10 @@ function Ringkasan() {
             <>
               <div style={{ position: "relative", height: CH + 28, display: "flex", alignItems: "flex-end", gap: 14, padding: "0 6px", borderBottom: `1px solid ${C.line}` }}>
                 <div style={{ position: "absolute", left: 0, right: 0, bottom: (20 / mTop) * CH, borderTop: `1.5px dashed ${C.steel}` }} />
-                {margins.map((t) => (
+                {margins.map((t, mi) => (
                   <div key={t.tipe} style={colTop()}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: t.margin >= 20 ? C.ink : C.red }}>{t.margin}%</span>
-                    <div style={{ width: "100%", maxWidth: 44, height: Math.max(3, (Math.max(0, t.margin) / mTop) * CH), borderRadius: "8px 8px 0 0", background: tipeColor(t.tipe), opacity: t.margin > 0 ? 1 : 0.5 }} />
+                    <div className="anim-y" style={{ "--i": mi, width: "100%", maxWidth: 44, height: Math.max(3, (Math.max(0, t.margin) / mTop) * CH), borderRadius: "8px 8px 0 0", background: tipeColor(t.tipe), opacity: t.margin > 0 ? 1 : 0.5 }} />
                   </div>
                 ))}
               </div>
@@ -98,12 +98,12 @@ function Ringkasan() {
             </div>
           </div>
           <div style={{ height: CH + 34, display: "flex", alignItems: "flex-end", gap: 8, borderBottom: `1px solid ${C.line}` }}>
-            {progressPerBlok.map((b) => {
+            {progressPerBlok.map((b, bi) => {
               const tgt = b.Terpetakan + b.Target;
               return (
                 <div key={b.blok} style={colTop()} title={`${b.blok}: ${b.Terpetakan} terpetakan dari target ${tgt}`}>
                   <span style={{ fontSize: 11, color: C.steel, whiteSpace: "nowrap" }}><b style={{ color: b.Terpetakan ? C.ink : C.steel, fontWeight: 600 }}>{b.Terpetakan}</b>/{tgt}</span>
-                  <div style={{ width: "100%", maxWidth: 40, height: Math.max(4, (tgt / maxBlok) * CH), borderRadius: "6px 6px 0 0", background: tint(blockColor(b.blok), 18), position: "relative", overflow: "hidden" }}>
+                  <div className="anim-y" style={{ "--i": bi, width: "100%", maxWidth: 40, height: Math.max(4, (tgt / maxBlok) * CH), borderRadius: "6px 6px 0 0", background: tint(blockColor(b.blok), 18), position: "relative", overflow: "hidden" }}>
                     <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: `${tgt ? (b.Terpetakan / tgt) * 100 : 0}%`, background: blockColor(b.blok) }} />
                   </div>
                 </div>
@@ -119,7 +119,7 @@ function Ringkasan() {
           <div style={{ fontSize: 14, fontWeight: 700, color: C.ink, marginBottom: 14 }}>Distribusi tipe kavling</div>
           {tipePie.length === 0 ? <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling.</div> : (
             <div className="flex items-center gap-5 flex-wrap">
-              <div role="img" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 150, height: 150, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
+              <div role="img" className="anim-sweep" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 150, height: 150, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
                 <div style={{ position: "absolute", inset: 34, borderRadius: "50%", background: C.panel, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ fontFamily: MONO, fontSize: 19, fontWeight: 500, color: C.ink }}>{houses.length}</span>
                   <span style={{ fontSize: 11, color: C.steel }}>kavling</span>
@@ -201,10 +201,10 @@ function Kontraktor() {
         <div style={{ ...card, minWidth: 0 }}>
           <div className="text-sm font-semibold mb-3" style={{ color: C.ink }}>Unit per kontraktor</div>
           <div className="flex flex-col gap-2.5">
-            {rows.map((r) => (
+            {rows.map((r, ri) => (
               <div key={r.nama} className="dash-row-s">
                 <span className="text-xs" style={{ color: C.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.nama}>{r.nama}</span>
-                <Bar pct={(r.unit / maxUnit) * 100} color={colorOf.get(r.nama) || C.faint} h={22} />
+                <Bar pct={(r.unit / maxUnit) * 100} color={colorOf.get(r.nama) || C.faint} h={22} i={ri} />
                 <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right" }}>{r.unit}</span>
               </div>
             ))}
@@ -242,13 +242,13 @@ function MarginHarga() {
         </div>
         {list.length === 0 ? <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling dengan Luas Bangunan tipe yang terisi.</div> : (
           <div className="flex flex-col gap-3">
-            {list.map((t) => (
+            {list.map((t, idx) => (
               <div key={t.tipe} className="dash-row">
                 <span className="text-xs flex items-center gap-1.5" style={{ color: C.ink }}>
                   <span style={{ width: 8, height: 8, borderRadius: 2, background: tipeColor(t.tipe), display: "inline-block" }} />{t.tipe} <span style={{ color: C.steel }}>· {t.n} unit</span>
                 </span>
                 <div style={{ position: "relative" }}>
-                  <Bar pct={(Math.max(0, t.margin) / top) * 100} color={tipeColor(t.tipe)} />
+                  <Bar pct={(Math.max(0, t.margin) / top) * 100} color={tipeColor(t.tipe)} i={idx} />
                   <div style={{ position: "absolute", top: -2, bottom: -2, left: `${(20 / top) * 100}%`, borderLeft: `2px dashed ${C.steel}` }} />
                 </div>
                 <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right", color: t.margin >= 20 ? C.green : C.red, fontWeight: 600 }}>{t.margin}%</span>

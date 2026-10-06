@@ -8,10 +8,10 @@ import { useBoard } from "./BoardContext";
 const card = { background: C.panel, boxShadow: C.cardShadow, borderRadius: 16, padding: 14 };
 const title = { fontSize: 14, fontWeight: 700, color: C.ink, marginBottom: 10 };
 
-function Bar({ pct, color }) {
+function Bar({ pct, color, i = 0 }) {
   return (
     <div style={{ height: 6, borderRadius: 6, background: tint(color, 16), overflow: "hidden", marginTop: 5 }}>
-      <div style={{ width: `${Math.max(0, Math.min(100, pct))}%`, height: "100%", borderRadius: 6, background: color }} />
+      <div className="anim-x" style={{ "--i": i, width: `${Math.max(0, Math.min(100, pct))}%`, height: "100%", borderRadius: 6, background: color }} />
     </div>
   );
 }
@@ -48,7 +48,7 @@ export default function SidePanel() {
       <div style={card}>
           <div style={title}>Distribusi tipe</div>
           <div className="flex flex-col items-center gap-3">
-            <div role="img" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 96, height: 96, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
+            <div role="img" className="anim-sweep" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 96, height: 96, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
               <div style={{ position: "absolute", inset: 24, borderRadius: "50%", background: C.panel, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ fontFamily: MONO, fontSize: 16, fontWeight: 500, color: C.ink, lineHeight: 1 }}>{houses.length}</span>
                 <span style={{ fontSize: 10, color: C.steel }}>kavling</span>
@@ -77,7 +77,7 @@ export default function SidePanel() {
                   <span className="flex items-center gap-1.5" style={{ color: C.ink }}><i style={{ width: 8, height: 8, borderRadius: 3, background: col, display: "inline-block" }} />{s.label}</span>
                   <span style={{ color: C.steel, fontFamily: MONO }}>{n} / {houses.length}</span>
                 </div>
-                <Bar pct={houses.length ? (n / houses.length) * 100 : 0} color={col} />
+                <Bar pct={houses.length ? (n / houses.length) * 100 : 0} color={col} i={statusFields.findIndex((x) => x.key === s.key)} />
               </div>
             );
           })}
@@ -107,7 +107,7 @@ export default function SidePanel() {
         <div style={card}>
           <div style={title}>Kontraktor</div>
           <div className="flex flex-col gap-2.5">
-            {kontraktorLegend.map((k) => (
+            {kontraktorLegend.map((k, ki) => (
               <div key={k.label}>
                 <div className="flex items-center justify-between" style={{ fontSize: 12 }}>
                   <span className="flex items-center gap-1.5" style={{ color: C.ink, minWidth: 0 }}>
@@ -116,7 +116,7 @@ export default function SidePanel() {
                   </span>
                   <span style={{ color: C.steel, fontFamily: MONO, flexShrink: 0, marginLeft: 8 }}>{k.count} unit</span>
                 </div>
-                <Bar pct={(k.count / maxK) * 100} color={k.color} />
+                <Bar pct={(k.count / maxK) * 100} color={k.color} i={ki} />
               </div>
             ))}
           </div>
