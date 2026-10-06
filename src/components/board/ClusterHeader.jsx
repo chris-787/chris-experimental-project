@@ -82,10 +82,12 @@ export default function ClusterHeader() {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          {saving && <SmallSpinner />}
-          {!saving && dirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
-          {!saving && savedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
+        <div className="flex items-center gap-2" style={{ position: "relative" }}>
+          <div className="text-xs flex items-center gap-1.5" style={{ position: "absolute", right: 0, top: "100%", marginTop: 5, whiteSpace: "nowrap", color: saving ? C.steel : dirty ? C.amber : C.green }} role="status">
+            {saving && <><SmallSpinner /> Menyimpan...</>}
+            {!saving && dirty && "Ada perubahan belum disimpan"}
+            {!saving && !dirty && savedToast && "Tersimpan ✓"}
+          </div>
           {canEdit ? (
             <button
               onClick={() => saveHouses()}

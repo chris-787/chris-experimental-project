@@ -25,8 +25,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
       manifest: {
-        name: "Cluster Bintaro Jaya",
-        short_name: "Bintaro Jaya",
+        name: "Chris Project",
+        short_name: "Chris Project",
         description: "Pelacak status tender & penjualan kavling Cluster Bintaro Jaya",
         theme_color: "#C94A1C",
         background_color: "#F3F1EC",

@@ -1,12 +1,9 @@
-import { Suspense, lazy, useMemo } from "react";
+import { useMemo } from "react";
 import { BTN_PILL, Ic, MONO, Pill, btnPrimary, btnSecondary } from "../ui";
 import { C } from "../../theme";
 import { rupiah } from "../../lib/helpers";
 import KpiStrip from "./KpiStrip";
 import { useBoard } from "./BoardContext";
-
-// Grafik (recharts) baru diunduh saat halaman Dashboard dibuka.
-const DashboardCharts = lazy(() => import("../../DashboardCharts"));
 
 const TABS = [
   { key: "ringkasan", label: "Ringkasan" },
@@ -15,6 +12,7 @@ const TABS = [
   { key: "tindak", label: "Tindak lanjut" },
 ];
 
+const pillBtn = { height: 40, padding: "0 18px", borderRadius: 999, fontWeight: 600, fontSize: 13, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
 const card = { background: C.panel, boxShadow: C.cardShadow, borderRadius: 16, padding: 16 };
 
 function Bar({ pct, color, h = 26 }) {
@@ -26,38 +24,105 @@ function Bar({ pct, color, h = 26 }) {
 }
 
 function Ringkasan() {
-  const { houses, progressPerBlok, marginPerTipe, statusBreakdown, statusFields, tipeColor, tipePie, totalTarget } = useBoard();
+  const { houses, marginPerTipe, progressPerBlok, statusFields, tipeColor, tipePie, totalTarget } = useBoard();
   const rows = statusFields.map((s) => ({ key: s.key, label: s.label, n: houses.filter((h) => h.status[s.key]).length }));
   const firstEmpty = rows.find((r) => r.key !== "terjual" && r.n === 0);
+  const margins = marginPerTipe.filter((t) => t.n > 0);
+  const mTop = Math.max(30, ...margins.map((t) => t.margin));
+  const CH = 150; // tinggi area batang (px)
+  const maxBlok = Math.max(1, ...progressPerBlok.map((b) => b.Terpetakan + b.Target));
+  const totalPie = tipePie.reduce((sum, d) => sum + d.value, 0) || 1;
+  let acc = 0;
+  const conic = tipePie.map((d) => { const from = (acc / totalPie) * 100; acc += d.value; return `${tipeColor(d.name)} ${from}% ${(acc / totalPie) * 100}%`; }).join(", ");
+  const colTop = (barH) => ({ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", gap: 5, height: "100%", flex: 1, minWidth: 0 });
   return (
     <>
       <KpiStrip />
-      <div style={{ ...card }} className="mb-3">
-        <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-          <div className="text-sm font-semibold" style={{ color: C.ink }}>Alur status kavling</div>
-          {firstEmpty && houses.length > 0 && <Pill color={C.accent}>{houses.length} kavling belum mencapai {firstEmpty.label}</Pill>}
-        </div>
-        <div className="flex flex-col gap-2.5">
-          <div className="dash-row">
-            <span className="text-xs" style={{ color: C.ink }}>Terpetakan</span>
-            <Bar pct={totalTarget ? (houses.length / totalTarget) * 100 : 0} color={C.accent} />
-            <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right" }}>{houses.length} / {totalTarget}</span>
+      <div className="dash-two mb-3">
+        <div style={{ ...card, minWidth: 0 }}>
+          <div className="flex items-center justify-between flex-wrap gap-2 mb-3.5">
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>Alur status kavling</div>
+            {firstEmpty && houses.length > 0 && <Pill color={C.accent}>{houses.length} kavling menunggu {firstEmpty.label}</Pill>}
           </div>
-          {rows.map((r) => (
-            <div key={r.key} className="dash-row">
-              <span className="text-xs" style={{ color: C.ink }}>{r.label}</span>
-              <Bar pct={houses.length ? (r.n / houses.length) * 100 : 0} color={C.green} />
-              <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right", color: r.n ? C.ink : C.steel }}>{r.n} / {houses.length}</span>
+          <div className="flex flex-col gap-2.5">
+            <div className="dash-row">
+              <span className="text-xs" style={{ color: C.ink }}>Terpetakan</span>
+              <Bar pct={totalTarget ? (houses.length / totalTarget) * 100 : 0} color={C.accent} />
+              <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right" }}>{houses.length} / {totalTarget}</span>
             </div>
-          ))}
+            {rows.map((r) => (
+              <div key={r.key} className="dash-row">
+                <span className="text-xs" style={{ color: C.ink }}>{r.label}</span>
+                <Bar pct={houses.length ? (r.n / houses.length) * 100 : 0} color={C.green} />
+                <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right", color: r.n ? C.ink : C.steel }}>{r.n} / {houses.length}</span>
+              </div>
+            ))}
+          </div>
+          <div className="text-xs mt-3" style={{ color: C.steel }}>Tiap baris menghitung kavling yang sudah mencapai status itu. Status tidak harus berurutan.</div>
         </div>
-        <div className="text-xs mt-3" style={{ color: C.steel }}>Tiap baris menghitung kavling yang sudah mencapai status itu. Status tidak harus berurutan.</div>
+
+        <div style={{ ...card, minWidth: 0 }}>
+          <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>Margin per Tipe</div>
+            <span className="text-xs" style={{ color: C.steel }}>garis putus = target 20%</span>
+          </div>
+          {margins.length === 0 ? (
+            <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling dengan Luas Bangunan tipe yang terisi.</div>
+          ) : (
+            <>
+              <div style={{ position: "relative", height: CH + 28, display: "flex", alignItems: "flex-end", gap: 14, padding: "0 6px", borderBottom: `1px solid ${C.line}` }}>
+                <div style={{ position: "absolute", left: 0, right: 0, bottom: (20 / mTop) * CH, borderTop: `1.5px dashed ${C.steel}` }} />
+                {margins.map((t) => (
+                  <div key={t.tipe} style={colTop()}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: t.margin >= 20 ? C.ink : C.red }}>{t.margin}%</span>
+                    <div style={{ width: "100%", maxWidth: 44, height: Math.max(3, (Math.max(0, t.margin) / mTop) * CH), borderRadius: "8px 8px 0 0", background: t.margin >= 20 ? C.accent : t.margin > 0 ? C.amber : C.red }} />
+                  </div>
+                ))}
+              </div>
+              <div className="flex" style={{ gap: 14, padding: "6px 6px 0", fontSize: 11, color: C.steel }}>
+                {margins.map((t) => <span key={t.tipe} style={{ flex: 1, textAlign: "center", minWidth: 0 }}>{t.tipe}</span>)}
+              </div>
+            </>
+          )}
+        </div>
       </div>
-      <div style={{ ...card }}>
-        <div className="text-sm font-semibold mb-2" style={{ color: C.ink }}>Grafik</div>
-        <Suspense fallback={<div style={{ minHeight: 150 }} />}>
-          <DashboardCharts C={C} progressPerBlok={progressPerBlok} marginPerTipe={marginPerTipe} statusBreakdown={statusBreakdown} tipePie={tipePie} tipeColor={tipeColor} />
-        </Suspense>
+
+      <div className="dash-two">
+        <div style={{ ...card, minWidth: 0 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 12 }}>Kavling terpetakan per blok</div>
+          <div style={{ height: CH + 24, display: "flex", alignItems: "flex-end", gap: 8, borderBottom: `1px solid ${C.line}` }}>
+            {progressPerBlok.map((b) => (
+              <div key={b.blok} style={colTop()}>
+                <span style={{ fontSize: 11, fontWeight: b.Terpetakan ? 600 : 400, color: b.Terpetakan ? C.ink : C.steel }}>{b.Terpetakan}</span>
+                <div style={{ width: "100%", maxWidth: 40, height: Math.max(3, (b.Terpetakan / maxBlok) * CH), borderRadius: "6px 6px 0 0", background: b.Terpetakan ? C.accent : C.line }} />
+              </div>
+            ))}
+          </div>
+          <div className="flex" style={{ gap: 8, paddingTop: 6, fontSize: 11, color: C.steel }}>
+            {progressPerBlok.map((b) => <span key={b.blok} style={{ flex: 1, textAlign: "center", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={`${b.blok}: ${b.Terpetakan} dari target ${b.Terpetakan + b.Target}`}>{b.blok}</span>)}
+          </div>
+        </div>
+
+        <div style={{ ...card, minWidth: 0 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 14 }}>Distribusi tipe kavling</div>
+          {tipePie.length === 0 ? <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling.</div> : (
+            <div className="flex items-center gap-5 flex-wrap">
+              <div role="img" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 150, height: 150, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
+                <div style={{ position: "absolute", inset: 34, borderRadius: "50%", background: C.panel, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontFamily: MONO, fontSize: 22, fontWeight: 500, color: C.ink }}>{houses.length}</span>
+                  <span style={{ fontSize: 11, color: C.steel }}>kavling</span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2" style={{ fontSize: 13 }}>
+                {tipePie.map((d) => (
+                  <span key={d.name} className="flex items-center gap-2" style={{ color: C.ink }}>
+                    <i style={{ width: 12, height: 12, borderRadius: 3, background: tipeColor(d.name), display: "inline-block" }} />{d.name} <span style={{ color: C.steel }}>· {d.value}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
@@ -212,8 +277,8 @@ export default function DashboardPage() {
         <div className="flex-1" style={{ minWidth: 200 }}>
           <div className="text-sm" style={{ color: C.steel }}>Ringkasan semua kavling terpetakan</div>
         </div>
-        <button onClick={() => setShowSimulasi(true)} className={BTN_PILL} style={btnSecondary}><Ic name="calculator" size={14} /> Simulasi Harga</button>
-        <button onClick={printReportPDF} className={BTN_PILL} style={btnPrimary}><Ic name="printer" size={14} /> Print Laporan</button>
+        <button onClick={() => setShowSimulasi(true)} style={{ ...pillBtn, background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}><Ic name="calculator" size={15} /> Simulasi Harga</button>
+        <button onClick={printReportPDF} style={{ ...pillBtn, background: C.accent, color: "#fff", border: "1px solid transparent" }}><Ic name="printer" size={15} /> Print Laporan</button>
       </div>
       <div role="tablist" aria-label="Bagian dashboard" className="dash-tabs mb-3" style={{ display: "flex", gap: 4, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: 4, width: "fit-content", maxWidth: "100%", overflowX: "auto" }}>
         {TABS.map((t) => (

@@ -68,12 +68,19 @@ export function Field({ label, children }) {
 }
 export function StatusRow({ label, value, onToggle }) {
   return (
-    <label className="flex items-center justify-between py-1 cursor-pointer select-none">
-      <span className="text-sm" style={{ color: C.ink }}>{label}</span>
-      <span onClick={onToggle} className="w-9 h-5 rounded-full relative transition-colors" style={{ background: value ? C.green : C.faint }}>
-        <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all" style={{ left: value ? 18 : 2 }} />
-      </span>
-    </label>
+    <div className="flex items-center justify-between select-none" style={{ padding: "6px 0" }}>
+      <span style={{ fontSize: 13, color: C.ink }}>{label}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={!!value}
+        aria-label={label}
+        onClick={onToggle}
+        style={{ width: 36, height: 20, borderRadius: 999, border: "none", padding: 0, position: "relative", cursor: "pointer", flexShrink: 0, background: value ? C.green : C.faint, transition: "background .15s" }}
+      >
+        <span style={{ position: "absolute", top: 2, left: value ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left .15s" }} />
+      </button>
+    </div>
   );
 }
 export const MONO = "'IBM Plex Mono', monospace";
@@ -102,8 +109,8 @@ export function KpiCard({ label, value, sub, pct, color }) {
 export function Pill({ children, color }) {
   return <span style={{ fontSize: 11, padding: "1px 8px", borderRadius: 999, background: tint(color), color, fontWeight: 500, whiteSpace: "nowrap" }}>{children}</span>;
 }
-export const cellInput = { width: "100%", minWidth: 80, padding: "2px 6px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
-export const formInput = { width: "100%", padding: "5px 8px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "'IBM Plex Mono', monospace", color: C.ink, background: C.panel };
+export const cellInput = { width: "100%", minWidth: 80, padding: "2px 6px", fontSize: 12, border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: "inherit", color: C.ink, background: C.panel };
+export const formInput = { width: "100%", height: 36, padding: "0 12px", fontSize: 13, border: `1px solid ${C.line}`, borderRadius: 10, fontFamily: "inherit", color: C.ink, background: C.panel, boxSizing: "border-box" };
 
 // Kolom isian (Kontraktor, SPK, harga, dst) tampil di dua tempat sekaligus:
 // tabel dan panel detail. Tanpa ini keduanya sama-sama "merebut" kursor dan

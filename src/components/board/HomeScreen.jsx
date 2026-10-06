@@ -73,10 +73,12 @@ export default function HomeScreen() {
             )}
           </div>
 
-          <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
-            {homeSaving && <SmallSpinner />}
-            {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
-            {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
+          <div className="flex items-center gap-2" style={{ flexShrink: 0, position: "relative" }}>
+            <div className="text-xs flex items-center gap-1.5" style={{ position: "absolute", right: 0, top: "100%", marginTop: 4, whiteSpace: "nowrap", zIndex: 5, color: homeSaving ? C.steel : homeDirty ? C.amber : C.green }} role="status">
+              {homeSaving && <><SmallSpinner /> Menyimpan...</>}
+              {!homeSaving && homeDirty && "Ada perubahan belum disimpan"}
+              {!homeSaving && !homeDirty && homeSavedToast && "Tersimpan ✓"}
+            </div>
             {canEdit && homeDirty && <button onClick={saveHomeChanges} style={{ ...pillBtn, height: 38, background: C.amber, color: "#fff", border: `1px solid ${C.amber}` }}>Simpan Perubahan</button>}
             {!canEdit && <span style={{ height: 38, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 13, background: C.pillFill, color: C.steel }}>View Mode</span>}
             <ThemeToggle />

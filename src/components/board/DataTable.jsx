@@ -143,8 +143,8 @@ export default function DataTable() {
               </label>
               <button onClick={resetColWidths} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.steel, background: C.panel }}>Reset</button>
               <div className="flex items-center gap-1.5">
-                <button onClick={() => setTableZoom((z) => Math.max(50, z - 10))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
-                <div className="flex items-center h-7 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel }}>
+                <button onClick={() => setTableZoom((z) => Math.max(50, z - 10))} style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
+                <div className="flex items-center" style={{ height: 30, borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel }}>
                   <input
                     type="number"
                     value={tableZoom}
@@ -155,7 +155,7 @@ export default function DataTable() {
                   />
                   <span className="text-xs pr-2" style={{ color: C.steel }}>%</span>
                 </div>
-                <button onClick={() => setTableZoom((z) => Math.min(150, z + 10))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>+</button>
+                <button onClick={() => setTableZoom((z) => Math.min(150, z + 10))} style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>+</button>
               </div>
               <div className="flex items-center rounded-lg overflow-hidden" style={{ border: `1px solid ${C.line}` }} role="group" aria-label="Tampilan kolom">
                 {[["ringkas", "Ringkas"], ["lengkap", "Lengkap"]].map(([v, label]) => (

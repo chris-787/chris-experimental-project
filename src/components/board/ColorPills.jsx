@@ -14,10 +14,10 @@ export default function ColorPills() {
   const otherActive = others.some((s) => s.key === colorMode);
   return (
     <div role="group" aria-label="Warna peta" className="flex items-center dash-tabs" style={{ gap: 4, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: 4, width: "fit-content", maxWidth: "100%", overflowX: "auto" }}>
-      {first && <button aria-pressed={colorMode === first.key} onClick={() => setColorMode(first.key)} style={pill(colorMode === first.key)}>{first.label}</button>}
-      <button aria-pressed={colorMode === "kontraktor"} onClick={() => setColorMode("kontraktor")} style={pill(colorMode === "kontraktor")}>Per Kontraktor</button>
-      <button aria-pressed={colorMode === "blok"} onClick={() => setColorMode("blok")} style={pill(colorMode === "blok")}>Per Blok</button>
       <button aria-pressed={colorMode === "tipe"} onClick={() => setColorMode("tipe")} style={pill(colorMode === "tipe")}>Per Tipe</button>
+      <button aria-pressed={colorMode === "blok"} onClick={() => setColorMode("blok")} style={pill(colorMode === "blok")}>Per Blok</button>
+      <button aria-pressed={colorMode === "kontraktor"} onClick={() => setColorMode("kontraktor")} style={pill(colorMode === "kontraktor")}>Per Kontraktor</button>
+      {first && <button aria-pressed={colorMode === first.key} onClick={() => setColorMode(first.key)} style={pill(colorMode === first.key)}>{first.label}</button>}
       {others.length > 0 && (
         <span style={{ position: "relative", display: "inline-flex", flexShrink: 0 }}>
           <select
@@ -26,7 +26,7 @@ export default function ColorPills() {
             onChange={(e) => e.target.value && setColorMode(e.target.value)}
             style={{ ...pill(otherActive), appearance: "none", WebkitAppearance: "none", outline: "none", paddingRight: 28, width: otherActive ? 156 : 112 }}
           >
-            <option value="" disabled>Status lain</option>
+            <option value="" disabled>Status Lain</option>
             {others.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
           </select>
           <span aria-hidden="true" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 11, color: otherActive ? "#fff" : C.steel }}>▾</span>

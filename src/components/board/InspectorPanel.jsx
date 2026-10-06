@@ -56,7 +56,7 @@ export default function InspectorPanel() {
                     <div className="flex items-center gap-1.5">
                       <input
                         ref={focusWhen(true, "inspector")}
-                        style={{ ...formInput, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                        style={formInput}
                         value={getDetail(h, s.key)}
                         onChange={(e) => setDetail(h.id, s.key, e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") setDetailEditingKey(null); }}
@@ -141,7 +141,7 @@ export default function InspectorPanel() {
               onChange={(e) => updateHouse(h.id, { catatan: e.target.value })}
               placeholder="Kondisi khusus, kendala lapangan, dll..."
               rows={2}
-              style={{ ...formInput, resize: "vertical", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+              style={{ ...formInput, height: "auto", padding: "8px 12px", resize: "vertical" }}
             />
           </Field>
         </div>
