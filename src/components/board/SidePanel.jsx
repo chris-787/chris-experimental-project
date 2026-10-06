@@ -1,6 +1,5 @@
 import { MONO, Pill, SectionHead, tint } from "../ui";
 import { C } from "../../theme";
-import { timeAgo } from "../../lib/calc";
 import { statusColor } from "../../lib/palette";
 import { useBoard } from "./BoardContext";
 
@@ -23,7 +22,6 @@ export default function SidePanel() {
   let acc = 0;
   const conic = tipePie.map((d) => { const from = (acc / total) * 100; acc += d.value; return `${tipeColor(d.name)} ${from}% ${(acc / total) * 100}%`; }).join(", ");
   const maxK = Math.max(1, ...kontraktorLegend.map((k) => k.count));
-  const recent = houses.filter((h) => h.lastEditedAt).sort((a, b) => b.lastEditedAt - a.lastEditedAt).slice(0, 5);
   return (
     <div className="flex flex-col gap-3">
       {followUpList.length > 0 && (
@@ -46,6 +44,27 @@ export default function SidePanel() {
         </div>
       )}
 
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
+      <div style={card}>
+          <div style={title}>Distribusi tipe</div>
+          <div className="flex flex-col items-center gap-3">
+            <div role="img" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 96, height: 96, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
+              <div style={{ position: "absolute", inset: 24, borderRadius: "50%", background: C.panel, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontFamily: MONO, fontSize: 16, fontWeight: 500, color: C.ink, lineHeight: 1 }}>{houses.length}</span>
+                <span style={{ fontSize: 10, color: C.steel }}>kavling</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5" style={{ fontSize: 12, minWidth: 0, alignSelf: "stretch" }}>
+              {tipePie.map((d) => (
+                <span key={d.name} className="flex items-center gap-1.5" style={{ color: C.ink }}>
+                  <i style={{ width: 9, height: 9, borderRadius: 3, background: tipeColor(d.name), display: "inline-block", flexShrink: 0 }} />{d.name} <span style={{ color: C.steel }}>· {d.value}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+
       <div style={card}>
         <div style={title}>Progres Status</div>
         <div className="flex flex-col gap-2.5">
@@ -65,6 +84,8 @@ export default function SidePanel() {
         </div>
       </div>
 
+      </div>
+
       {marginPerTipe.some((t) => t.n > 0) && (
         <div style={card}>
           <div style={title}>Margin per Tipe</div>
@@ -78,27 +99,6 @@ export default function SidePanel() {
                 <Pill color={t.margin >= 20 ? C.green : C.red}>{t.margin}%</Pill>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {tipePie.length > 0 && (
-        <div style={card}>
-          <div style={title}>Distribusi tipe</div>
-          <div className="flex items-center gap-4">
-            <div role="img" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 92, height: 92, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
-              <div style={{ position: "absolute", inset: 22, borderRadius: "50%", background: C.panel, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontFamily: MONO, fontSize: 16, fontWeight: 500, color: C.ink, lineHeight: 1 }}>{houses.length}</span>
-                <span style={{ fontSize: 10, color: C.steel }}>kavling</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-1.5" style={{ fontSize: 12, minWidth: 0 }}>
-              {tipePie.map((d) => (
-                <span key={d.name} className="flex items-center gap-1.5" style={{ color: C.ink }}>
-                  <i style={{ width: 9, height: 9, borderRadius: 3, background: tipeColor(d.name), display: "inline-block", flexShrink: 0 }} />{d.name} <span style={{ color: C.steel }}>· {d.value}</span>
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       )}
@@ -123,29 +123,6 @@ export default function SidePanel() {
         </div>
       )}
 
-      <div style={card}>
-        <div style={title}>Terakhir diubah</div>
-        {recent.length === 0 ? (
-          <div className="text-xs" style={{ color: C.steel }}>Belum ada perubahan tercatat.</div>
-        ) : (
-          <div className="flex flex-col">
-            {recent.map((h) => (
-              <button
-                key={h.id}
-                onClick={() => setSelectedId(h.id)}
-                className="flex items-center justify-between gap-2 py-1.5 w-full"
-                style={{ fontSize: 12, borderTop: `1px solid ${C.line}`, borderLeft: "none", borderRight: "none", borderBottom: "none", background: "transparent", cursor: "pointer", textAlign: "left", color: C.ink }}
-              >
-                <span className="flex items-center gap-1.5">
-                  <i style={{ width: 8, height: 8, borderRadius: 2, background: tipeColor(h.tipe), display: "inline-block" }} />
-                  <span style={{ fontFamily: MONO, fontWeight: 500 }}>{h.blok}-{h.noKavling}</span>
-                </span>
-                <span style={{ color: C.steel, fontSize: 11 }}>{timeAgo(h.lastEditedAt)}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }

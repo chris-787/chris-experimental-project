@@ -3,7 +3,7 @@ import { BTN_PILL, Ic, MONO, Pill, SectionHead, btnPrimary, btnSecondary, tint }
 import { C } from "../../theme";
 import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid, rupiah } from "../../lib/helpers";
 import { statusColor } from "../../lib/palette";
-import KpiStrip from "./KpiStrip";
+import KpiStrip, { KPI_COLORS, KpiBox } from "./KpiStrip";
 import { useBoard } from "./BoardContext";
 
 const TABS = [
@@ -222,9 +222,18 @@ function MarginHarga() {
   return (
     <>
       <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-        <div style={card}><div className="text-xs" style={{ color: C.steel }}>Total Margin</div><div style={{ fontFamily: MONO, fontSize: 17, marginTop: 8 }}>{rupiah(totalMargin)}</div></div>
-        <div style={card}><div className="text-xs" style={{ color: C.steel }}>Rata-rata Margin</div><div style={{ fontFamily: MONO, fontSize: 20, marginTop: 4, color: avgMarginPct >= 20 ? C.green : C.red }}>{avgMarginPct.toFixed(2)}%</div><div className="text-xs" style={{ color: C.steel }}>target minimal 20%</div></div>
-        <div style={{ ...card, display: "flex", alignItems: "center" }}><button onClick={() => setShowSimulasi(true)} className={BTN_PILL} style={btnPrimary}><Ic name="calculator" size={14} /> Buka Simulasi Harga</button></div>
+        <KpiBox color={KPI_COLORS.margin} icon="wallet" label="Total Margin">
+          <div style={{ fontFamily: MONO, fontSize: 18, fontWeight: 500, marginTop: 10, color: C.ink, whiteSpace: "nowrap" }}>{rupiah(totalMargin)}</div>
+        </KpiBox>
+        <KpiBox color={KPI_COLORS.avg} icon="percent" label="Rata-rata Margin">
+          <div style={{ fontFamily: MONO, fontSize: 21, fontWeight: 500, marginTop: 6, color: avgMarginPct >= 20 ? C.green : C.red }}>{avgMarginPct.toFixed(2)}%</div>
+          <div className="text-xs" style={{ color: C.steel, marginTop: 4 }}>target minimal 20%</div>
+        </KpiBox>
+        <div style={{ ...card, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 10 }}>
+          <SectionHead icon="calculator" color={C.accent} title="Simulasi Harga" />
+          <div className="text-xs" style={{ color: C.steel, marginTop: -4, lineHeight: 1.5 }}>Coba ubah harga jual atau HPP untuk melihat dampaknya ke margin sebelum diputuskan.</div>
+          <button onClick={() => setShowSimulasi(true)} className={BTN_PILL} style={{ ...btnPrimary, justifyContent: "center", height: 34, width: "100%" }}><Ic name="calculator" size={14} /> Buka Simulasi Harga</button>
+        </div>
       </div>
       <div style={card}>
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">

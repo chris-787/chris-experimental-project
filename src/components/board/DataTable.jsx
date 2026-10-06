@@ -166,12 +166,12 @@ export default function DataTable() {
               <div style={{ position: "relative" }}>
                 <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Kolom</button>
                 {showColMenu && (
-                  <div style={{ position: "absolute", right: 0, top: "110%", zIndex: 20, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 180, maxHeight: 260, overflowY: "auto" }}>
+                  <div style={{ position: "absolute", right: 0, top: "110%", zIndex: 20, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 180, maxHeight: "min(420px, 62vh)", overflowY: "auto" }}>
                     <div className="text-xs font-semibold mb-1" style={{ color: C.ink }}>Tampilkan kolom</div>
-                    {columns.filter((c) => c.key !== "no" && c.key !== "kavling" && c.key !== "aksi" && c.key !== "select").map((c) => (
+                    {columns.filter((c) => c.key !== "no" && c.key !== "kavling" && c.key !== "tipe" && c.key !== "select").map((c) => (
                       <label key={c.key} className="flex items-center gap-2 text-xs py-1" style={{ color: C.ink }}>
                         <input type="checkbox" checked={!hiddenCols.includes(c.key)} onChange={() => toggleColHidden(c.key)} />
-                        {c.label}
+                        {c.key === "aksi" ? "Aksi (Duplikat, Hapus)" : c.label}
                       </label>
                     ))}
                   </div>

@@ -71,7 +71,7 @@ export default function Login() {
 
         <div style={{ borderTop: `1px solid ${C.line}`, marginBottom: 14 }} />
         <h1 style={{ fontSize: 22, fontWeight: 700, color: C.ink, margin: "0 0 4px" }}>
-          Chris Project [Experimental Project]
+          Chris Project<br />[Experimental Project]
         </h1>
         <p style={{ fontSize: 13, color: C.steel, margin: "0 0 20px" }}>
           Masukkan username dan password Anda untuk melanjutkan.
