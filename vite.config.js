@@ -28,8 +28,8 @@ export default defineConfig({
         name: "Cluster Bintaro Jaya",
         short_name: "Bintaro Jaya",
         description: "Pelacak status tender & penjualan kavling Cluster Bintaro Jaya",
-        theme_color: "#162C48",
-        background_color: "#FAFAF8",
+        theme_color: "#C94A1C",
+        background_color: "#F3F1EC",
         display: "standalone",
         start_url: "/",
         icons: [

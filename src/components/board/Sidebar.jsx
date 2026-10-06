@@ -1,0 +1,82 @@
+import { C } from "../../theme";
+import { Ic } from "../ui";
+import { timeAgo } from "../../lib/calc";
+import { useBoard } from "./BoardContext";
+
+// Menu kiri (desktop) / bar menu bawah (HP). Bisa dilipat jadi ikon saja.
+const ITEMS = [
+  { key: "home", label: "Home", icon: "home" },
+  { key: "kerja", label: "Main Mode", icon: "map" },
+  { key: "data", label: "Data Mode", icon: "table" },
+  { key: "pengaturan", label: "Settings", icon: "sliders" },
+];
+
+export default function Sidebar() {
+  const { activeCluster, canEdit, displayName, goHome, goMode, handleLogoutClick, lastBackupAt, mode, sidebarCollapsed, toggleSidebar } = useBoard();
+  const initials = (displayName || "?").slice(0, 2).toUpperCase();
+  return (
+    <nav className={`app-side ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Menu utama">
+      <div className="side-extra flex items-center gap-2.5" style={{ width: "100%", justifyContent: sidebarCollapsed ? "center" : "flex-start", flexDirection: sidebarCollapsed ? "column" : "row" }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>CB</div>
+        <div className="side-hide-collapsed" style={{ lineHeight: 1.15, flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: C.ink }}>Cluster Bintaro</div>
+          <div style={{ fontSize: 12, color: C.steel }}>Jaya</div>
+        </div>
+        <button
+          onClick={toggleSidebar}
+          aria-label={sidebarCollapsed ? "Lebarkan sidebar" : "Lipat sidebar"}
+          title={sidebarCollapsed ? "Lebarkan sidebar" : "Lipat sidebar"}
+          style={{ width: 36, height: 36, borderRadius: 10, border: `1px solid ${C.line}`, background: "transparent", color: C.steel, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+        >
+          <Ic name={sidebarCollapsed ? "chevR" : "back"} size={16} />
+        </button>
+      </div>
+
+      <div className="side-menu" role="list">
+        <div className="side-extra side-hide-collapsed" style={{ fontSize: 11, letterSpacing: 0.6, textTransform: "uppercase", color: C.steel, padding: "0 .75rem .35rem" }}>Menu</div>
+        {ITEMS.map((it) => {
+          const active = it.key === mode;
+          return (
+            <button
+              key={it.key}
+              role="listitem"
+              className="side-item"
+              aria-current={active ? "page" : undefined}
+              aria-label={it.label}
+              title={it.label}
+              onClick={() => (it.key === "home" ? goHome() : goMode(it.key))}
+            >
+              <Ic name={it.icon} size={19} />
+              <span className="side-label">{it.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="side-extra side-hide-collapsed" style={{ width: "100%" }}>
+        <div style={{ fontSize: 11, letterSpacing: 0.6, textTransform: "uppercase", color: C.steel, padding: "0 .75rem .4rem" }}>Cluster aktif</div>
+        <button onClick={goHome} title="Kembali ke Home untuk ganti cluster" style={{ width: "100%", textAlign: "left", border: `1px solid ${C.line}`, background: "transparent", color: C.ink, borderRadius: 12, padding: "9px 12px", cursor: "pointer", minHeight: 44, fontFamily: "inherit" }}>
+          <span style={{ display: "block", fontWeight: 600, fontSize: 13 }}>{activeCluster.name || "—"}</span>
+          <span style={{ display: "block", fontSize: 12, color: C.steel }}>Ganti cluster</span>
+        </button>
+      </div>
+
+      <div className="side-extra" style={{ marginTop: "auto", width: "100%", display: "flex", flexDirection: "column", gap: 10, alignItems: sidebarCollapsed ? "center" : "stretch" }}>
+        <div className="side-hide-collapsed" style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: 12, fontSize: 12, lineHeight: 1.5, color: C.steel }}>
+          <span style={{ display: "block", color: C.ink, fontWeight: 600, marginBottom: 2 }}>Backup terakhir</span>
+          {lastBackupAt ? timeAgo(lastBackupAt) : "Belum pernah. Backup hanya tersimpan saat Anda menekan tombol di Home."}
+        </div>
+        <div className="flex items-center gap-2.5" style={{ padding: "2px 4px", flexDirection: sidebarCollapsed ? "column" : "row" }}>
+          <div title={canEdit ? "Admin" : "View Mode"} style={{ width: 34, height: 34, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 }}>{initials}</div>
+          <div className="side-hide-collapsed" style={{ lineHeight: 1.25, flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: 600, color: C.ink, fontSize: 13 }}>{displayName}</div>
+            <div style={{ fontSize: 12, color: C.steel }}>{canEdit ? "Admin" : "View Mode"}</div>
+          </div>
+          <button onClick={handleLogoutClick} aria-label="Log out" title="Log out" style={{ border: "none", background: "transparent", color: C.steel, cursor: "pointer", padding: 8, minWidth: 36, minHeight: 36 }}>
+            <Ic name="logout" size={18} />
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}

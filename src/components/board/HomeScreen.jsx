@@ -33,7 +33,7 @@ export default function HomeScreen() {
             </div>
             <div className="text-sm mt-1" style={{ color: C.steel }}><GreetingText name={displayName} /></div>
             <div className="text-xs mt-1" style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel }}><ClockText /></div>
-            <div className="text-xs mt-0.5" style={{ color: C.faint }}>Created by Aditya Christiandi Sinulingga. Ver 1.0</div>
+            <div className="text-xs mt-0.5" style={{ color: C.faint }}>Created by Aditya Christiandi Sinulingga. Ver 2.0</div>
             {clusters.length === 0 && (
               <div className="mt-2 text-xs">
                 <span style={{ color: C.steel }}>Tidak melihat data lama Anda? </span>

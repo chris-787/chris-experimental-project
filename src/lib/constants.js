@@ -9,6 +9,7 @@ export const WHATS_NEW_GROUPS = [
   {
     date: "3 Oktober 2026",
     items: [
+      { icon: "🧭", title: "Versi 2.0: sidebar dan warna baru", desc: "Menu Home, Main Mode, Data Mode, dan Settings pindah ke sidebar di kiri (bar menu di bawah layar di HP). Sidebar bisa dilipat jadi ikon dan pilihannya diingat; di Data Mode otomatis terlipat supaya tabel lega. Warna diganti jadi krem dan oranye, termasuk mode gelap." },
       { icon: "📋", title: "Rincian kavling di bawah legenda", desc: "Di bawah legenda Site Plan ada daftar kavling per kelompok warna yang sedang aktif (kontraktor, Sudah/Belum, blok, atau tipe), dikelompokkan per tipe, mis. \"Tipe 6x12 (4 unit) : RB/D-06, RB/D-08, ...\". Bisa disembunyikan, dan ikut tercetak di Cetak Site Plan." },
       { icon: "©️", title: "Credit di hasil cetak", desc: "Cetak Site Plan, cetak laporan Dashboard, dan Ringkasan Kavling sekarang memuat credit chrisproject.site di atas judul." },
       { icon: "🧩", title: "Tabel Ringkas / Lengkap", desc: "Di atas tabel ada tombol Ringkas (kolom inti saja: No, Kavling, Tipe, Status, Kontraktor, HPP, Harga Jual, Margin) dan Lengkap (semua kolom, bisa diatur lewat menu Kolom). Pilihan ini hanya berlaku di perangkat Anda." },
