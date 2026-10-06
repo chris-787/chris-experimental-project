@@ -177,3 +177,5 @@ button, input, select, textarea { font-family: inherit; }
 html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hide-collapsed { transition: none !important; }
 @media (prefers-reduced-motion: reduce) { .app-side, .side-label, .side-hide-collapsed { transition: none; } ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
 .col-dot { display: inline-block; width: 8px; height: 8px; border-radius: 3px; margin-right: 7px; vertical-align: 0; }
+.dash-cal { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: 12px; align-items: start; }
+@media (max-width: 900px) { .dash-cal { grid-template-columns: minmax(0, 1fr); } }

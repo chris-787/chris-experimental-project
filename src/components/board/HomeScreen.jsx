@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { BrandMark, ClockText, GreetingText, Ic, IconChip, MONO, Pill, ProgressBar } from "../../components/ui";
+import { BrandMark, ClockText, GreetingText, Ic, IconChip, MONO, Pill, ProgressBar, tint } from "../../components/ui";
 import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid } from "../../lib/helpers";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useBoard } from "./BoardContext";
@@ -306,8 +306,9 @@ export default function HomeScreen() {
             <div className="p-2.5 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
                 <div className="flex items-center gap-2.5">
-                  <IconChip name="clock" bg={C.chipAmberBg} color={C.amber} size={34} />
-                  <div className="text-sm font-semibold" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
+                  <span style={{ width: 28, height: 28, borderRadius: 8, background: tint(C.amber, 18), color: C.amber, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Ic name="calendar" size={15} /></span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, lineHeight: 1 }}>Perlu Ditindaklanjuti</span>
+                  <Pill color={C.amber}>{homeFollowUpList.length}</Pill>
                 </div>
                 {homeAllFollowUpList.length > 0 && <div className="flex" style={{ background: C.pillFill, borderRadius: 10, padding: 3 }}>
                   <button onClick={() => setFollowUpView("list")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "list" ? C.select : "transparent", color: followUpView === "list" ? C.selectInk : C.steel, border: "none" }}>Daftar</button>

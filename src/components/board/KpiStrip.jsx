@@ -32,7 +32,7 @@ export default function KpiStrip() {
       </div>
       <div className="kpi-wide" style={box}>
         <div style={{ fontSize: 11, color: C.steel }}>Total Margin</div>
-        <div style={{ fontFamily: MONO, fontSize: 16, fontWeight: 500, marginTop: 8, color: C.ink, overflowWrap: "anywhere" }}>{rupiah(totalMargin)}</div>
+        <div style={{ fontFamily: MONO, fontSize: "clamp(12px, 1.2vw, 16px)", fontWeight: 500, marginTop: 8, color: C.ink, whiteSpace: "nowrap" }}>{rupiah(totalMargin)}</div>
         <div style={{ fontSize: 11, color: C.steel, marginTop: 14 }}>dari {houses.length} kavling terpetakan</div>
       </div>
       <div className="kpi-wide" style={box}>

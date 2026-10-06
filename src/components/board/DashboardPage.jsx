@@ -1,7 +1,8 @@
-import { useMemo } from "react";
-import { BTN_PILL, Ic, MONO, Pill, btnPrimary, btnSecondary } from "../ui";
+import { useMemo, useState } from "react";
+import { BTN_PILL, Ic, MONO, Pill, SectionHead, btnPrimary, btnSecondary, tint } from "../ui";
 import { C } from "../../theme";
-import { rupiah } from "../../lib/helpers";
+import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid, rupiah } from "../../lib/helpers";
+import { statusColor } from "../../lib/palette";
 import KpiStrip from "./KpiStrip";
 import { useBoard } from "./BoardContext";
 
@@ -24,7 +25,7 @@ function Bar({ pct, color, h = 26 }) {
 }
 
 function Ringkasan() {
-  const { houses, marginPerTipe, progressPerBlok, statusFields, tipeColor, tipePie, totalTarget } = useBoard();
+  const { blockColor, houses, marginPerTipe, progressPerBlok, statusFields, tipeColor, tipePie, totalTarget } = useBoard();
   const rows = statusFields.map((s) => ({ key: s.key, label: s.label, n: houses.filter((h) => h.status[s.key]).length }));
   const firstEmpty = rows.find((r) => r.key !== "terjual" && r.n === 0);
   const margins = marginPerTipe.filter((t) => t.n > 0);
@@ -46,14 +47,14 @@ function Ringkasan() {
           </div>
           <div className="flex flex-col gap-2.5">
             <div className="dash-row">
-              <span className="text-xs" style={{ color: C.ink }}>Terpetakan</span>
+              <span className="text-xs flex items-center gap-1.5" style={{ color: C.ink }}><i style={{ width: 8, height: 8, borderRadius: 3, background: C.data, display: "inline-block" }} />Terpetakan</span>
               <Bar pct={totalTarget ? (houses.length / totalTarget) * 100 : 0} color={C.data} />
               <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right" }}>{houses.length} / {totalTarget}</span>
             </div>
-            {rows.map((r) => (
+            {rows.map((r, i) => (
               <div key={r.key} className="dash-row">
-                <span className="text-xs" style={{ color: C.ink }}>{r.label}</span>
-                <Bar pct={houses.length ? (r.n / houses.length) * 100 : 0} color={C.green} />
+                <span className="text-xs flex items-center gap-1.5" style={{ color: C.ink }}><i style={{ width: 8, height: 8, borderRadius: 3, background: statusColor(i), display: "inline-block" }} />{r.label}</span>
+                <Bar pct={houses.length ? (r.n / houses.length) * 100 : 0} color={statusColor(i)} />
                 <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right", color: r.n ? C.ink : C.steel }}>{r.n} / {houses.length}</span>
               </div>
             ))}
@@ -75,7 +76,7 @@ function Ringkasan() {
                 {margins.map((t) => (
                   <div key={t.tipe} style={colTop()}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: t.margin >= 20 ? C.ink : C.red }}>{t.margin}%</span>
-                    <div style={{ width: "100%", maxWidth: 44, height: Math.max(3, (Math.max(0, t.margin) / mTop) * CH), borderRadius: "8px 8px 0 0", background: t.margin >= 20 ? C.data : t.margin > 0 ? C.amber : C.red }} />
+                    <div style={{ width: "100%", maxWidth: 44, height: Math.max(3, (Math.max(0, t.margin) / mTop) * CH), borderRadius: "8px 8px 0 0", background: tipeColor(t.tipe), opacity: t.margin > 0 ? 1 : 0.5 }} />
                   </div>
                 ))}
               </div>
@@ -92,8 +93,8 @@ function Ringkasan() {
           <div className="flex items-center justify-between flex-wrap gap-2" style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.ink }}>Kavling terpetakan per blok</div>
             <div className="flex items-center gap-3 text-xs" style={{ color: C.steel }}>
-              <span className="flex items-center gap-1.5"><i style={{ width: 10, height: 10, borderRadius: 3, background: C.data, display: "inline-block" }} />Terpetakan</span>
-              <span className="flex items-center gap-1.5"><i style={{ width: 10, height: 10, borderRadius: 3, background: C.line, display: "inline-block", boxShadow: `inset 0 0 0 1px ${C.faint}` }} />Target</span>
+              <span className="flex items-center gap-1.5"><i style={{ width: 10, height: 10, borderRadius: 3, background: C.steel, display: "inline-block" }} />Terpetakan (warna blok)</span>
+              <span className="flex items-center gap-1.5"><i style={{ width: 10, height: 10, borderRadius: 3, background: tint(C.steel, 22), display: "inline-block" }} />Target (sisa)</span>
             </div>
           </div>
           <div style={{ height: CH + 34, display: "flex", alignItems: "flex-end", gap: 8, borderBottom: `1px solid ${C.line}` }}>
@@ -102,8 +103,8 @@ function Ringkasan() {
               return (
                 <div key={b.blok} style={colTop()} title={`${b.blok}: ${b.Terpetakan} terpetakan dari target ${tgt}`}>
                   <span style={{ fontSize: 11, color: C.steel, whiteSpace: "nowrap" }}><b style={{ color: b.Terpetakan ? C.ink : C.steel, fontWeight: 600 }}>{b.Terpetakan}</b>/{tgt}</span>
-                  <div style={{ width: "100%", maxWidth: 40, height: Math.max(4, (tgt / maxBlok) * CH), borderRadius: "6px 6px 0 0", background: C.line, boxShadow: `inset 0 0 0 1px ${C.faint}`, position: "relative", overflow: "hidden" }}>
-                    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: `${tgt ? (b.Terpetakan / tgt) * 100 : 0}%`, background: C.data }} />
+                  <div style={{ width: "100%", maxWidth: 40, height: Math.max(4, (tgt / maxBlok) * CH), borderRadius: "6px 6px 0 0", background: tint(blockColor(b.blok), 18), position: "relative", overflow: "hidden" }}>
+                    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: `${tgt ? (b.Terpetakan / tgt) * 100 : 0}%`, background: blockColor(b.blok) }} />
                   </div>
                 </div>
               );
@@ -238,7 +239,7 @@ function MarginHarga() {
                   <span style={{ width: 8, height: 8, borderRadius: 2, background: tipeColor(t.tipe), display: "inline-block" }} />{t.tipe} <span style={{ color: C.steel }}>· {t.n} unit</span>
                 </span>
                 <div style={{ position: "relative" }}>
-                  <Bar pct={(Math.max(0, t.margin) / top) * 100} color={t.margin >= 20 ? C.green : C.red} />
+                  <Bar pct={(Math.max(0, t.margin) / top) * 100} color={tipeColor(t.tipe)} />
                   <div style={{ position: "absolute", top: -2, bottom: -2, left: `${(20 / top) * 100}%`, borderLeft: `2px dashed ${C.steel}` }} />
                 </div>
                 <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right", color: t.margin >= 20 ? C.green : C.red, fontWeight: 600 }}>{t.margin}%</span>
@@ -252,29 +253,89 @@ function MarginHarga() {
 }
 
 function TindakLanjut() {
-  const { followUpList, goMode, setSelectedId } = useBoard();
+  const { goMode, houses, setSelectedId } = useBoard();
+  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const [cal, setCal] = useState({ y: now.getFullYear(), m: now.getMonth() });
+  const [picked, setPicked] = useState(null);
+  const all = useMemo(() => houses.filter((h) => h.followUpDate).sort((a, b) => a.followUpDate.localeCompare(b.followUpDate)), [houses]);
+  const byDate = useMemo(() => { const m = {}; all.forEach((h) => { (m[h.followUpDate] = m[h.followUpDate] || []).push(h); }); return m; }, [all]);
+  const cells = buildCalendarGrid(cal.y, cal.m);
+  const list = picked ? (byDate[picked] || []) : all;
+  const overdueCount = all.filter((h) => h.followUpDate < today).length;
+  const open = (h) => { setSelectedId(h.id); goMode("kerja"); };
+  const navBtn = { width: 28, height: 28, borderRadius: 8, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, cursor: "pointer", fontSize: 14, lineHeight: 1 };
   return (
-    <div style={card}>
-      <div className="text-sm font-semibold mb-3" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({followUpList.length})</div>
-      {followUpList.length === 0 ? (
-        <div className="text-xs" style={{ color: C.steel }}>Tidak ada follow-up yang jatuh tempo dalam 7 hari ke depan.</div>
-      ) : (
-        <div className="flex flex-col">
-          {followUpList.map((h) => (
-            <button
-              key={h.id}
-              onClick={() => { setSelectedId(h.id); goMode("kerja"); }}
-              className="flex items-center justify-between py-2.5 text-sm"
-              style={{ borderTop: `1px solid ${C.line}`, background: "transparent", border: "none", borderTopStyle: "solid", borderTopWidth: 1, borderTopColor: C.line, cursor: "pointer", textAlign: "left", fontFamily: "inherit", color: C.ink }}
-            >
-              <span style={{ fontFamily: MONO, fontWeight: 500 }}>{h.blok}-{h.noKavling} <span style={{ color: C.steel, fontFamily: "inherit", fontSize: 12 }}>· {h.tipe}</span></span>
-              <span className="text-xs" style={{ color: h.overdue ? C.red : C.steel, fontFamily: MONO }}>
-                {h.overdue ? "Lewat tenggat — " : ""}{new Date(h.followUpDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-              </span>
-            </button>
-          ))}
+    <div className="dash-cal">
+      <div style={card}>
+        <SectionHead icon="calendar" color={C.amber} title="Kalender follow-up" />
+        <div className="flex items-center justify-between mb-2.5">
+          <button aria-label="Bulan sebelumnya" onClick={() => setCal((c) => { const d = new Date(c.y, c.m - 1, 1); return { y: d.getFullYear(), m: d.getMonth() }; })} style={navBtn}>&lsaquo;</button>
+          <span style={{ fontSize: 13, fontWeight: 700, color: C.ink }}>{MONTH_LABELS[cal.m]} {cal.y}</span>
+          <button aria-label="Bulan berikutnya" onClick={() => setCal((c) => { const d = new Date(c.y, c.m + 1, 1); return { y: d.getFullYear(), m: d.getMonth() }; })} style={navBtn}>&rsaquo;</button>
         </div>
-      )}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3 }}>
+          {WEEKDAY_LABELS.map((wd) => <div key={wd} style={{ textAlign: "center", fontSize: 11, fontWeight: 600, color: C.steel, paddingBottom: 3 }}>{wd}</div>)}
+          {cells.map((d, i) => {
+            if (!d) return <div key={i} style={{ height: 38 }} />;
+            const items = byDate[d] || [];
+            const overdue = items.length > 0 && d < today;
+            const isToday = d === today;
+            const sel = d === picked;
+            const dot = overdue ? C.red : C.amber;
+            return (
+              <button
+                key={d}
+                onClick={() => setPicked(sel ? null : d)}
+                aria-label={`${d}${items.length ? `, ${items.length} follow-up` : ""}`}
+                style={{ height: 38, borderRadius: 10, border: isToday ? `1.5px solid ${C.select}` : "1.5px solid transparent", background: sel ? C.select : items.length ? tint(dot, 14) : "transparent", color: sel ? C.selectInk : C.ink, fontSize: 12, fontWeight: items.length ? 700 : 400, cursor: "pointer", fontFamily: "inherit", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2 }}
+              >
+                <span>{Number(d.slice(-2))}</span>
+                {items.length > 0 && <span style={{ width: 5, height: 5, borderRadius: "50%", background: sel ? C.selectInk : dot }} />}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex items-center gap-3 flex-wrap text-xs mt-3" style={{ color: C.steel }}>
+          <span className="flex items-center gap-1.5"><i style={{ width: 8, height: 8, borderRadius: "50%", background: C.red, display: "inline-block" }} />Lewat tenggat</span>
+          <span className="flex items-center gap-1.5"><i style={{ width: 8, height: 8, borderRadius: "50%", background: C.amber, display: "inline-block" }} />Akan datang</span>
+        </div>
+      </div>
+
+      <div style={{ ...card, minWidth: 0 }}>
+        <SectionHead
+          icon="calendar" color={C.amber} title={picked ? new Date(picked).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "Perlu ditindaklanjuti"} count={list.length}
+          right={picked ? <button onClick={() => setPicked(null)} className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ border: `1px solid ${C.line}`, background: C.panel, color: C.ink }}>Tampilkan semua</button> : (overdueCount > 0 ? <Pill color={C.red}>{overdueCount} lewat tenggat</Pill> : null)}
+        />
+        {list.length === 0 ? (
+          <div className="text-xs" style={{ color: C.steel }}>{picked ? "Tidak ada follow-up di tanggal ini." : "Belum ada follow-up terjadwal. Isi tanggal follow-up di detail kavling, lalu muncul di sini."}</div>
+        ) : (
+          <div className="flex flex-col">
+            {list.map((h) => {
+              const od = h.followUpDate < today;
+              return (
+                <button
+                  key={h.id}
+                  onClick={() => open(h)}
+                  className="flex items-center justify-between gap-3 py-2.5 text-sm w-full"
+                  style={{ borderTop: `1px solid ${C.line}`, borderLeft: "none", borderRight: "none", borderBottom: "none", background: "transparent", cursor: "pointer", textAlign: "left", fontFamily: "inherit", color: C.ink }}
+                >
+                  <span className="flex items-center gap-2" style={{ minWidth: 0 }}>
+                    <i style={{ width: 4, height: 28, borderRadius: 4, background: od ? C.red : C.amber, flexShrink: 0 }} />
+                    <span>
+                      <span style={{ fontFamily: MONO, fontWeight: 600 }}>{h.blok}-{h.noKavling}</span>
+                      <span style={{ display: "block", fontSize: 11, color: C.steel }}>{h.tipe}{h.kontraktor ? ` · ${h.kontraktor}` : ""}</span>
+                    </span>
+                  </span>
+                  <span className="text-xs" style={{ color: od ? C.red : C.steel, fontFamily: MONO, flexShrink: 0 }}>
+                    {od ? "Lewat — " : ""}{new Date(h.followUpDate).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

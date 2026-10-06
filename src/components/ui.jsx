@@ -27,6 +27,7 @@ export function Chip({ active, onClick, children }) {
 }
 export const ICON_PATHS = {
   plus: <path d="M12 5v14M5 12h14" />,
+  calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /><path d="m9 15 2 2 4-4" /></>,
   brand: <><circle cx="12" cy="12" r="9" /><path d="M15.5 8.5l-2 5-5 2 2-5z" /></>,
   search: <><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></>,
   chart: <><path d="M4 20V10" /><path d="M12 20V4" /><path d="M20 20v-7" /></>,
@@ -138,6 +139,22 @@ export function BrandMark({ size = 34 }) {
   return (
     <div aria-hidden="true" style={{ width: size, height: size, borderRadius: Math.round(size * 0.28), background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
       <Ic name="brand" size={Math.round(size * 0.55)} />
+    </div>
+  );
+}
+
+// Judul bagian kartu: ikon kecil berwarna, judul, dan jumlah (label bulat) sebaris rapi.
+export function SectionHead({ icon, color, title, count, right }) {
+  return (
+    <div className="flex items-center justify-between gap-2 flex-wrap" style={{ marginBottom: 12 }}>
+      <div className="flex items-center gap-2.5">
+        <span style={{ width: 28, height: 28, borderRadius: 8, background: tint(color, 16), color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Ic name={icon} size={15} />
+        </span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, lineHeight: 1 }}>{title}</span>
+        {count != null && <Pill color={color}>{count}</Pill>}
+      </div>
+      {right}
     </div>
   );
 }
