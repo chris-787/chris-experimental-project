@@ -228,10 +228,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [colWidths, setColWidths] = useState({});
   const [showColMenu, setShowColMenu] = useState(false);
 
-  const DEFAULT_COL_WIDTH = { no: 44, select: 34, kavling: 90, tipe: 135, kategori: 140, statusGab: 330, kontraktor: 150, noSpk: 150, thSpk: 75, blnSpk: 75, luasBangunan: 90, hpp: 215, adendum: 110, hargaJual: 215, margin: 195, catatan: 160, aksi: 170 };
+  const DEFAULT_COL_WIDTH = { no: 44, select: 34, kavling: 90, tipe: 146, kategori: 140, statusGab: 330, kontraktor: 150, noSpk: 150, thSpk: 75, blnSpk: 75, luasBangunan: 90, hpp: 215, adendum: 110, hargaJual: 215, margin: 195, catatan: 160, aksi: 170 };
   // Kolom harga & margin isinya angka panjang; lebar minimum ini menjaga
   // isinya tetap satu baris supaya tinggi baris tabel tetap pendek.
-  const MIN_COL_WIDTH = { hpp: 215, hargaJual: 215, margin: 195 };
+  const MIN_COL_WIDTH = { hpp: 215, hargaJual: 215, margin: 195, tipe: 146 };
   function colWidth(key) {
     // Tampilan Ringkas: kolom non-angka dirapatkan (lebar tersimpan diabaikan)
     // supaya muat lebih banyak di layar. Lebar kolom status mengikuti
@@ -239,7 +239,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     let ringkasW = null;
     if (tableView === "ringkas") {
       const st = statusFields.find((s) => s.key === key);
-      ringkasW = ringkasWidths[key] || (st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 135, kontraktor: 240 }[key] || null));
+      ringkasW = ringkasWidths[key] || (st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 146, kontraktor: 240 }[key] || null));
     }
     // Judul kolom boleh turun ke baris berikutnya (seperti wrap text di Excel),
     // jadi batas terkecil kolom = kata terpanjang di judulnya.

@@ -8,7 +8,7 @@ import { statusColor } from "../../lib/palette";
 import { useBoard } from "./BoardContext";
 
 export default function DataTable() {
-  const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
+  const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, tipeColor, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
   const [fillKey, setFillKey] = React.useState(null);
   const fillOk = tableView === "ringkas" && canEdit && !hiddenCols.includes("statusGab");
   React.useEffect(() => { if (!fillOk) setFillKey(null); }, [fillOk]);
@@ -293,9 +293,12 @@ export default function DataTable() {
                       </div>
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
-                      <select style={cellInput} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
-                        {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
-                      </select>
+                      <div style={{ position: "relative" }}>
+                        <span aria-hidden="true" style={{ position: "absolute", left: 8, top: "50%", marginTop: -4, width: 8, height: 8, borderRadius: 3, background: tipeColor(h.tipe), pointerEvents: "none" }} />
+                        <select style={{ ...cellInput, paddingLeft: 22 }} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
+                          {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
+                        </select>
+                      </div>
                     </td>
                     <td>
                       <select style={cellInput} value={h.kategori} onChange={(e) => updateHouse(h.id, { kategori: e.target.value })}>
