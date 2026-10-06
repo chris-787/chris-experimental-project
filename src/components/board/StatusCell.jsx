@@ -84,7 +84,10 @@ export default function StatusCell({ h, fillKey }) {
             key={s.key}
             style={{ ...pill, cursor: canEdit && s.hasDetail && !fill ? "pointer" : undefined }}
             title={s.hasDetail && canEdit ? "Klik untuk isi keterangan" : s.label}
+            role={!fill && canEdit && s.hasDetail ? "button" : undefined}
+            tabIndex={!fill && canEdit && s.hasDetail ? 0 : undefined}
             onClick={!fill && canEdit && s.hasDetail ? (e) => { e.stopPropagation(); setDetailEditingKey(key); } : undefined}
+            onKeyDown={!fill && canEdit && s.hasDetail ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDetailEditingKey(key); } } : undefined}
           >
             {s.label}{s.hasDetail && detail ? `: ${detail}` : ""}
             {canEdit && !fill && (

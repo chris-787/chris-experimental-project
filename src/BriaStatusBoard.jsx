@@ -1,20 +1,15 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from "react";
 import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
 import { flushSync } from "react-dom";
 import { onStorageError } from "./lib/errorBus";
 
 import { BoardContext } from "./components/board/BoardContext";
-import WhatsNewModal from "./components/board/WhatsNewModal";
-import SimulasiModal from "./components/board/SimulasiModal";
-import DashboardPage from "./components/board/DashboardPage";
 import Sidebar from "./components/board/Sidebar";
 import LoadingSkeleton from "./components/board/LoadingSkeleton";
-import RekapKontraktorModal from "./components/board/RekapKontraktorModal";
 
 import DataTable from "./components/board/DataTable";
 import MainLayout from "./components/board/MainLayout";
-import SettingsPanel from "./components/board/SettingsPanel";
 import ClusterHeader from "./components/board/ClusterHeader";
 import HomeScreen from "./components/board/HomeScreen";
 import { C, PALETTE } from "./theme";
@@ -22,6 +17,14 @@ import { SITE_IMAGE_DEFAULT, MAX_IMG_DIM, DEFAULT_BLOCKS, DEFAULT_TIPE, DEFAULT_
 import { makeCalc } from "./lib/calc";
 import { makeReports } from "./lib/reports";
 import { measureTextWidth, centroid, resizeImageFile } from "./lib/helpers";
+
+// Bagian yang jarang dibuka dimuat belakangan supaya halaman pertama lebih cepat tampil.
+const WhatsNewModal = lazy(() => import("./components/board/WhatsNewModal"));
+const SimulasiModal = lazy(() => import("./components/board/SimulasiModal"));
+const RekapKontraktorModal = lazy(() => import("./components/board/RekapKontraktorModal"));
+const DashboardPage = lazy(() => import("./components/board/DashboardPage"));
+const SettingsPanel = lazy(() => import("./components/board/SettingsPanel"));
+const LazyFallback = () => <div className="sk" style={{ height: 160, borderRadius: 16, margin: "8px 0" }} role="status" aria-label="Memuat" />;
 
 // Akun khusus "lihat saja" (investor/atasan) -- tidak pakai sistem role
 // di database, cukup dicek dari emailnya karena cuma satu akun ini yang
@@ -1152,11 +1155,20 @@ export default function BriaStatusBoard({ onLogout, session }) {
     { key: "aksi", label: "" },
   ]), [statusFields]);
 
+  // Di HP kolom "No" disembunyikan supaya kolom beku (kavling) tidak memakan layar.
+  const [phoneWidth, setPhoneWidth] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 680px)").matches);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 680px)");
+    const on = (e) => setPhoneWidth(e.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   const hiddenCols = useMemo(() => {
-    if (tableView !== "ringkas") return [...hiddenColsSaved.filter((k) => k !== "tipe" && k !== "statusGab"), "statusGab"];
-    const visible = [...(ringkasCols || defaultRingkas()), "no", "select", "kavling", "tipe"];
+    const noCol = phoneWidth ? ["no"] : [];
+    if (tableView !== "ringkas") return [...hiddenColsSaved.filter((k) => k !== "tipe" && k !== "statusGab" && k !== "no"), "statusGab", ...noCol];
+    const visible = [...(ringkasCols || defaultRingkas()), "select", "kavling", "tipe", ...(phoneWidth ? [] : ["no"])];
     return columns.filter((c) => !visible.includes(c.key)).map((c) => c.key);
-  }, [tableView, columns, statusFields, hiddenColsSaved, ringkasCols]);
+  }, [tableView, columns, statusFields, hiddenColsSaved, ringkasCols, phoneWidth]);
 
   const tableRows = useMemo(() => {
     const in7Str = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
@@ -1452,11 +1464,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
         </div>
       )}
 
-      {!currentClusterId && homeLoaded && showWhatsNew && <WhatsNewModal />}
+      {!currentClusterId && homeLoaded && showWhatsNew && <Suspense fallback={null}><WhatsNewModal /></Suspense>}
 
-      {currentClusterId && showSimulasi && <SimulasiModal />}
+      {currentClusterId && showSimulasi && <Suspense fallback={null}><SimulasiModal /></Suspense>}
 
-      {currentClusterId && showRekapKontraktor && <RekapKontraktorModal />}
+      {currentClusterId && showRekapKontraktor && <Suspense fallback={null}><RekapKontraktorModal /></Suspense>}
 
       {!currentClusterId ? <HomeScreen /> : (
       <div className="app-shell">
@@ -1470,10 +1482,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
           View Mode — pengaturan di halaman ini tidak bisa diubah dari akun ini.
         </div>
       )}
-      {mode === "pengaturan" && <SettingsPanel />}
+      {mode === "pengaturan" && <Suspense fallback={<LazyFallback />}><SettingsPanel /></Suspense>}
 
       {/* ===================== DASHBOARD ===================== */}
-      {mode === "dashboard" && <DashboardPage />}
+      {mode === "dashboard" && <Suspense fallback={<LazyFallback />}><DashboardPage /></Suspense>}
 
       {/* ===================== MAIN MODE: peta + dashboard sebaris, lalu detail kavling ===================== */}
       {mode === "kerja" && <MainLayout />}

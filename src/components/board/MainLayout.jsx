@@ -11,7 +11,7 @@ export default function MainLayout() {
     <>
       <KpiStrip />
       <div ref={rowRef} className="map-data-row" style={{ display: "flex", flexWrap: "nowrap", alignItems: "flex-start", gap: 0, marginBottom: 6 }}>
-        <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 0, minWidth: 320, paddingRight: 8 }}>
+        <div className="map-panel-col" style={{ flexBasis: `${mapPct}%`, flexGrow: 0, flexShrink: 1, minWidth: 320, paddingRight: 8 }}>
           <MapPanel />
         </div>
         <div
@@ -20,7 +20,7 @@ export default function MainLayout() {
           className="panel-resize-handle drag-handle"
           style={{ flex: "0 0 6px", cursor: "col-resize", borderRadius: 6, margin: "0 5px", alignSelf: "stretch", minHeight: 40 }}
         />
-        <div className="inspector-panel-col" style={{ flex: "1 1 300px", minWidth: 300, paddingLeft: 8 }}>
+        <div className="inspector-panel-col" style={{ flex: "1 1 260px", minWidth: 260, paddingLeft: 8 }}>
           <SidePanel />
         </div>
       </div>

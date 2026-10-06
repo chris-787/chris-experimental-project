@@ -1,4 +1,4 @@
-// Palet warna "Blueprint Modern" — krem/navy dengan aksen hijau (positif),
+// Palet warna aplikasi: putih sejuk + navy (terang) dan slate lembut (gelap), dengan aksen hijau (positif),
 // merah (negatif/hapus), dan emas (peringatan). Dipakai bersama oleh
 // BriaStatusBoard.jsx dan Login.jsx supaya tampilannya konsisten.
 //

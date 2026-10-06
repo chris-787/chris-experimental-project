@@ -159,9 +159,9 @@ function Kontraktor() {
   return (
     <>
       <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-        <div style={card}><div className="text-xs" style={{ color: C.steel }}>Jumlah kontraktor</div><div style={{ fontFamily: MONO, fontSize: 20, marginTop: 4 }}>{named}</div></div>
-        <div style={card}><div className="text-xs" style={{ color: C.steel }}>Kavling punya kontraktor</div><div style={{ fontFamily: MONO, fontSize: 20, marginTop: 4 }}>{houses.filter((h) => (h.kontraktor || "").trim()).length} <span style={{ fontSize: 16, color: C.steel }}>/ {houses.length}</span></div></div>
-        <div style={card}><div className="text-xs" style={{ color: C.steel }}>Total HPP</div><div style={{ fontFamily: MONO, fontSize: 17, marginTop: 8 }}>{rupiah(rows.reduce((s, r) => s + r.hpp, 0))}</div></div>
+        <KpiBox color={KPI_COLORS.mapped} icon="hardhat" label="Jumlah kontraktor"><div style={{ fontFamily: MONO, fontSize: 20, marginTop: 8, color: C.ink }}>{named}</div></KpiBox>
+        <KpiBox color={KPI_COLORS.sold} icon="checkCircle" label="Kavling punya kontraktor"><div style={{ fontFamily: MONO, fontSize: 20, marginTop: 8, color: C.ink }}>{houses.filter((h) => (h.kontraktor || "").trim()).length} <span style={{ fontSize: 16, color: C.steel }}>/ {houses.length}</span></div></KpiBox>
+        <KpiBox color={KPI_COLORS.margin} icon="wallet" label="Total HPP"><div style={{ fontFamily: MONO, fontSize: 17, marginTop: 10, color: C.ink }}>{rupiah(rows.reduce((s, r) => s + r.hpp, 0))}</div></KpiBox>
       </div>
       <div className="dash-two">
         <div style={{ ...card, minWidth: 0 }}>

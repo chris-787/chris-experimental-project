@@ -137,7 +137,7 @@ export function focusWhen(active, where) {
   };
 }
 
-// Logo aplikasi: kotak oranye dengan ikon bangunan (menggantikan tulisan "CB").
+// Logo aplikasi: kotak aksen dengan ikon kompas.
 export function BrandMark({ size = 34 }) {
   return (
     <div aria-hidden="true" style={{ width: size, height: size, borderRadius: Math.round(size * 0.28), background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>

@@ -195,3 +195,9 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 
 /* Gelap: warna data (grafik, bar, kartu angka) dilembutkan supaya serasi dengan slate */
 :root[data-theme="dark"] .viz { filter: saturate(.62); }
+
+/* Hormati pengaturan "kurangi gerakan" di perangkat: matikan animasi dekoratif */
+@media (prefers-reduced-motion: reduce) {
+  .sk { animation: none; }
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
