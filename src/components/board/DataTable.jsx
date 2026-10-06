@@ -53,15 +53,15 @@ export default function DataTable() {
           {canEdit && selectedRows.length > 0 && (
             <div className="flex items-center gap-2.5 flex-wrap mb-2.5 p-2 rounded-lg" style={{ background: C.rowSelectedBg, border: `1px solid ${C.accent}` }}>
               <span className="text-xs font-semibold" style={{ color: C.ink }}>{selectedRows.length} kavling dipilih</span>
-              <select onChange={(e) => { bulkSetKategori(e.target.value); e.target.value = ""; }} defaultValue="" className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
+              <select onChange={(e) => { bulkSetKategori(e.target.value); e.target.value = ""; }} defaultValue="" className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>
                 <option value="" disabled>Set Kategori...</option>
                 {kategoriOptions.map((k) => <option key={k} value={k}>{k}</option>)}
               </select>
-              <select onChange={(e) => { bulkSetTipe(e.target.value); e.target.value = ""; }} defaultValue="" className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
+              <select onChange={(e) => { bulkSetTipe(e.target.value); e.target.value = ""; }} defaultValue="" className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>
                 <option value="" disabled>Set Tipe...</option>
                 {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
               </select>
-              <select onChange={(e) => { const [key, val] = e.target.value.split(":"); if (key) bulkSetStatus(key, val === "true"); e.target.value = ""; }} defaultValue="" className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
+              <select onChange={(e) => { const [key, val] = e.target.value.split(":"); if (key) bulkSetStatus(key, val === "true"); e.target.value = ""; }} defaultValue="" className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>
                 <option value="" disabled>Set Status...</option>
                 {statusFields.map((s) => (
                   <React.Fragment key={s.key}>
@@ -72,7 +72,7 @@ export default function DataTable() {
               </select>
               <div className="flex items-center gap-1">
                 <span className="text-xs" style={{ color: C.steel }}>Follow-up:</span>
-                <input type="date" onChange={(e) => { if (e.target.value) { bulkSetFollowUp(e.target.value); e.target.value = ""; } }} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }} />
+                <input type="date" onChange={(e) => { if (e.target.value) { bulkSetFollowUp(e.target.value); e.target.value = ""; } }} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: C.panel }} />
               </div>
               {bulkDeleteArmed ? (
                 <button onClick={() => { bulkDelete(); setBulkDeleteArmed(false); }} className="text-xs px-2 py-1 rounded-lg" style={{ color: "#fff", background: C.red }}>Yakin? Klik lagi untuk hapus {selectedRows.length} kavling</button>
@@ -138,7 +138,7 @@ export default function DataTable() {
               </div>
             </div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <select value={tableStatusFilter} onChange={(e) => setTableStatusFilter(e.target.value)} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink }}>
+              <select value={tableStatusFilter} onChange={(e) => setTableStatusFilter(e.target.value)} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>
                 <option value="semua">Semua Status</option>
                 {statusFields.map((s) => (
                   <React.Fragment key={s.key}>
@@ -162,7 +162,7 @@ export default function DataTable() {
                     onChange={(e) => setTableZoom(Math.min(150, Math.max(50, Number(e.target.value) || 100)))}
                     onDoubleClick={() => setTableZoom(100)}
                     title="Zoom tabel. Klik 2x untuk kembali ke 100%"
-                    style={{ width: 46, textAlign: "right", border: "none", outline: "none", fontSize: 12, color: C.steel, padding: "0 2px 0 6px" }}
+                    style={{ width: 46, height: "100%", textAlign: "right", border: "none", outline: "none", background: "transparent", fontSize: 12, color: C.steel, padding: "0 2px 0 6px" }}
                   />
                   <span className="text-xs pr-2" style={{ color: C.steel }}>%</span>
                 </div>
@@ -506,7 +506,7 @@ export default function DataTable() {
           <div className="flex items-center justify-between flex-wrap gap-2.5 mt-2.5 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
             <div className="flex items-center gap-2 text-xs" style={{ color: C.steel }}>
               <span>Show</span>
-              <select value={pageSize} onChange={(e) => setPageSize(e.target.value === "all" ? "all" : Number(e.target.value))} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
+              <select value={pageSize} onChange={(e) => setPageSize(e.target.value === "all" ? "all" : Number(e.target.value))} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
