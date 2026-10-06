@@ -48,7 +48,7 @@
   --steel: #98A1A8;
   --faint: #4A555D;
   --line: #353D43;
-  --accent: #5878C4;
+  --accent: #5879B4;
   --accent2: #A9C0E8;
   --select: #4A565E;
   --select-ink: #F1F3F4;
@@ -192,3 +192,6 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 
 /* menu "+ status" di kolom Status gabungan (dirender di luar tabel) */
 .status-menu-item:hover { background: var(--select-soft) !important; }
+
+/* Gelap: warna data (grafik, bar, kartu angka) dilembutkan supaya serasi dengan slate */
+:root[data-theme="dark"] .viz { filter: saturate(.62); }

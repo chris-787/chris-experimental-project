@@ -353,7 +353,7 @@ export default function DashboardPage() {
   const { dashTab, setDashTab, printReportPDF, setShowSimulasi } = useBoard();
   const tab = TABS.some((t) => t.key === dashTab) ? dashTab : "ringkasan";
   return (
-    <div>
+    <div className="viz">
       <div className="flex items-center gap-2 flex-wrap mb-3">
         <div className="flex-1" style={{ minWidth: 200 }}>
           <div className="text-sm" style={{ color: C.steel }}>Ringkasan semua kavling terpetakan</div>

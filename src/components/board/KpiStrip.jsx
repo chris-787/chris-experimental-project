@@ -11,7 +11,7 @@ export const KPI_COLORS = { mapped: "#2E8B8B", sold: "#3F7D58", margin: "#3B6FD4
 export function KpiBox({ color, icon, label, children, className }) {
   return (
     <div
-      className={className}
+      className={`viz ${className || ""}`}
       style={{
         background: `color-mix(in srgb, ${color} 9%, var(--panel))`,
         boxShadow: `0 0 0 1px color-mix(in srgb, ${color} 24%, var(--line))`,

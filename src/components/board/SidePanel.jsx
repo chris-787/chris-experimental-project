@@ -23,7 +23,7 @@ export default function SidePanel() {
   const conic = tipePie.map((d) => { const from = (acc / total) * 100; acc += d.value; return `${tipeColor(d.name)} ${from}% ${(acc / total) * 100}%`; }).join(", ");
   const maxK = Math.max(1, ...kontraktorLegend.map((k) => k.count));
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 viz">
       {followUpList.length > 0 && (
         <div style={{ ...card, background: C.alertAmberBg }}>
           <SectionHead
