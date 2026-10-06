@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { Field, Ic, StatusRow, focusWhen, formInput } from "../../components/ui";
+import { Field, Ic, StatusRow, focusWhen, formInput, tint } from "../../components/ui";
 import { MONTHS } from "../../lib/constants";
 import React from "react";
 import { rupiah } from "../../lib/helpers";
@@ -7,21 +7,22 @@ import { timeAgo } from "../../lib/calc";
 import { useBoard } from "./BoardContext";
 
 export default function InspectorPanel() {
-  const { canEdit, confirmDeleteId, detailEditingKey, finalHppPerM2, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, luasBangunanOf, marginOf, marginPct, monthEditingKey, priceEditingKey, printKavlingSummary, removeHouse, selectFromMap, selectedId, setConfirmDeleteId, setDetail, setDetailEditingKey, setMonthEditingKey, setPriceEditingKey, setSelectedId, setTextEditingKey, statusFields, tableRows, textEditingKey, tipeOptions, updateHouse, updateStatus } = useBoard();
+  const { kontraktorColorOf, tipeColor, canEdit, confirmDeleteId, detailEditingKey, finalHppPerM2, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, luasBangunanOf, marginOf, marginPct, monthEditingKey, priceEditingKey, printKavlingSummary, removeHouse, selectFromMap, selectedId, setConfirmDeleteId, setDetail, setDetailEditingKey, setMonthEditingKey, setPriceEditingKey, setSelectedId, setTextEditingKey, statusFields, tableRows, textEditingKey, tipeOptions, updateHouse, updateStatus } = useBoard();
     if (!selectedId) {
       return <div className="text-sm py-2 text-center" style={{ color: C.steel }}>Klik salah satu kavling di peta untuk mengisi datanya.</div>;
     }
     const h = houses.find((x) => x.id === selectedId);
     if (!h) return <div className="text-sm py-2 text-center" style={{ color: C.steel }}>Kavling tidak ditemukan.</div>;
     const idx = tableRows.findIndex((x) => x.id === selectedId);
+    const kColor = kontraktorColorOf(h.kontraktor);
     const prevRow = tableRows[idx - 1];
     const nextRow = tableRows[idx + 1];
     return (
       <div data-inspector>
         <div className="flex items-center gap-2.5 flex-wrap mb-3.5">
           <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
-          <span style={{ background: C.pillFill, color: C.ink, fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 999 }}>{h.tipe}</span>
-          <span style={{ background: h.status.terjual ? C.pillFill : C.pillFill, color: h.status.terjual ? C.green : C.steel, fontWeight: 600, fontSize: 12, padding: "3px 10px", borderRadius: 999 }}>{h.status.terjual ? "Sudah terjual" : "Belum terjual"}</span>
+          <span style={{ background: tint(tipeColor(h.tipe), 18), color: C.ink, fontWeight: 600, fontSize: 11, padding: "3px 10px 3px 8px", borderRadius: 999, display: "inline-flex", alignItems: "center", gap: 6 }}><i style={{ width: 8, height: 8, borderRadius: 3, background: tipeColor(h.tipe), display: "inline-block" }} />{h.tipe}</span>
+          <span style={{ background: h.status.terjual ? tint(C.green, 18) : C.pillFill, color: h.status.terjual ? C.green : C.steel, fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 999 }}>{h.status.terjual ? "Sudah terjual" : "Belum terjual"}</span>
           {h.lastEditedAt && <span className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}</span>}
           <span style={{ flex: 1 }} />
           <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: prevRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: prevRow ? "pointer" : "default" }} title="Kavling sebelumnya (←)">&lsaquo; Prev</button>
@@ -32,7 +33,7 @@ export default function InspectorPanel() {
 
         <div className="inspector-cols">
         <div>
-        <div className="col-head">Data dan status</div>
+        <div className="col-head"><i className="col-dot" style={{ background: C.data }} />Data dan status</div>
         <Field label="Tipe / Ukuran">
           <select style={formInput} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
             {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
@@ -90,7 +91,7 @@ export default function InspectorPanel() {
         </div>
         <div>
         <div>
-        <div className="col-head">Kontraktor dan SPK</div>
+        <div className="col-head"><i className="col-dot" style={{ background: kColor || C.steel }} />Kontraktor dan SPK</div>
           {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
             <Field label="Kontraktor">
               <input ref={focusWhen(textEditingKey === `${h.id}:kontraktor`, "inspector")} list="kontraktor-options" style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
@@ -98,7 +99,7 @@ export default function InspectorPanel() {
           ) : (
             <div className="mb-2">
               <div className="text-xs mb-1" style={{ color: C.steel }}>Kontraktor</div>
-              <div onClick={() => setTextEditingKey(`${h.id}:kontraktor`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>{h.kontraktor}</div>
+              <div onClick={() => setTextEditingKey(`${h.id}:kontraktor`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel, display: "flex", alignItems: "center", gap: 8, fontWeight: 600 }}>{kColor && <i style={{ width: 10, height: 10, borderRadius: 3, background: kColor, flexShrink: 0 }} />}{h.kontraktor}</div>
             </div>
           )}
           {textEditingKey === `${h.id}:spkNo` || !h.spkNo ? (
@@ -148,7 +149,7 @@ export default function InspectorPanel() {
         </div>
         <div>
         <div>
-        <div className="col-head">Harga dan HPP</div>
+        <div className="col-head"><i className="col-dot" style={{ background: C.green }} />Harga dan HPP</div>
           <div className="grid grid-cols-2 gap-2">
             <div className="text-xs mb-2" style={{ color: C.steel }}>
               Luas Bangunan: <b style={{ color: C.ink }}>{luasBangunanOf(h)} m²</b> <span style={{ color: C.steel }}>(ikut Tipe "{h.tipe}", atur di Pengaturan)</span>
@@ -162,7 +163,7 @@ export default function InspectorPanel() {
             <div className="mb-2.5">
               <div className="text-xs mb-1" style={{ color: C.steel }}>HPP per m² (Rp)</div>
               <div onClick={() => setPriceEditingKey(`${h.id}:hpp`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>
-                {rupiah(h.hppPerM2)}{luasBangunanOf(h) ? <> → Total: <b>{rupiah(hppTotal(h))}</b></> : <span style={{ color: C.amber }}> — atur LB Tipe ini dulu di Pengaturan</span>}
+                {rupiah(h.hppPerM2)}{luasBangunanOf(h) ? <> → Total: <b style={{ background: tint(C.data, 16), padding: "1px 8px", borderRadius: 999, fontFamily: "IBM Plex Mono, monospace" }}>{rupiah(hppTotal(h))}</b></> : <span style={{ color: C.amber }}> — atur LB Tipe ini dulu di Pengaturan</span>}
               </div>
             </div>
           )}
@@ -181,7 +182,7 @@ export default function InspectorPanel() {
             <div className="mb-2.5">
               <div className="text-xs mb-1" style={{ color: C.steel }}>Harga Jual per m² (Rp)</div>
               <div onClick={() => setPriceEditingKey(`${h.id}:harga`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel }}>
-                {rupiah(h.hargaJualPerM2)}{luasBangunanOf(h) ? <> → Total: <b>{rupiah(hargaJualTotal(h))}</b></> : <span style={{ color: C.amber }}> — atur LB Tipe ini dulu di Pengaturan</span>}
+                {rupiah(h.hargaJualPerM2)}{luasBangunanOf(h) ? <> → Total: <b style={{ background: tint(C.green, 16), padding: "1px 8px", borderRadius: 999, fontFamily: "IBM Plex Mono, monospace" }}>{rupiah(hargaJualTotal(h))}</b></> : <span style={{ color: C.amber }}> — atur LB Tipe ini dulu di Pengaturan</span>}
               </div>
             </div>
           )}
@@ -200,7 +201,7 @@ export default function InspectorPanel() {
               <span className="text-xs" style={{ color: C.steel }}>atur Luas Bangunan Tipe</span>
             ) : (
               <span style={{ textAlign: "right" }}>
-                <div className="text-base font-semibold" style={{ fontFamily: "IBM Plex Mono, monospace", color: marginPct(h) >= 20 ? C.green : C.red }}>{marginPct(h).toFixed(2)}%</div>
+                <div style={{ display: "inline-block", fontFamily: "IBM Plex Mono, monospace", fontWeight: 700, fontSize: 15, padding: "2px 12px", borderRadius: 999, background: tint(marginPct(h) >= 20 ? C.green : C.red, 16), color: marginPct(h) >= 20 ? C.green : C.red }}>{marginPct(h).toFixed(2)}%</div>
                 <div className="text-xs" style={{ color: C.steel }}>{rupiah(marginOf(h))}</div>
               </span>
             )}

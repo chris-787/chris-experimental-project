@@ -11,14 +11,12 @@ export function setTheme(mode) {
   } catch (e) {}
 }
 
-let animTimer = null;
+// Ganti tema memakai View Transitions API (crossfade satu gambar penuh, ringan di
+// browser). Browser yang belum mendukung tetap berpindah tema, hanya tanpa animasi.
 export function toggleTheme() {
-  // Pasang kelas animasi sebentar supaya perpindahan warna terang/gelap mulus.
-  const root = document.documentElement;
-  root.classList.add("theme-anim");
-  clearTimeout(animTimer);
-  animTimer = setTimeout(() => root.classList.remove("theme-anim"), 450);
   const next = getTheme() === "dark" ? "light" : "dark";
-  setTheme(next);
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (document.startViewTransition && !reduce) document.startViewTransition(() => setTheme(next));
+  else setTheme(next);
   return next;
 }

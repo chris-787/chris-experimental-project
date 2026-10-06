@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
+import { flushSync } from "react-dom";
 import { onStorageError } from "./lib/errorBus";
 
 import { BoardContext } from "./components/board/BoardContext";
@@ -127,8 +128,18 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const sidebarCollapsed = sidebarPref ?? mode === "data";
   function toggleSidebar() {
     const next = !sidebarCollapsed;
-    setSidebarPref(next);
     try { localStorage.setItem("bria-sidebar", next ? "1" : "0"); } catch (e) {}
+    const apply = () => flushSync(() => setSidebarPref(next));
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (document.startViewTransition && !reduce) {
+      // Gambar lama dan baru dimorf oleh browser (tanpa menghitung ulang tata letak tiap frame).
+      const root = document.documentElement;
+      root.classList.add("vt-sidebar");
+      const vt = document.startViewTransition(apply);
+      vt.finished.finally(() => root.classList.remove("vt-sidebar"));
+    } else {
+      apply();
+    }
   }
   const [dashTab, setDashTab] = useState("ringkasan"); // sub-halaman Dashboard
   const calibrating = mode === "kerja" && editMap && canEdit;
@@ -1360,6 +1371,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const { importExcel, printReportPDF, printSitePlan, printKavlingSummary, exportExcel, handleRestoreAllFile, applyRestoreAll, exportAllBackup, exportAllExcel, exportBackup, importBackup } = makeReports({ kontraktorLegend, activeCluster, avgMarginPct, blockColor, blockProgress, blocks, canEdit, clusters, colorMode, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, loadHomeStats, luasBangunanOf, marginOf, marginPct, marginPerTipe, newBlockId, opacity, pendingRestoreAll, polyColor, saveClustersIndex, saveConfig, saveHouses, setBlocks, setClusters, setExportingBackupAll, setExportingExcelAll, setHouses, setImportMsg, setKategoriOptions, setLastBackupAt, setPendingRestoreAll, setRestoreAllError, setRestoreAllResult, setRestoringAll, setSettingsMsg, setStatusFields, setTableBlocks, setTipeOptions, siteImage, soldUnits, statusFields, tableRows, tipeOptions, tipePie, totalMargin, totalTarget });
 
   const board = {
+    kontraktorColorOf: (name) => kontraktorColorMap.get((name || "").trim()) || null,
     dashTab, setDashTab, sidebarCollapsed, toggleSidebar, kontraktorLegend, tableView, setTableView, FROZEN_KEYS, KAVLING_SEARCH_LIMIT, SmallSpinner, actionMenuId, activeBlock, activeCluster, activeTipe, addBlock, addCluster, addKategori, addStatus, addTipe, appTitle, applyRestoreAll, avgMarginPct, blockColor, blockProgress, blocks, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calendarMonth, calendarSelectedDate, calibrating, canEdit, cancelDrawing, cancelEditShape, clusterDuplicateCount, clusterSearch, clusterStats, clusters, colWidth, colorMode, columns, confirmDeleteBlokId, confirmDeleteClusterId, confirmDeleteId, confirmDeleteKategoriName, confirmDeleteStatusKey, confirmDeleteTipeName, currentClusterId, currentPage, deleteCluster, detailEditingKey, dirty, displayName, draft, draftCentroid, drawingPoints, duplicateFilterActive, duplicateHouse, editMap, editPoints, editingShapeId, exportAllBackup, exportAllExcel, exportBackup, exportExcel, exportingBackupAll, exportingExcelAll, finalHppPerM2, finishPolygon, followUpFilterActive, followUpList, followUpView, followUpsByDate, frozenLeft, getDetail, globalHousesIndex, goHome, goMode, handleImageClick, handleImageUpload, handleLogoutClick, handleRestoreAllFile, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, hargaJualTotal, hiddenCols, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, houses, hppTotal, imgUploading, imgWrapRef, importBackup, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, lastDeleted, lastDeletedBulk, luasBangunanOf, mapHeight, mapPct, marginOf, marginPct, marginPerTipe, mode, monthEditingKey, moveStatusField, newBlock, newClusterName, newClusterSubtitle, newKategori, newStatus, newStatusHasDetail, newTipe, newTipeLuas, opacity, openCluster, openKavlingFromSearch, pageRows, pageSize, pendingRestoreAll, planBoxRef, polyColor, polygonsClickable, priceEditingKey, printKavlingSummary, printReportPDF, printSitePlan, progressPerBlok, rangeEnd, rangeStart, recoverLegacyCluster, refreshTipeColors, rekapKontraktor, reloadAfterRemoteUpdate, remoteUpdateAvailable, removeBlock, removeHouse, removeKategori, removeStatusField, removeTipe, renameBlock, renameKategori, renameStatusLabel, renameTipe, resetColWidths, resetImage, restoreAllError, restoreAllResult, restoringAll, rowBg, rowRef, rowRefs, saveAppTitle, saveConflict, saveEditShape, saveHomeChanges, saveHouses, savedToast, saving, selectFromMap, selectedId, selectedRows, setActionMenuId, setActiveBlock, setActiveTipe, setAppTitle, setBulkDeleteArmed, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setColorMode, setConfirmDeleteBlokId, setConfirmDeleteClusterId, setConfirmDeleteId, setConfirmDeleteKategoriName, setConfirmDeleteStatusKey, setConfirmDeleteTipeName, setCurrentPage, setDetail, setDetailEditingKey, setDraft, setDrawingPoints, setDuplicateFilterActive, setEditMap, setEditPoints, setEditingShapeId, setFollowUpFilterActive, setFollowUpView, setHomeDirty, setImportMsg, setKavlingSearch, setMapHeight, setMonthEditingKey, setNewBlock, setNewClusterName, setNewClusterSubtitle, setNewKategori, setNewStatus, setNewStatusHasDetail, setNewTipe, setNewTipeLuas, setOpacity, setPageSize, setPendingRestoreAll, setPriceEditingKey, setRestoreAllResult, setSelectedId, setSelectedRows, setShowArchivedClusters, setShowColMenu, setShowRekapKontraktor, setShowSimulasi, setShowWhatsNew, setSimHargaMode, setSimHargaValue, setSimHppMode, setSimHppValue, setSimScope, setTableBlocks, setTableSearchQuery, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, setZoom, settingsMsg, showArchivedClusters, showColMenu, simHargaMode, simHargaValue, simHppMode, simHppValue, simScope, siteImage, soldUnits, sortDir, sortKey, startColResize, startDrag, startEditShape, startHeightDrag, startVertexDrag, statusBreakdown, statusFields, submitDraft, subtitleWidth, tableBlocks, tableRows, tableSearchQuery, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeColor, tipeOptions, tipePie, toggleArchiveCluster, toggleColHidden, togglePinCluster, toggleRowSelect, toggleSort, toggleStatusDetail, toggleTableBlock, toggleTableTipe, totalMargin, totalPages, totalRows, totalTarget, undoBulkDelete, undoDelete, undoPoint, updateBlockTarget, updateClusterMeta, updateHouse, updateStatus, updateTipeLuas, zoom,
   };
 
