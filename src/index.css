@@ -92,13 +92,14 @@ body {
 /* Kotak abu-abu berdenyut untuk layar memuat (LoadingSkeleton) */
 @keyframes bria-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 .sk { background: var(--line); border-radius: 8px; animation: bria-pulse 1.4s ease-in-out infinite; }
-.skel-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; }
-.skel-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; max-width: 1040px; }
+@media (max-width: 680px) {
+  .sk-map-row { flex-direction: column; align-items: stretch !important; }
+  .sk-map-main, .sk-map-side { flex-basis: 100% !important; min-width: 0 !important; }
+}
 
 /* HP: tombol opsi peta dilipat, tinggi site plan mengikuti gambar */
 .opts-toggle { display: none; }
 @media (max-width: 640px) {
-  .skel-grid { grid-template-columns: minmax(0, 1fr); }
   .opts-toggle { display: inline-flex; }
   .map-opts { display: none; }
   .map-opts.open { display: flex; }
