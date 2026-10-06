@@ -11,8 +11,8 @@ export const WHATS_NEW_GROUPS = [
     items: [
       { icon: "🧭", title: "Versi 2.0: tampilan baru", desc: "Menu pindah ke sidebar di kiri (bar menu di bawah layar di HP) dan bisa dilipat jadi ikon; pilihannya diingat, dan di Data Mode otomatis terlipat. Warna diganti jadi krem dan oranye, termasuk mode gelap." },
       { icon: "📈", title: "Halaman Dashboard", desc: "Menu baru Dashboard berisi empat bagian: Ringkasan (alur status dan grafik), Kontraktor (rekap lengkap dengan total HPP dan status per kontraktor), Margin dan Harga, serta Tindak lanjut. Tombol Simulasi Harga dan Print Laporan pindah ke sini." },
-      { icon: "🗺️", title: "Main Mode lebih ringkas", desc: "Empat angka utama kini di atas peta. Pilihan Warna peta jadi tombol bulat di atas peta, dan panel di sampingnya hanya berisi progres status dan margin per tipe. Tombol Move Dashboard dihapus." },
-      { icon: "🏠", title: "Home dua kolom", desc: "Daftar cluster di kiri, sedangkan follow-up, kalender, dan kartu Keamanan data (dengan tombol Backup sekarang) di kanan." },
+      { icon: "🗺️", title: "Main Mode lebih ringkas", desc: "Empat angka utama kini di atas peta, tombol Edit Site Plan dan Cetak ada di kartu Site Plan, dan pilihan Warna peta berupa tombol bulat. Panel di samping hanya berisi progres status dan margin per tipe; grafik dan rekap ada di menu Dashboard. Bar atas tidak lagi menempel saat di-scroll." },
+      { icon: "🏠", title: "Home baru", desc: "Bar atas dengan kotak cari lintas cluster, sapaan, dan tombol Export, Backup, Restore. Kartu cluster menampilkan progres, margin, terjual, dan Order Marketing. Kalender follow-up dan kartu Keamanan data (Backup sekarang) ada di kanan." },
     ],
   },
   {

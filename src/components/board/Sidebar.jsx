@@ -13,7 +13,7 @@ const ITEMS = [
 ];
 
 export default function Sidebar() {
-  const { activeCluster, canEdit, displayName, goHome, goMode, handleLogoutClick, lastBackupAt, mode, sidebarCollapsed, toggleSidebar } = useBoard();
+  const { activeCluster, blocks, canEdit, displayName, goHome, goMode, handleLogoutClick, lastBackupAt, mode, sidebarCollapsed, toggleSidebar, totalTarget } = useBoard();
   const initials = (displayName || "?").slice(0, 2).toUpperCase();
   return (
     <nav className={`app-side ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Menu utama">
@@ -56,9 +56,12 @@ export default function Sidebar() {
 
       <div className="side-extra side-hide-collapsed" style={{ width: "100%" }}>
         <div style={{ fontSize: 11, letterSpacing: 0.6, textTransform: "uppercase", color: C.steel, padding: "0 .75rem .4rem" }}>Cluster aktif</div>
-        <button onClick={goHome} title="Kembali ke Home untuk ganti cluster" style={{ width: "100%", textAlign: "left", border: `1px solid ${C.line}`, background: "transparent", color: C.ink, borderRadius: 12, padding: "9px 12px", cursor: "pointer", minHeight: 44, fontFamily: "inherit" }}>
-          <span style={{ display: "block", fontWeight: 600, fontSize: 13 }}>{activeCluster.name || "—"}</span>
-          <span style={{ display: "block", fontSize: 12, color: C.steel }}>Ganti cluster</span>
+        <button onClick={goHome} title="Kembali ke Home untuk ganti cluster" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, textAlign: "left", border: `1px solid ${C.line}`, background: "transparent", color: C.ink, borderRadius: 12, padding: "8px 10px", cursor: "pointer", minHeight: 44, fontFamily: "inherit" }}>
+          <span style={{ minWidth: 0 }}>
+            <span style={{ display: "block", fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{activeCluster.name || "—"}</span>
+            <span style={{ display: "block", fontSize: 11, color: C.steel }}>{totalTarget} unit target · {blocks.length} blok</span>
+          </span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0, color: C.steel }}><path d="M6 9l6 6 6-6" /></svg>
         </button>
       </div>
 

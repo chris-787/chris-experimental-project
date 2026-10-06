@@ -24,7 +24,7 @@ export default function ColorPills() {
             aria-label="Status lain"
             value={otherActive ? colorMode : ""}
             onChange={(e) => e.target.value && setColorMode(e.target.value)}
-            style={{ ...pill(otherActive), appearance: "none", WebkitAppearance: "none", outline: "none", paddingRight: 28 }}
+            style={{ ...pill(otherActive), appearance: "none", WebkitAppearance: "none", outline: "none", paddingRight: 28, width: otherActive ? 156 : 112 }}
           >
             <option value="" disabled>Status lain</option>
             {others.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}

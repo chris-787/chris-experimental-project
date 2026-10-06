@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { Field, cellInput, formInput } from "../../components/ui";
+import { BTN_PILL, Chip, Field, Ic, btnPrimary, btnSecondary, cellInput, formInput } from "../../components/ui";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { centroid } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
@@ -7,7 +7,7 @@ import ColorPills from "./ColorPills";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
-  const { kontraktorLegend, actionMenuId, activeBlock, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setMapHeight, setSelectedId, setZoom, siteImage, startEditShape, startHeightDrag, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
+  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setMapHeight, setSelectedId, setZoom, siteImage, startEditShape, startHeightDrag, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
   // Tinggi gambar yang sedang tampil. Di HP kotak Site Plan dipendekkan
   // sampai setinggi gambar (lihat .plan-box di index.css). Koordinat poligon
   // TIDAK disentuh: lapisan SVG tetap berbentuk persegi seperti semula,
@@ -34,12 +34,11 @@ export default function MapPanel() {
     <div style={{ marginBottom: 12 }}>
     <div className="rounded-xl p-2.5" style={{ background: C.panel, boxShadow: C.cardShadow, position: "relative" }}>
         <div>
-          <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+          <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
             <div>
-              <div className="text-sm font-medium" style={{ color: C.ink }}>Site Plan</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: C.ink }}>Site Plan</div>
               <div className="text-xs" style={{ color: C.steel }}>Cubit layar atau tekan Ctrl + scroll untuk zoom cepat</div>
             </div>
-            {siteImage && (
             <div className="flex items-center gap-2 flex-wrap">
               {calibrating && drawingPoints.length > 0 && (
                 <div className="flex items-center gap-1.5">
@@ -49,6 +48,30 @@ export default function MapPanel() {
                   <button onClick={cancelDrawing} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Batal</button>
                 </div>
               )}
+              {canEdit && (
+                <button
+                  onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
+                  className={BTN_PILL}
+                  style={editMap ? { border: `1px solid ${C.amber}`, background: C.alertAmberBg, color: C.amber } : btnSecondary}
+                >
+                  <Ic name="pencil" size={14} /> {editMap ? "Edit Site Plan aktif — klik untuk selesai" : "Edit Site Plan"}
+                </button>
+              )}
+              {siteImage && <button onClick={printSitePlan} className={BTN_PILL} style={btnPrimary}><Ic name="printer" size={14} /> Cetak</button>}
+            </div>
+          </div>
+
+          {siteImage && (
+            <div className="flex items-center justify-between gap-2.5 flex-wrap mb-2.5">
+              {!calibrating ? <ColorPills /> : <span />}
+              <div className="flex items-center gap-3 flex-wrap">
+                {!calibrating && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs" style={{ color: C.steel }}>Opacity</span>
+                    <input type="range" min="10" max="100" value={opacity} onChange={(e) => setOpacity(Number(e.target.value))} aria-label="Opacity warna peta" style={{ width: 90 }} />
+                    <span className="text-xs" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", minWidth: 30 }}>{opacity}%</span>
+                  </div>
+                )}
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setZoom((z) => Math.max(50, z - 20))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
                 <div className="flex items-center h-7 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel }}>
@@ -67,11 +90,38 @@ export default function MapPanel() {
                   <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Clear</button>
                 )}
               </div>
+              </div>
             </div>
-            )}
-          </div>
+          )}
 
-          {siteImage && !calibrating && <div className="mb-2"><ColorPills /></div>}
+          {calibrating && (
+            <div className="flex flex-col gap-2 mb-2.5 p-2.5 rounded-xl" style={{ background: C.paper, border: `1px solid ${C.line}` }}>
+              {(blocks.length === 0 || tipeOptions.length === 0) ? (
+                <p className="text-xs" style={{ color: C.amber }}>
+                  Cluster ini belum punya {blocks.length === 0 && tipeOptions.length === 0 ? "Blok maupun Tipe" : blocks.length === 0 ? "Blok" : "Tipe"}. Tambahkan dulu lewat menu "Settings" sebelum bisa menggambar kavling.
+                </p>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs" style={{ color: C.steel }}>Blok aktif:</span>
+                    {blocks.map((b) => (
+                      <Chip key={b.id} active={activeBlock === b.name} onClick={() => setActiveBlock(b.name)}>
+                        {b.name} ({blockProgress.find((p) => p.name === b.name)?.placed || 0}/{b.target})
+                      </Chip>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs" style={{ color: C.steel }}>Tipe aktif:</span>
+                    {tipeOptions.map((t) => (
+                      <Chip key={t.id} active={activeTipe === t.name} onClick={() => setActiveTipe(t.name)}>{t.name}</Chip>
+                    ))}
+                  </div>
+                  <p className="text-xs" style={{ color: C.steel }}>Pilih Blok &amp; Tipe aktif di atas, lalu klik tiap sudut kavling mengikuti bentuknya (min. 3 titik), lalu "Selesai Poligon" dan isi nomor kavlingnya. Klik bentuk yang sudah ada untuk menghapusnya.</p>
+                </>
+              )}
+            </div>
+          )}
+
           {!siteImage ? (
             <div className="flex flex-col items-center justify-center gap-2.5 py-16" style={{ border: `1px dashed ${C.line}`, borderRadius: 8, background: C.paper }}>
               <div className="text-sm" style={{ color: C.steel }}>Cluster ini belum punya gambar site plan.</div>
