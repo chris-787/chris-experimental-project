@@ -1166,7 +1166,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const hiddenCols = useMemo(() => {
     const noCol = phoneWidth ? ["no"] : [];
     if (tableView !== "ringkas") return [...hiddenColsSaved.filter((k) => k !== "tipe" && k !== "statusGab" && k !== "no"), "statusGab", ...noCol];
-    const visible = [...(ringkasCols || defaultRingkas()), "select", "kavling", "tipe", ...(phoneWidth ? [] : ["no"])];
+    const visible = [...(ringkasCols || defaultRingkas()).filter((k) => !(phoneWidth && k === "no")), "select", "kavling", "tipe", ...(phoneWidth ? [] : ["no"])];
     return columns.filter((c) => !visible.includes(c.key)).map((c) => c.key);
   }, [tableView, columns, statusFields, hiddenColsSaved, ringkasCols, phoneWidth]);
 
