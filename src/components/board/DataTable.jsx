@@ -260,7 +260,7 @@ export default function DataTable() {
                       </div>
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
-                      <select style={{ ...cellInput, textAlign: "center", textAlignLast: "center" }} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
+                      <select style={cellInput} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
                         {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
                       </select>
                     </td>
