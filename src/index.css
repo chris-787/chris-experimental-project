@@ -127,3 +127,10 @@ body {
 .dash-two { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 12px; align-items: start; }
 @media (max-width: 900px) { .dash-two { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 560px) { .dash-row { grid-template-columns: 100px minmax(0, 1fr) 64px; gap: 8px; } }
+
+/* Home: daftar cluster di kiri, panel follow-up dan backup di kanan */
+.home-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+@media (max-width: 1000px) { .home-grid { grid-template-columns: minmax(0, 1fr); } }
+.dash-tabs { scrollbar-width: none; }
+.dash-tabs::-webkit-scrollbar { display: none; }
+@media (max-width: 560px) { .kpi-wide { grid-column: span 2; } }

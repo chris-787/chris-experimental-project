@@ -1378,7 +1378,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         .col-resize-handle:active { background: ${C.accent}55; }
         .editable-heading:hover, .editable-heading:focus { border-bottom-color: ${C.line} !important; }
         @media (max-width: 680px) {
-          .map-data-row { flex-direction: column; }
+          .map-data-row { flex-direction: column; align-items: stretch !important; }
           .panel-resize-handle { display: none !important; }
           .map-panel-col { flex-basis: 100% !important; min-width: 0 !important; padding-right: 0 !important; }
           .inspector-panel-col { flex-basis: 100% !important; min-width: 0 !important; padding-left: 0 !important; }

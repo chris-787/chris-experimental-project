@@ -81,7 +81,7 @@ function Kontraktor() {
   const maxUnit = Math.max(1, ...rows.map((r) => r.unit));
   return (
     <>
-      <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+      <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
         <div style={card}><div className="text-xs" style={{ color: C.steel }}>Jumlah kontraktor</div><div style={{ fontFamily: MONO, fontSize: 24, marginTop: 4 }}>{named}</div></div>
         <div style={card}><div className="text-xs" style={{ color: C.steel }}>Kavling punya kontraktor</div><div style={{ fontFamily: MONO, fontSize: 24, marginTop: 4 }}>{houses.filter((h) => (h.kontraktor || "").trim()).length} <span style={{ fontSize: 16, color: C.steel }}>/ {houses.length}</span></div></div>
         <div style={card}><div className="text-xs" style={{ color: C.steel }}>Total HPP</div><div style={{ fontFamily: MONO, fontSize: 20, marginTop: 8 }}>{rupiah(rows.reduce((s, r) => s + r.hpp, 0))}</div></div>
@@ -144,7 +144,7 @@ function MarginHarga() {
   const top = Math.max(30, ...list.map((t) => t.margin));
   return (
     <>
-      <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+      <div className="mb-3" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
         <div style={card}><div className="text-xs" style={{ color: C.steel }}>Total Margin</div><div style={{ fontFamily: MONO, fontSize: 20, marginTop: 8 }}>{rupiah(totalMargin)}</div></div>
         <div style={card}><div className="text-xs" style={{ color: C.steel }}>Rata-rata Margin</div><div style={{ fontFamily: MONO, fontSize: 24, marginTop: 4, color: avgMarginPct >= 20 ? C.green : C.red }}>{avgMarginPct.toFixed(2)}%</div><div className="text-xs" style={{ color: C.steel }}>target minimal 20%</div></div>
         <div style={{ ...card, display: "flex", alignItems: "center" }}><button onClick={() => setShowSimulasi(true)} className={BTN_PILL} style={btnPrimary}><Ic name="calculator" size={14} /> Buka Simulasi Harga</button></div>
@@ -215,14 +215,14 @@ export default function DashboardPage() {
         <button onClick={() => setShowSimulasi(true)} className={BTN_PILL} style={btnSecondary}><Ic name="calculator" size={14} /> Simulasi Harga</button>
         <button onClick={printReportPDF} className={BTN_PILL} style={btnPrimary}><Ic name="printer" size={14} /> Print Laporan</button>
       </div>
-      <div role="tablist" aria-label="Bagian dashboard" className="flex flex-wrap mb-3" style={{ gap: 4, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: 4, width: "fit-content", maxWidth: "100%" }}>
+      <div role="tablist" aria-label="Bagian dashboard" className="dash-tabs mb-3" style={{ display: "flex", gap: 4, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: 4, width: "fit-content", maxWidth: "100%", overflowX: "auto" }}>
         {TABS.map((t) => (
           <button
             key={t.key}
             role="tab"
             aria-selected={tab === t.key}
             onClick={() => setDashTab(t.key)}
-            style={{ height: 36, padding: "0 16px", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", background: tab === t.key ? C.accent : "transparent", color: tab === t.key ? "#fff" : C.steel }}
+            style={{ height: 36, padding: "0 16px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", background: tab === t.key ? C.accent : "transparent", color: tab === t.key ? "#fff" : C.steel }}
           >{t.label}</button>
         ))}
       </div>

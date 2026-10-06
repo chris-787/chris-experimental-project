@@ -7,9 +7,17 @@ export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "
 
 export const WHATS_NEW_GROUPS = [
   {
+    date: "6 Oktober 2026",
+    items: [
+      { icon: "🧭", title: "Versi 2.0: tampilan baru", desc: "Menu pindah ke sidebar di kiri (bar menu di bawah layar di HP) dan bisa dilipat jadi ikon; pilihannya diingat, dan di Data Mode otomatis terlipat. Warna diganti jadi krem dan oranye, termasuk mode gelap." },
+      { icon: "📈", title: "Halaman Dashboard", desc: "Menu baru Dashboard berisi empat bagian: Ringkasan (alur status dan grafik), Kontraktor (rekap lengkap dengan total HPP dan status per kontraktor), Margin dan Harga, serta Tindak lanjut. Tombol Simulasi Harga dan Print Laporan pindah ke sini." },
+      { icon: "🗺️", title: "Main Mode lebih ringkas", desc: "Empat angka utama kini di atas peta. Pilihan Warna peta jadi tombol bulat di atas peta, dan panel di sampingnya hanya berisi progres status dan margin per tipe. Tombol Move Dashboard dihapus." },
+      { icon: "🏠", title: "Home dua kolom", desc: "Daftar cluster di kiri, sedangkan follow-up, kalender, dan kartu Keamanan data (dengan tombol Backup sekarang) di kanan." },
+    ],
+  },
+  {
     date: "3 Oktober 2026",
     items: [
-      { icon: "🧭", title: "Versi 2.0: sidebar dan warna baru", desc: "Menu Home, Main Mode, Data Mode, dan Settings pindah ke sidebar di kiri (bar menu di bawah layar di HP). Sidebar bisa dilipat jadi ikon dan pilihannya diingat; di Data Mode otomatis terlipat supaya tabel lega. Warna diganti jadi krem dan oranye, termasuk mode gelap." },
       { icon: "📋", title: "Rincian kavling di bawah legenda", desc: "Di bawah legenda Site Plan ada daftar kavling per kelompok warna yang sedang aktif (kontraktor, Sudah/Belum, blok, atau tipe), dikelompokkan per tipe, mis. \"Tipe 6x12 (4 unit) : RB/D-06, RB/D-08, ...\". Bisa disembunyikan, dan ikut tercetak di Cetak Site Plan." },
       { icon: "©️", title: "Credit di hasil cetak", desc: "Cetak Site Plan, cetak laporan Dashboard, dan Ringkasan Kavling sekarang memuat credit chrisproject.site di atas judul." },
       { icon: "🧩", title: "Tabel Ringkas / Lengkap", desc: "Di atas tabel ada tombol Ringkas (kolom inti saja: No, Kavling, Tipe, Status, Kontraktor, HPP, Harga Jual, Margin) dan Lengkap (semua kolom, bisa diatur lewat menu Kolom). Pilihan ini hanya berlaku di perangkat Anda." },
