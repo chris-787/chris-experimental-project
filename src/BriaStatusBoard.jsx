@@ -1381,7 +1381,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
       <style>{`
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 3px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
-        table.dataTbl th { text-align: left; color: ${C.steel}; font-weight: 600; padding: 8px 8px; background: ${C.panel}; position: sticky; top: 0; will-change: transform; }
+        table.dataTbl th { text-align: center; color: #fff; font-weight: 600; padding: 8px 8px; background: ${C.accent}; border-bottom-color: transparent; position: sticky; top: 0; will-change: transform; }
+        table.dataTbl th:not(:last-child) { border-right-color: rgba(255,255,255,.2) !important; }
+        table.dataTbl th .col-resize-handle > span { background: transparent !important; }
         table.dataTbl th.th-center { text-align: center; }
         .inspector-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
         .inspector-cols > div + div { border-left: 1px solid ${C.line}; padding-left: 24px; }

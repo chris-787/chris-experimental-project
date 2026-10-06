@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { Chip, Ic, cellInput, focusWhen } from "../../components/ui";
+import { Chip, Ic, cellInput, focusWhen, tint } from "../../components/ui";
 import { MONTHS } from "../../lib/constants";
 import React from "react";
 import { rupiah } from "../../lib/helpers";
@@ -241,7 +241,7 @@ export default function DataTable() {
                       <input type="checkbox" checked={selectedRows.includes(h.id)} onChange={() => toggleRowSelect(h.id)} />
                     </td>
                     <td className="frz" style={{ fontFamily: "IBM Plex Mono, monospace", overflow: "hidden", left: frozenLeft.kavling, background: rowBg(h), boxShadow: `inset -1px 0 0 ${C.line}` }} onClick={(e) => { if (calibrating) { e.stopPropagation(); setSelectedId(h.id); } }}>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         {isDuplicateKavling(h) && <span title="Nomor kavling ini duplikat di bloknya" style={{ width: 7, height: 7, borderRadius: "50%", background: C.red, flexShrink: 0 }} />}
                         {!isDuplicateKavling(h) && isIncomplete(h) && <span title="Data harga/luas bangunan belum lengkap" style={{ width: 7, height: 7, borderRadius: "50%", background: C.gold, flexShrink: 0 }} />}
                         {calibrating ? (
@@ -260,7 +260,7 @@ export default function DataTable() {
                       </div>
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
-                      <select style={cellInput} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
+                      <select style={{ ...cellInput, textAlign: "center", textAlignLast: "center" }} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
                         {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
                       </select>
                     </td>
@@ -367,7 +367,7 @@ export default function DataTable() {
                       {priceEditingKey === `${h.id}:hpp` || !h.hppPerM2 ? (
                         <input
                           ref={focusWhen(priceEditingKey === `${h.id}:hpp`, "table")}
-                          type="number" min="0" style={{ ...cellInput, minWidth: 100 }}
+                          type="number" min="0" style={{ ...cellInput, minWidth: 100, textAlign: "center" }}
                           value={h.hppPerM2 || ""}
                           onChange={(e) => { setPriceEditingKey(`${h.id}:hpp`); updateHouse(h.id, { hppPerM2: Number(e.target.value) || 0 }); }}
                           onKeyDown={(e) => { if (e.key === "Enter") setPriceEditingKey(null); }}
@@ -376,9 +376,10 @@ export default function DataTable() {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:hpp`); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "nowrap" }}
+                          title="Klik untuk ubah"
+                          style={{ fontSize: 11, color: C.data, cursor: "pointer", padding: "4px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.data, 14) }}
                         >
-                          {rupiah(h.hppPerM2)}
+                          <span style={{ opacity: 0.65 }}>{rupiah(h.hppPerM2)}</span>
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hppTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
                         </div>
                       )}
@@ -396,7 +397,7 @@ export default function DataTable() {
                       {priceEditingKey === `${h.id}:harga` || !h.hargaJualPerM2 ? (
                         <input
                           ref={focusWhen(priceEditingKey === `${h.id}:harga`, "table")}
-                          type="number" min="0" style={{ ...cellInput, minWidth: 100 }}
+                          type="number" min="0" style={{ ...cellInput, minWidth: 100, textAlign: "center" }}
                           value={h.hargaJualPerM2 || ""}
                           onChange={(e) => { setPriceEditingKey(`${h.id}:harga`); updateHouse(h.id, { hargaJualPerM2: Number(e.target.value) || 0 }); }}
                           onKeyDown={(e) => { if (e.key === "Enter") setPriceEditingKey(null); }}
@@ -405,9 +406,10 @@ export default function DataTable() {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:harga`); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, whiteSpace: "nowrap" }}
+                          title="Klik untuk ubah"
+                          style={{ fontSize: 11, color: C.accent2, cursor: "pointer", padding: "4px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.accent, 14) }}
                         >
-                          {rupiah(h.hargaJualPerM2)}
+                          <span style={{ opacity: 0.65 }}>{rupiah(h.hargaJualPerM2)}</span>
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hargaJualTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
                         </div>
                       )}
