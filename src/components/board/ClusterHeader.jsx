@@ -82,9 +82,9 @@ export default function ClusterHeader() {
           )}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
-          <div className="flex items-center gap-2">
-            {canEdit ? (
+        <div className="flex items-start gap-2" style={{ paddingBottom: 19 }}>
+          {canEdit ? (
+            <div style={{ position: "relative" }}>
               <button
                 onClick={() => saveHouses()}
                 style={{ height: 36, padding: "0 16px", borderRadius: 999, fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", ...(dirty ? { background: C.amber, color: "#fff", border: `1px solid ${C.amber}` } : { background: C.panel, color: C.steel, border: `1px solid ${C.line}` }) }}
@@ -92,16 +92,16 @@ export default function ClusterHeader() {
               >
                 Simpan Perubahan
               </button>
-            ) : (
-              <span style={{ height: 36, padding: "0 16px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>
-            )}
-            <ThemeToggle />
-          </div>
-          <div className="text-xs flex items-center gap-1.5" style={{ minHeight: 15, color: saving ? C.steel : dirty ? C.amber : C.green }} role="status">
-            {saving && <><SmallSpinner /> Menyimpan...</>}
-            {!saving && dirty && "Ada perubahan belum disimpan"}
-            {!saving && !dirty && savedToast && "Tersimpan ✓"}
-          </div>
+              <div className="text-xs flex items-center gap-1.5" style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", marginTop: 4, whiteSpace: "nowrap", color: saving ? C.steel : dirty ? C.amber : C.green }} role="status">
+                {saving && <><SmallSpinner /> Menyimpan...</>}
+                {!saving && dirty && "Ada perubahan belum disimpan"}
+                {!saving && !dirty && savedToast && "Tersimpan ✓"}
+              </div>
+            </div>
+          ) : (
+            <span style={{ height: 36, padding: "0 16px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>
+          )}
+          <ThemeToggle />
         </div>
       </div>
 

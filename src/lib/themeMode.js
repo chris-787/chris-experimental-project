@@ -11,7 +11,13 @@ export function setTheme(mode) {
   } catch (e) {}
 }
 
+let animTimer = null;
 export function toggleTheme() {
+  // Pasang kelas animasi sebentar supaya perpindahan warna terang/gelap mulus.
+  const root = document.documentElement;
+  root.classList.add("theme-anim");
+  clearTimeout(animTimer);
+  animTimer = setTimeout(() => root.classList.remove("theme-anim"), 450);
   const next = getTheme() === "dark" ? "light" : "dark";
   setTheme(next);
   return next;

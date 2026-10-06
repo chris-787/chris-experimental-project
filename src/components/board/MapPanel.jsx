@@ -76,7 +76,7 @@ export default function MapPanel() {
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setZoom((z) => Math.max(50, z - 20))} aria-label="Perkecil peta" style={zoomBtn}>−</button>
                 <button onClick={() => setZoom((z) => Math.min(400, z + 20))} aria-label="Perbesar peta" style={zoomBtn}>+</button>
-                <button onClick={() => setZoom(100)} title="Kembali ke 100%" aria-label="Setel ulang zoom" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600 }}>{zoom}%</button>
+                <button onClick={() => setZoom(100)} title="Kembali ke 100%" aria-label="Setel ulang zoom" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600 }}>{Math.round(zoom)}%</button>
                 {selectedId && (
                   <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Clear</button>
                 )}

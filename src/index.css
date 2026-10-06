@@ -7,62 +7,62 @@
    -- tidak perlu re-render React, CSS yang menangani semuanya. */
 :root {
   color-scheme: light;
-  --ink: #1E1B18;
-  --paper: #F3F1EC;
+  --ink: #141A24;
+  --paper: #F4F6F9;
   --panel: #FFFFFF;
-  --steel: #6F6A63;
-  --faint: #D5CFC3;
-  --line: #E7E2D9;
-  --accent: #C94A1C;
-  --accent2: #A83A12;
-  --select: #1E1B18;
+  --steel: #5A6579;
+  --faint: #CBD3DF;
+  --line: #E1E6EE;
+  --accent: #2A4A8A;
+  --accent2: #1F3A70;
+  --select: #141A24;
   --select-ink: #FFFFFF;
-  --select-soft: #ECE8DF;
-  --data: #3E5C7E;
+  --select-soft: #E9EEF5;
+  --data: #2E6B6B;
   --green: #3F7D58;
   --amber: #B8791E;
   --red: #BD3B2E;
   --gold: #C9A227;
-  --card-shadow: 0 0 0 1px var(--line), 0 1px 3px rgba(30,27,24,.05);
-  --pill-fill: #EFEBE2;
-  --search-fill: #F7F4EC;
+  --card-shadow: 0 0 0 1px var(--line), 0 1px 3px rgba(20,26,36,.05);
+  --pill-fill: #ECEFF4;
+  --search-fill: #F0F3F8;
   --alert-amber-bg: #FFF7E8;
   --alert-red-bg: #FBEAE6;
-  --info-blue-bg: #F6F1EA;
-  --row-selected-bg: #FBF0E9;
+  --info-blue-bg: #EEF2F8;
+  --row-selected-bg: #EAF0FA;
   --chip-amber-bg: #FCEFD6;
   --chip-red-bg: #FBEDEA;
-  --chip-blue-bg: #FBE6DC;
+  --chip-blue-bg: #E3EAF6;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --ink: #F1EDE7;
-  --paper: #151210;
-  --panel: #201C19;
-  --steel: #A39C92;
-  --faint: #4A443D;
-  --line: #2F2A25;
-  --accent: #D75A2C;
-  --accent2: #F4986F;
-  --select: #F1EDE7;
-  --select-ink: #151210;
-  --select-soft: #2F2A25;
-  --data: #7C9CC4;
+  --ink: #E8EDF5;
+  --paper: #0E1420;
+  --panel: #161E2E;
+  --steel: #98A3B8;
+  --faint: #33425F;
+  --line: #243047;
+  --accent: #3F6FE0;
+  --accent2: #8FB0FF;
+  --select: #E8EDF5;
+  --select-ink: #0E1420;
+  --select-soft: #243047;
+  --data: #5FB3A8;
   --green: #52A373;
   --amber: #D9A441;
   --red: #E0695C;
   --gold: #D9B84C;
   --card-shadow: 0 0 0 1px var(--line), 0 1px 3px rgba(0,0,0,.35);
-  --pill-fill: #2A2521;
-  --search-fill: #2B2622;
+  --pill-fill: #1F2A3E;
+  --search-fill: #1B2538;
   --alert-amber-bg: #3A2E14;
   --alert-red-bg: #3A1E1C;
-  --info-blue-bg: #251F1B;
-  --row-selected-bg: #2B221C;
+  --info-blue-bg: #162238;
+  --row-selected-bg: #1B2A44;
   --chip-amber-bg: #3D3018;
   --chip-red-bg: #3D2220;
-  --chip-blue-bg: #3A2418;
+  --chip-blue-bg: #1B2A4A;
 }
 
 html {
@@ -86,7 +86,7 @@ body {
 
 .kavling-search-input:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 74, 28, 0.25);
+  box-shadow: 0 0 0 3px rgba(42, 74, 138, 0.25);
 }
 
 /* Kotak abu-abu berdenyut untuk layar memuat (LoadingSkeleton) */
@@ -111,7 +111,7 @@ body {
 
 /* Kerangka aplikasi: sidebar kiri (desktop) / bar menu bawah (HP) */
 .app-shell { display: flex; min-height: 100vh; background: var(--paper); }
-.app-side { flex: 0 0 204px; position: sticky; top: 0; height: 100vh; box-sizing: border-box; background: var(--panel); border-right: 1px solid var(--line); padding: .9rem .6rem; display: flex; flex-direction: column; gap: 1.1rem; overflow-y: auto; overflow-x: hidden; z-index: 35; }
+.app-side { transition: flex-basis .24s cubic-bezier(.4,0,.2,1), padding .24s cubic-bezier(.4,0,.2,1); flex: 0 0 204px; position: sticky; top: 0; height: 100vh; box-sizing: border-box; background: var(--panel); border-right: 1px solid var(--line); padding: .9rem .6rem; display: flex; flex-direction: column; gap: 1.1rem; overflow-y: auto; overflow-x: hidden; z-index: 35; }
 .app-side.collapsed { flex-basis: 58px; padding: .9rem .4rem; align-items: center; }
 .app-main { flex: 1 1 0; min-width: 0; padding: 1rem; }
 .side-item { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 38px; padding: 0 .65rem; border: none; border-radius: 10px; background: transparent; color: var(--steel); font-size: 12.5px; font-weight: 500; cursor: pointer; text-align: left; font-family: inherit; }
@@ -119,7 +119,10 @@ body {
 .side-item[aria-current="page"] { background: var(--select-soft); color: var(--ink); font-weight: 600; box-shadow: inset 3px 0 0 var(--accent); }
 .app-side.collapsed .side-item[aria-current="page"] { box-shadow: none; }
 .app-side.collapsed .side-item { justify-content: center; padding: 0; width: 40px; min-height: 40px; }
-.app-side.collapsed .side-label, .app-side.collapsed .side-hide-collapsed { display: none; }
+.side-label { display: inline-block; max-width: 160px; overflow: hidden; white-space: nowrap; opacity: 1; transition: opacity .18s ease, max-width .24s ease; }
+.side-hide-collapsed { max-width: 260px; max-height: 240px; opacity: 1; overflow: hidden; transition: opacity .18s ease, max-width .24s ease, max-height .24s ease, padding .24s ease, margin .24s ease, border-width .24s ease; }
+.app-side.collapsed .side-label { max-width: 0; opacity: 0; }
+.app-side.collapsed .side-hide-collapsed { max-width: 0; max-height: 0; opacity: 0; padding: 0 !important; margin: 0 !important; border-width: 0 !important; pointer-events: none; }
 .side-menu { display: flex; flex-direction: column; gap: 4px; width: 100%; }
 @media (max-width: 760px) {
   .app-shell { flex-direction: column; }
@@ -127,7 +130,7 @@ body {
   .side-extra { display: none !important; }
   .side-menu { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); flex-direction: row; gap: 2px; }
   .side-item, .app-side.collapsed .side-item { flex-direction: column; justify-content: center; gap: 2px; width: auto; height: 52px; padding: 0; font-size: 11px; text-align: center; }
-  .app-side.collapsed .side-label { display: inline; }
+  .app-side.collapsed .side-label { max-width: 160px; opacity: 1; }
   .app-main { padding-bottom: 6rem; }
 }
 
@@ -152,7 +155,7 @@ body {
 button, input, select, textarea { font-family: inherit; }
 .col-head { font-size: 11px; letter-spacing: .5px; text-transform: uppercase; color: var(--steel); font-weight: 600; margin-bottom: 10px; }
 /* Kotak cari: bingkai ikut membulat saat fokus (bukan kotak di dalam pil) */
-.search-pill:focus-within { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(201, 74, 28, 0.15); }
+.search-pill:focus-within { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(42, 74, 138, 0.18); }
 .search-pill input:focus { outline: none; box-shadow: none; }
 .app-side.collapsed .side-menu { align-items: center; }
 
@@ -164,3 +167,7 @@ button, input, select, textarea { font-family: inherit; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb { background: var(--faint); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
 *::-webkit-scrollbar-thumb:hover { background: var(--steel); background-clip: content-box; }
+
+/* Animasi ganti tema terang/gelap (kelas dipasang sebentar saat tombol tema ditekan) */
+html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after { transition: background-color .35s ease, color .35s ease, border-color .35s ease, box-shadow .35s ease, fill .35s ease, stroke .35s ease !important; }
+@media (prefers-reduced-motion: reduce) { .app-side, .side-label, .side-hide-collapsed { transition: none; } html.theme-anim * { transition: none !important; } }

@@ -28,8 +28,8 @@ export default defineConfig({
         name: "Chris Project",
         short_name: "Chris Project",
         description: "Pelacak status tender & penjualan kavling Cluster Bintaro Jaya",
-        theme_color: "#C94A1C",
-        background_color: "#F3F1EC",
+        theme_color: "#2A4A8A",
+        background_color: "#F4F6F9",
         display: "standalone",
         start_url: "/",
         icons: [
