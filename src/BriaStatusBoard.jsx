@@ -238,11 +238,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
       const st = statusFields.find((s) => s.key === key);
       ringkasW = ringkasWidths[key] || (st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 100, kontraktor: 192 }[key] || null));
     }
-    const stField = statusFields.find((s) => s.key === key);
-    const stMin = stField ? Math.ceil(measureTextWidth(stField.label, "600 12px 'Plus Jakarta Sans', sans-serif")) + 26 : 0;
-    const w = Math.max(stMin, ringkasW || colWidths[key] || DEFAULT_COL_WIDTH[key] || (key === "acOrder" ? 170 : 90));
+    // Judul kolom boleh turun ke baris berikutnya (seperti wrap text di Excel),
+    // jadi batas terkecil kolom = kata terpanjang di judulnya.
+    const label = (columns.find((c) => c.key === key) || {}).label || "";
+    const headMin = Math.ceil(Math.max(0, ...label.split(/\s+/).map((wd) => measureTextWidth(wd, "600 12px 'Plus Jakarta Sans', sans-serif")))) + 30;
+    const w = Math.max(headMin, ringkasW || colWidths[key] || DEFAULT_COL_WIDTH[key] || (key === "acOrder" ? 170 : 90));
     if (key === "select") return w;
-    return Math.max(MIN_COL_WIDTH[key] || 60, w);
+    return Math.max(MIN_COL_WIDTH[key] || 60, headMin, w);
   }
   function resetColWidths() {
     setColWidths({});
@@ -1382,6 +1384,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 3px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
         table.dataTbl th { text-align: center; color: #fff; font-weight: 600; padding: 8px 8px; background: ${C.accent}; border-bottom-color: transparent; position: sticky; top: 0; will-change: transform; }
+        table.dataTbl th { white-space: normal; line-height: 1.25; }
+        table.dataTbl td { border-right: 1px solid ${C.line}; }
+        table.dataTbl td:last-child { border-right: none; }
         table.dataTbl th:not(:last-child) { border-right-color: rgba(255,255,255,.2) !important; }
         table.dataTbl th .col-resize-handle > span { background: transparent !important; }
         table.dataTbl th.th-center { text-align: center; }
