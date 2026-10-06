@@ -18,24 +18,21 @@ export default function InspectorPanel() {
     const nextRow = tableRows[idx + 1];
     return (
       <div data-inspector>
-        <div className="flex items-center justify-between mb-2.5">
-          <div>
-            <div className="text-base font-semibold" style={{ color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
-            {h.lastEditedAt && <div className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}</div>}
-            <div className="text-xs" style={{ color: C.faint }}>Tips: ← → untuk pindah, Esc untuk tutup</div>
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex gap-1">
-              <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: prevRow ? C.ink : C.faint }}>&lsaquo; Prev</button>
-              <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: nextRow ? C.ink : C.faint }}>Next &rsaquo;</button>
-              <button onClick={() => setSelectedId(null)} title="Tutup / hapus highlight" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>✕</button>
-            </div>
-            <button onClick={() => printKavlingSummary(h)} className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5" style={{ background: C.accent, color: "#fff" }}><Ic name="printer" size={13} /> Ringkasan</button>
-          </div>
+        <div className="flex items-center gap-2.5 flex-wrap mb-3.5">
+          <div style={{ fontSize: 17, fontWeight: 700, color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
+          <span style={{ background: C.chipBlueBg, color: C.accent, fontWeight: 600, fontSize: 12, padding: "3px 10px", borderRadius: 999 }}>{h.tipe}</span>
+          <span style={{ background: h.status.terjual ? C.pillFill : C.pillFill, color: h.status.terjual ? C.green : C.steel, fontWeight: 600, fontSize: 12, padding: "3px 10px", borderRadius: 999 }}>{h.status.terjual ? "Sudah terjual" : "Belum terjual"}</span>
+          {h.lastEditedAt && <span className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}</span>}
+          <span style={{ flex: 1 }} />
+          <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} style={{ height: 36, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: prevRow ? C.ink : C.faint, fontWeight: 600, fontSize: 13, cursor: prevRow ? "pointer" : "default" }} title="Kavling sebelumnya (←)">&lsaquo; Prev</button>
+          <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} style={{ height: 36, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: nextRow ? C.ink : C.faint, fontWeight: 600, fontSize: 13, cursor: nextRow ? "pointer" : "default" }} title="Kavling berikutnya (→)">Next &rsaquo;</button>
+          <button onClick={() => printKavlingSummary(h)} style={{ height: 36, padding: "0 16px", borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}><Ic name="printer" size={14} /> Ringkasan</button>
+          <button onClick={() => setSelectedId(null)} aria-label="Tutup detail" title="Tutup / hapus highlight (Esc)" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.steel, cursor: "pointer" }}>✕</button>
         </div>
 
         <div className="inspector-cols">
         <div>
+        <div className="col-head">Data dan status</div>
         <Field label="Tipe / Ukuran">
           <select style={formInput} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
             {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
@@ -59,7 +56,7 @@ export default function InspectorPanel() {
                     <div className="flex items-center gap-1.5">
                       <input
                         ref={focusWhen(true, "inspector")}
-                        style={{ ...formInput, fontFamily: "Inter, sans-serif" }}
+                        style={{ ...formInput, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                         value={getDetail(h, s.key)}
                         onChange={(e) => setDetail(h.id, s.key, e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") setDetailEditingKey(null); }}
@@ -93,6 +90,7 @@ export default function InspectorPanel() {
         </div>
         <div>
         <div>
+        <div className="col-head">Kontraktor dan SPK</div>
           {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
             <Field label="Kontraktor">
               <input ref={focusWhen(textEditingKey === `${h.id}:kontraktor`, "inspector")} list="kontraktor-options" style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
@@ -143,13 +141,14 @@ export default function InspectorPanel() {
               onChange={(e) => updateHouse(h.id, { catatan: e.target.value })}
               placeholder="Kondisi khusus, kendala lapangan, dll..."
               rows={2}
-              style={{ ...formInput, resize: "vertical", fontFamily: "Inter, sans-serif" }}
+              style={{ ...formInput, resize: "vertical", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             />
           </Field>
         </div>
         </div>
         <div>
         <div>
+        <div className="col-head">Harga dan HPP</div>
           <div className="grid grid-cols-2 gap-2">
             <div className="text-xs mb-2" style={{ color: C.steel }}>
               Luas Bangunan: <b style={{ color: C.ink }}>{luasBangunanOf(h)} m²</b> <span style={{ color: C.steel }}>(ikut Tipe "{h.tipe}", atur di Pengaturan)</span>

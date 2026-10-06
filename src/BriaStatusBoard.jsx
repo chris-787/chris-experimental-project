@@ -52,7 +52,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [tipeOptions, setTipeOptions] = useState(DEFAULT_TIPE);
   const [statusFields, setStatusFields] = useState(DEFAULT_STATUS);
   const [kategoriOptions, setKategoriOptions] = useState(DEFAULT_KATEGORI);
-  const [appTitle, setAppTitle] = useState("Cluster Bintaro Jaya [Experimental Project]");
+  const [appTitle, setAppTitle] = useState("Chris Project [Experimental Project]");
   const [clusters, setClusters] = useState([]);
   const [currentClusterId, setCurrentClusterId] = useState(null);
   const [homeLoaded, setHomeLoaded] = useState(false);
@@ -141,7 +141,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [subtitleWidth, setSubtitleWidth] = useState(20);
   useEffect(() => {
     const subtitle = (clusters.find((c) => c.id === currentClusterId) || {}).subtitle || "";
-    const width = measureTextWidth(subtitle, "14px Inter, sans-serif");
+    const width = measureTextWidth(subtitle, "14px 'Plus Jakarta Sans', sans-serif");
     setSubtitleWidth(Math.max(Math.ceil(width) + 4, 20));
   }, [clusters, currentClusterId]);
   const [editingShapeId, setEditingShapeId] = useState(null);
@@ -218,7 +218,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     let ringkasW = null;
     if (tableView === "ringkas") {
       const st = statusFields.find((s) => s.key === key);
-      ringkasW = st ? Math.ceil(measureTextWidth(st.label, "500 12px Inter, sans-serif")) + 26 : ({ no: 44, tipe: 100, kontraktor: 192 }[key] || null);
+      ringkasW = st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 100, kontraktor: 192 }[key] || null);
     }
     const w = ringkasW || colWidths[key] || DEFAULT_COL_WIDTH[key] || (key === "acOrder" ? 170 : 90);
     if (key === "select") return w;
@@ -1348,11 +1348,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
   return (
     <BoardContext.Provider value={board}>
-    <div style={{ background: C.paper, minHeight: "100%", fontFamily: "Inter, sans-serif" }} className={currentClusterId ? "" : "p-4"}>
+    <div style={{ background: C.paper, minHeight: "100%", fontFamily: "'Plus Jakarta Sans', sans-serif" }} className={currentClusterId ? "" : "p-4"}>
       <style>{`
         * { box-sizing: border-box; }
-        table.dataTbl th, table.dataTbl td { padding: 2px 6px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
-        table.dataTbl th { text-align: center; color: ${C.steel}; font-weight: 500; background: ${C.paper}; position: sticky; top: 0; will-change: transform; }
+        table.dataTbl th, table.dataTbl td { padding: 6px 10px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
+        table.dataTbl th { text-align: left; color: ${C.steel}; font-weight: 600; padding: 10px 10px; background: ${C.panel}; position: sticky; top: 0; will-change: transform; }
+        table.dataTbl th.th-center { text-align: center; }
         .inspector-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
         .inspector-cols > div + div { border-left: 1px solid ${C.line}; padding-left: 24px; }
         @media (max-width: 1000px) {
@@ -1365,6 +1366,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
         }
         table.dataTbl tr:hover td { background: ${C.rowSelectedBg} !important; }
         table.dataTbl input[type=checkbox] { accent-color: ${C.green}; width: 14px; height: 14px; }
+        table.dataTbl input.status-dot { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid ${C.faint}; background: transparent; cursor: pointer; display: inline-block; vertical-align: middle; position: relative; margin: 0; }
+        table.dataTbl input.status-dot:checked { background: ${C.green}; border-color: ${C.green}; }
+        table.dataTbl input.status-dot:checked::after { content: ""; position: absolute; left: 4.5px; top: 2px; width: 4px; height: 7px; border: solid #fff; border-width: 0 1.6px 1.6px 0; transform: rotate(45deg); }
+        table.dataTbl input.status-dot:focus-visible { outline: 2px solid ${C.accent}; outline-offset: 2px; }
         table.dataTbl th { z-index: 3; }
         table.dataTbl th.frz { z-index: 4; }
         table.dataTbl td.frz { position: sticky; z-index: 2; }

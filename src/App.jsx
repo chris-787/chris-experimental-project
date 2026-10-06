@@ -6,7 +6,7 @@ import { C } from "./theme";
 
 function SetupNeeded() {
   return (
-    <div style={{ minHeight: "100vh", background: C.paper, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter, sans-serif", padding: 16 }}>
+    <div style={{ minHeight: "100vh", background: C.paper, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Plus Jakarta Sans', sans-serif", padding: 16 }}>
       <div style={{ width: "100%", maxWidth: 460, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, padding: 28 }}>
         <div style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.amber, textTransform: "uppercase", marginBottom: 6 }}>
           Setup belum selesai
@@ -50,7 +50,7 @@ export default function App() {
           border: `3px solid ${C.line}`, borderTopColor: C.accent,
           animation: "bria-spin 0.7s linear infinite",
         }} />
-        <span style={{ fontSize: 13, color: C.steel, fontFamily: "Inter, sans-serif" }}>Memuat...</span>
+        <span style={{ fontSize: 13, color: C.steel, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Memuat...</span>
       </div>
     );
   }

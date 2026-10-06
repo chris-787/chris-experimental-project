@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { C } from "../../theme";
 import { Ic } from "../ui";
+import { measureTextWidth } from "../../lib/helpers";
 import ThemeToggle from "../ThemeToggle";
 import { useBoard } from "./BoardContext";
 
@@ -8,7 +10,14 @@ import { useBoard } from "./BoardContext";
 const TITLES = { kerja: "Main Mode", data: "Data Mode", dashboard: "Dashboard", pengaturan: "Settings" };
 
 export default function ClusterHeader() {
-  const { SmallSpinner, activeCluster, calibrating, canEdit, currentClusterId, dirty, mode, reloadAfterRemoteUpdate, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setClusters, setTableSearchQuery, tableSearchQuery, updateClusterMeta } = useBoard();
+  const { SmallSpinner, activeCluster, calibrating, canEdit, currentClusterId, dirty, goMode, houses, mode, setSelectedId, reloadAfterRemoteUpdate, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setClusters, setTableSearchQuery, tableSearchQuery, updateClusterMeta } = useBoard();
+  const textW = (t, ph) => Math.ceil(measureTextWidth(t || ph || "", "13px 'Plus Jakarta Sans', sans-serif")) + 8;
+  const q = tableSearchQuery.trim().toLowerCase();
+  const results = useMemo(
+    () => (q ? houses.filter((h) => `${h.blok}-${h.noKavling}`.toLowerCase().includes(q)).slice(0, 8) : []),
+    [houses, q]
+  );
+  const pick = (id) => { setSelectedId(id); setTableSearchQuery(""); if (mode !== "kerja") goMode("kerja"); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const ghost = { background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 13, color: C.steel };
   return (
     <>
@@ -20,7 +29,7 @@ export default function ClusterHeader() {
           <div className="flex items-center flex-wrap" style={{ marginTop: 2 }}>
             <input
               value={activeCluster.name}
-              size={Math.max(activeCluster.name.length, 4)}
+              
               readOnly={!canEdit}
               onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, name: e.target.value } : c)))}
               onBlur={(e) => updateClusterMeta(currentClusterId, { name: e.target.value })}
@@ -28,12 +37,12 @@ export default function ClusterHeader() {
               className="editable-heading"
               aria-label="Nama cluster"
               title={canEdit ? "Klik untuk edit nama cluster" : undefined}
-              style={ghost}
+              style={{ ...ghost, width: textW(activeCluster.name) }}
             />
             <span style={{ color: C.steel, fontSize: 13, margin: "0 6px" }}>·</span>
             <input
               value={activeCluster.subtitle}
-              size={Math.max((activeCluster.subtitle || "").length, 6)}
+              
               readOnly={!canEdit}
               placeholder="Lokasi / catatan"
               onChange={(e) => setClusters((prev) => prev.map((c) => (c.id === currentClusterId ? { ...c, subtitle: e.target.value } : c)))}
@@ -42,24 +51,36 @@ export default function ClusterHeader() {
               className="editable-heading"
               aria-label="Lokasi cluster"
               title={canEdit ? "Klik untuk edit lokasi" : undefined}
-              style={ghost}
+              style={{ ...ghost, width: textW(activeCluster.subtitle, "Lokasi / catatan") }}
             />
           </div>
         </div>
 
-        {(mode === "kerja" || mode === "data") && (
-          <label className="flex items-center gap-2" style={{ background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: "0 14px", height: 40, flex: "0 1 300px", minWidth: 180, color: C.steel }}>
+        <div style={{ position: "relative", flex: "0 1 300px", minWidth: 180 }}>
+          <label className="flex items-center gap-2 search-pill" style={{ background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: "0 14px", height: 40, color: C.steel }}>
             <Ic name="search" size={16} />
             <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>Cari kavling</span>
             <input
               value={tableSearchQuery}
               onChange={(e) => setTableSearchQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && mode !== "data" && results[0]) pick(results[0].id); if (e.key === "Escape") setTableSearchQuery(""); }}
               placeholder="Cari kavling, mis. RB/D-06"
-              className="kavling-search-input"
               style={{ border: "none", outline: "none", background: "transparent", fontFamily: "inherit", fontSize: 13, color: C.ink, width: "100%", minWidth: 0 }}
             />
           </label>
-        )}
+          {q && mode !== "data" && (
+            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 40, marginTop: 6, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 14, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", overflow: "hidden" }}>
+              {results.length === 0 ? (
+                <div className="text-xs p-2.5" style={{ color: C.steel }}>Tidak ditemukan.</div>
+              ) : results.map((h) => (
+                <button key={h.id} onClick={() => pick(h.id)} className="flex items-center justify-between w-full text-xs" style={{ padding: "8px 12px", border: "none", borderBottom: `1px solid ${C.line}`, background: "transparent", cursor: "pointer", textAlign: "left", color: C.ink }}>
+                  <span style={{ fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace" }}>{h.blok}-{h.noKavling}</span>
+                  <span style={{ color: C.steel }}>{h.tipe}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-2">
           {saving && <SmallSpinner />}

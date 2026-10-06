@@ -42,7 +42,7 @@ export default function Login() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         padding: 16,
       }}
     >
@@ -71,7 +71,7 @@ export default function Login() {
 
         <div style={{ borderTop: `1px solid ${C.line}`, marginBottom: 14 }} />
         <h1 style={{ fontSize: 22, fontWeight: 700, color: C.ink, margin: "0 0 4px" }}>
-          Cluster Bintaro Jaya [Experimental Project]
+          Chris Project [Experimental Project]
         </h1>
         <p style={{ fontSize: 13, color: C.steel, margin: "0 0 20px" }}>
           Masukkan username dan password Anda untuk melanjutkan.

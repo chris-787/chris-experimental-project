@@ -20,8 +20,8 @@ export default function Sidebar() {
       <div className="side-extra flex items-center gap-2.5" style={{ width: "100%", justifyContent: sidebarCollapsed ? "center" : "flex-start", flexDirection: sidebarCollapsed ? "column" : "row" }}>
         <div style={{ width: 32, height: 32, borderRadius: 9, background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 }}>CB</div>
         <div className="side-hide-collapsed" style={{ lineHeight: 1.15, flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: C.ink }}>Cluster Bintaro</div>
-          <div style={{ fontSize: 12, color: C.steel }}>Jaya</div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: C.ink }}>Chris Project</div>
+          <div style={{ fontSize: 12, color: C.steel }}>Version 2.0</div>
         </div>
         <button
           onClick={toggleSidebar}

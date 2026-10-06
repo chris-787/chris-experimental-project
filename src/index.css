@@ -67,6 +67,7 @@ html, body, #root {
 
 body {
   margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   background: var(--paper);
   transition: background-color .15s ease;
 }
@@ -138,3 +139,9 @@ body {
 /* Bentuk kartu mengikuti mockup: sudut lebih bulat, garis tipis */
 .rounded-xl { border-radius: 16px; }
 .rounded-2xl { border-radius: 18px; }
+
+button, input, select, textarea { font-family: inherit; }
+.col-head { font-size: 11px; letter-spacing: .5px; text-transform: uppercase; color: var(--steel); font-weight: 600; margin-bottom: 10px; }
+/* Kotak cari: bingkai ikut membulat saat fokus (bukan kotak di dalam pil) */
+.search-pill:focus-within { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(201, 74, 28, 0.15); }
+.search-pill input:focus { outline: none; box-shadow: none; }

@@ -6,7 +6,7 @@ import { rupiah } from "../../lib/helpers";
 import { useBoard } from "./BoardContext";
 
 export default function DataTable() {
-  const { tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableSearchQuery, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableSearchQuery, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
+  const { tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
   return (
     <>
         <div className="rounded-xl p-2.5 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
@@ -127,14 +127,7 @@ export default function DataTable() {
               </div>
             </div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <input
-                value={tableSearchQuery}
-                onChange={(e) => setTableSearchQuery(e.target.value)}
-                placeholder="Cari nomor blok"
-                className="text-xs px-2 py-1 rounded-lg border"
-                style={{ borderColor: C.line, color: C.ink, minWidth: 180 }}
-              />
-              <select value={tableStatusFilter} onChange={(e) => setTableStatusFilter(e.target.value)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
+              <select value={tableStatusFilter} onChange={(e) => setTableStatusFilter(e.target.value)} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink }}>
                 <option value="semua">Semua Status</option>
                 {statusFields.map((s) => (
                   <React.Fragment key={s.key}>
@@ -143,12 +136,12 @@ export default function DataTable() {
                   </React.Fragment>
                 ))}
               </select>
-              <button onClick={exportExcel} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.green, background: C.panel }}>Export Excel</button>
-              <label className="text-xs px-2 py-1 rounded-lg border cursor-pointer" style={{ borderColor: C.line, color: C.accent, background: C.panel }}>
+              <button onClick={exportExcel} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.green, background: C.panel }}>Export Excel</button>
+              <label className="text-xs px-3 py-1.5 rounded-full border cursor-pointer" style={{ borderColor: C.line, color: C.accent, background: C.panel }}>
                 Import Excel/CSV
                 <input type="file" accept=".xlsx,.xls,.csv" onChange={importExcel} style={{ display: "none" }} />
               </label>
-              <button onClick={resetColWidths} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.steel, background: C.panel }}>Reset</button>
+              <button onClick={resetColWidths} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.steel, background: C.panel }}>Reset</button>
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setTableZoom((z) => Math.max(50, z - 10))} className="w-7 h-7 rounded-lg text-sm" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
                 <div className="flex items-center h-7 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.panel }}>
@@ -171,7 +164,7 @@ export default function DataTable() {
                 ))}
               </div>
               {tableView === "lengkap" && <div style={{ position: "relative" }}>
-                <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Kolom</button>
+                <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Kolom</button>
                 {showColMenu && (
                   <div style={{ position: "absolute", right: 0, top: "110%", zIndex: 20, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 180, maxHeight: 260, overflowY: "auto" }}>
                     <div className="text-xs font-semibold mb-1" style={{ color: C.ink }}>Tampilkan kolom</div>
@@ -187,7 +180,7 @@ export default function DataTable() {
             </div>
           </div>
 
-          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 750, overflowY: "auto", zoom: tableZoom / 100 }}>
+          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
             <table className="dataTbl w-full" style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
                 {columns.map((c) => (
@@ -197,7 +190,7 @@ export default function DataTable() {
               <thead>
                 <tr>
                   {columns.map((c) => (
-                    <th key={c.key} className={FROZEN_KEYS.includes(c.key) ? "frz" : undefined} style={{ position: "sticky", top: 0, ...(FROZEN_KEYS.includes(c.key) ? { left: frozenLeft[c.key], boxShadow: c.key === "kavling" ? `inset -1px 0 0 ${C.line}` : undefined } : {}), borderRight: (c.key !== "aksi" && c.key !== "select") ? `1px solid ${C.line}` : "none" }}>
+                    <th key={c.key} className={[FROZEN_KEYS.includes(c.key) ? "frz" : "", statusFields.some((st) => st.key === c.key) ? "th-center" : ""].join(" ").trim() || undefined} style={{ position: "sticky", top: 0, ...(FROZEN_KEYS.includes(c.key) ? { left: frozenLeft[c.key], boxShadow: c.key === "kavling" ? `inset -1px 0 0 ${C.line}` : undefined } : {}), borderRight: (c.key !== "aksi" && c.key !== "select") ? `1px solid ${C.line}` : "none" }}>
                       {c.key === "no" || c.key === "aksi" ? c.label : c.key === "select" ? (
                         <input
                           type="checkbox"
@@ -274,14 +267,14 @@ export default function DataTable() {
                     {statusFields.map((s) => (
                       <td key={s.key} className={s.hasDetail ? "" : "text-center"} style={s.hasDetail ? { minWidth: 170 } : undefined}>
                         <div className="text-center">
-                          <input type="checkbox" checked={!!h.status[s.key]} onChange={(e) => { updateStatus(h.id, s.key, e.target.checked); if (s.hasDetail && e.target.checked) setDetailEditingKey(`${h.id}:${s.key}`); }} />
+                          <input type="checkbox" className="status-dot" aria-label={s.label} checked={!!h.status[s.key]} onChange={(e) => { updateStatus(h.id, s.key, e.target.checked); if (s.hasDetail && e.target.checked) setDetailEditingKey(`${h.id}:${s.key}`); }} />
                         </div>
                         {s.hasDetail && h.status[s.key] && (
                           detailEditingKey === `${h.id}:${s.key}` ? (
                             <div className="flex items-center gap-1" style={{ marginTop: 4 }} onClick={(e) => e.stopPropagation()}>
                               <input
                                 ref={focusWhen(true, "table")}
-                                style={{ ...cellInput, fontFamily: "Inter, sans-serif" }}
+                                style={{ ...cellInput, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                                 value={getDetail(h, s.key)}
                                 onChange={(e) => setDetail(h.id, s.key, e.target.value)}
                                 onKeyDown={(e) => { if (e.key === "Enter") setDetailEditingKey(null); }}

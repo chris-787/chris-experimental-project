@@ -32,10 +32,11 @@ export default function HomeScreen() {
                 size={Math.max(appTitle.length, 10)}
                 style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 15, fontWeight: 700, maxWidth: "100%", display: "block" }}
               />
-              <div style={{ fontSize: 12, color: C.steel }}>Papan Status Tender</div>
+              <div style={{ fontSize: 12, color: C.steel }}>Created by Aditya Christiandi Sinulingga. Ver 2.0</div>
             </div>
           </div>
-          <label className="flex items-center gap-2" style={{ background: C.paper, border: `1px solid ${C.line}`, borderRadius: 999, padding: "0 14px", height: 40, flex: "0 1 380px", minWidth: 200, color: C.steel }}>
+          <div style={{ position: "relative", flex: "0 1 380px", minWidth: 200 }}>
+          <label className="flex items-center gap-2 search-pill" style={{ background: C.paper, border: `1px solid ${C.line}`, borderRadius: 999, padding: "0 14px", height: 40, color: C.steel }}>
             <Ic name="search" size={16} />
             <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>Cari kavling di semua cluster</span>
             <input
@@ -46,18 +47,8 @@ export default function HomeScreen() {
               style={{ border: "none", outline: "none", background: "transparent", fontFamily: "inherit", fontSize: 13, color: C.ink, width: "100%", minWidth: 0 }}
             />
           </label>
-          <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
-            {homeSaving && <SmallSpinner />}
-            {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
-            {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
-            {canEdit && homeDirty && <button onClick={saveHomeChanges} style={{ ...pillBtn, height: 38, background: C.amber, color: "#fff", border: `1px solid ${C.amber}` }}>Simpan Perubahan</button>}
-            {!canEdit && <span style={{ height: 38, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 13, background: C.pillFill, color: C.steel }}>View Mode</span>}
-            <ThemeToggle />
-            <div title={displayName} style={{ width: 38, height: 38, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
-            <button onClick={handleLogoutClick} style={pillBtn}>Log Out</button>
-          </div>
             {kavlingSearch.trim() && (
-              <div className="rounded-lg" style={{ position: "absolute", top: "100%", right: 0, width: "min(460px, 100%)", zIndex: 40, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", marginTop: 6, border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
+              <div className="rounded-lg" style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 40, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", marginTop: 6, border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
                 <div style={{ maxHeight: 320, overflowY: "auto" }}>
                   {kavlingSearchResults.length === 0 ? (
                     <div className="text-xs p-2.5" style={{ color: C.steel }}>Tidak ditemukan.</div>
@@ -80,6 +71,18 @@ export default function HomeScreen() {
                 )}
               </div>
             )}
+          </div>
+
+          <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
+            {homeSaving && <SmallSpinner />}
+            {!homeSaving && homeDirty && <span className="text-xs" style={{ color: C.amber }}>Ada perubahan belum disimpan</span>}
+            {!homeSaving && homeSavedToast && <span className="text-xs" style={{ color: C.green }}>Tersimpan ✓</span>}
+            {canEdit && homeDirty && <button onClick={saveHomeChanges} style={{ ...pillBtn, height: 38, background: C.amber, color: "#fff", border: `1px solid ${C.amber}` }}>Simpan Perubahan</button>}
+            {!canEdit && <span style={{ height: 38, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 13, background: C.pillFill, color: C.steel }}>View Mode</span>}
+            <ThemeToggle />
+            <div title={displayName} style={{ width: 38, height: 38, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
+            <button onClick={handleLogoutClick} style={pillBtn}>Log Out</button>
+          </div>
         </div>
       </div>
 
@@ -89,7 +92,6 @@ export default function HomeScreen() {
           <div>
             <div style={{ fontSize: 13, color: C.steel }}>{todayLabel}</div>
             <h1 style={{ margin: "2px 0 0", fontSize: 26, fontWeight: 700, letterSpacing: "-0.4px", color: C.ink }}><GreetingText name={displayName} /></h1>
-            <div style={{ fontSize: 11, color: C.faint, marginTop: 2 }}>Created by Aditya Christiandi Sinulingga. Ver 2.0</div>
           </div>
           {clusters.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">

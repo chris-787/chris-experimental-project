@@ -7,7 +7,7 @@ const Box = ({ h, w = "100%", style }) => <div className="sk" style={{ height: h
 
 export default function LoadingSkeleton({ kind, title }) {
   return (
-    <div style={{ background: C.paper, minHeight: "100vh", fontFamily: "Inter, sans-serif" }} className="p-4" role="status" aria-label="Memuat data">
+    <div style={{ background: C.paper, minHeight: "100vh", fontFamily: "'Plus Jakarta Sans', sans-serif" }} className="p-4" role="status" aria-label="Memuat data">
       {kind === "cluster" ? (
         <>
           <div className="flex items-center gap-2.5 mb-4">
