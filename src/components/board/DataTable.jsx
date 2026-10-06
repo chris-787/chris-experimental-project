@@ -5,6 +5,7 @@ import React from "react";
 import { rupiah } from "../../lib/helpers";
 import StatusCell from "./StatusCell";
 import { statusColor } from "../../lib/palette";
+import { SlideInd, useSlideIndicator } from "../slide";
 import { useBoard } from "./BoardContext";
 
 // Batas jumlah baris sebelum tabel memakai gambar-sebagian (virtual). 60 baris ke bawah digambar semua.
@@ -14,6 +15,10 @@ const VIRTUAL_OVERSCAN = 12;
 export default function DataTable() {
   const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, tipeColor, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
   const [fillKey, setFillKey] = React.useState(null);
+  const [segRef, segBox] = useSlideIndicator([tableView]);
+  // Baris masuk bergantian: kelas animasi dipasang sesaat setelah tabel tampil (agar animasi CSS benar-benar mulai).
+  const [rowsIn, setRowsIn] = React.useState(false);
+  React.useEffect(() => { const id = setTimeout(() => setRowsIn(true), 60); return () => clearTimeout(id); }, []);
   const fillOk = tableView === "ringkas" && canEdit && !hiddenCols.includes("statusGab");
   React.useEffect(() => { if (!fillOk) setFillKey(null); }, [fillOk]);
   React.useEffect(() => {
@@ -208,10 +213,11 @@ export default function DataTable() {
                 </div>
                 <button onClick={() => setTableZoom((z) => Math.min(150, z + 10))} style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>+</button>
               </div>
-              <div className="flex items-center rounded-lg overflow-hidden" style={{ border: `1px solid ${C.line}` }} role="group" aria-label="Tampilan kolom">
+              <div ref={segRef} className="flex items-center rounded-lg overflow-hidden slide-host" style={{ border: `1px solid ${C.line}`, background: C.panel }} role="group" aria-label="Tampilan kolom">
+                <SlideInd box={segBox} radius={0} />
                 {[["ringkas", "Ringkas"], ["lengkap", "Lengkap"]].map(([v, label]) => (
-                  <button key={v} onClick={() => { setTableView(v); setShowColMenu(false); }} className="text-xs px-2 py-1" aria-pressed={tableView === v}
-                    style={tableView === v ? { background: C.select, color: C.selectInk } : { background: C.panel, color: C.steel }}>{label}</button>
+                  <button key={v} data-slide-active={tableView === v} onClick={() => { setTableView(v); setShowColMenu(false); }} className="text-xs px-2 py-1" aria-pressed={tableView === v}
+                    style={{ background: "transparent", color: tableView === v ? C.selectInk : C.steel }}>{label}</button>
                 ))}
               </div>
               <div style={{ position: "relative" }}>
@@ -309,7 +315,7 @@ export default function DataTable() {
                   <tr aria-hidden="true"><td colSpan={17 + statusFields.length} style={{ height: vStart * rowH, padding: 0, border: 0 }} /></tr>
                 )}
                 {pageRows.slice(vStart, vEnd).map((h, k) => { const i = vStart + k; return (
-                  <tr key={h.id} data-row="1" ref={(el) => (rowRefs.current[h.id] = el)} style={{ background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
+                  <tr key={h.id} data-row="1" className={!virtual && i < 24 ? (rowsIn ? "row-in" : "row-pre") : undefined} ref={(el) => (rowRefs.current[h.id] = el)} style={{ "--i": i, background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
                     <td className="text-center frz" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", left: frozenLeft.no, background: rowBg(h, i) }} onClick={(e) => e.stopPropagation()}>
                       {(pageSize === "all" ? 0 : (currentPage - 1) * pageSize) + i + 1}
                     </td>

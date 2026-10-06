@@ -135,7 +135,7 @@ export default function MapPanel() {
             <div ref={imgWrapRef} style={{ position: "relative", display: "grid", width: `${zoom}%`, cursor: calibrating ? "crosshair" : "default" }} onClick={handleImageClick}>
               <img ref={imgRef} src={siteImage} alt="Site plan" style={{ gridArea: "1 / 1", width: "100%", display: "block", userSelect: "none" }} draggable={false} />
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ gridArea: "1 / 1", width: "100%", height: "100%" }}>
-                {houses.filter((h) => h.id !== editingShapeId).map((h) => (
+                {houses.filter((h) => h.id !== editingShapeId).map((h, hi) => (
                   <React.Fragment key={h.id}>
                     {selectedId === h.id && (
                       <polygon
@@ -144,11 +144,11 @@ export default function MapPanel() {
                         vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }}
                       />
                     )}
-                    <polygon points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
+                    <polygon className="poly-in" points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
                       fill={polyColor(h)} fillOpacity={opacity / 100}
                       stroke="#00000066" strokeWidth="0.2"
                       vectorEffect="non-scaling-stroke"
-                      style={{ pointerEvents: polygonsClickable ? "auto" : "none", cursor: "pointer" }}
+                      style={{ pointerEvents: polygonsClickable ? "auto" : "none", cursor: "pointer", animationDelay: `${Math.max(0, blocks.findIndex((b) => b.name === h.blok)) * 110 + (hi % 9) * 30}ms` }}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (calibrating) { setActionMenuId(h.id); setSelectedId(h.id); }

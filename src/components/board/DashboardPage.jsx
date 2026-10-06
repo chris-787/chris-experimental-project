@@ -4,6 +4,7 @@ import { C } from "../../theme";
 import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid, rupiah } from "../../lib/helpers";
 import { statusColor } from "../../lib/palette";
 import KpiStrip, { KPI_COLORS, KpiBox } from "./KpiStrip";
+import { SlideInd, useSlideIndicator } from "../slide";
 import { useBoard } from "./BoardContext";
 
 const TABS = [
@@ -352,6 +353,7 @@ function TindakLanjut() {
 export default function DashboardPage() {
   const { dashTab, setDashTab, printReportPDF, setShowSimulasi } = useBoard();
   const tab = TABS.some((t) => t.key === dashTab) ? dashTab : "ringkasan";
+  const [slideRef, slideBox] = useSlideIndicator([tab]);
   return (
     <div className="viz">
       <div className="flex items-center gap-2 flex-wrap mb-3">
@@ -361,14 +363,16 @@ export default function DashboardPage() {
         <button onClick={() => setShowSimulasi(true)} style={{ ...pillBtn, background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}><Ic name="calculator" size={15} /> Simulasi Harga</button>
         <button onClick={printReportPDF} style={{ ...pillBtn, background: C.accent, color: "#fff", border: "1px solid transparent" }}><Ic name="printer" size={15} /> Print Laporan</button>
       </div>
-      <div role="tablist" aria-label="Bagian dashboard" className="dash-tabs mb-3" style={{ display: "flex", gap: 4, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: 4, width: "fit-content", maxWidth: "100%", overflowX: "auto" }}>
+      <div ref={slideRef} role="tablist" aria-label="Bagian dashboard" className="dash-tabs mb-3 slide-host" style={{ display: "flex", gap: 4, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: 4, width: "fit-content", maxWidth: "100%", overflowX: "auto" }}>
+        <SlideInd box={slideBox} />
         {TABS.map((t) => (
           <button
             key={t.key}
+            data-slide-active={tab === t.key}
             role="tab"
             aria-selected={tab === t.key}
             onClick={() => setDashTab(t.key)}
-            style={{ height: 32, padding: "0 16px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", background: tab === t.key ? C.select : "transparent", color: tab === t.key ? C.selectInk : C.steel }}
+            style={{ height: 32, padding: "0 16px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", background: "transparent", color: tab === t.key ? C.selectInk : C.steel }}
           >{t.label}</button>
         ))}
       </div>

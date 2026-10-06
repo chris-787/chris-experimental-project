@@ -2,10 +2,12 @@ import { C } from "../../theme";
 import { BrandMark, ClockText, GreetingText, Ic, IconChip, MONO, Pill, ProgressBar, tint } from "../../components/ui";
 import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid } from "../../lib/helpers";
 import ThemeToggle from "../../components/ThemeToggle";
+import { SlideInd, useSlideIndicator } from "../slide";
 import { useBoard } from "./BoardContext";
 
 export default function HomeScreen() {
   const { KAVLING_SEARCH_LIMIT, SmallSpinner, addCluster, appTitle, applyRestoreAll, calendarMonth, calendarSelectedDate, canEdit, clusterSearch, clusterStats, clusters, confirmDeleteClusterId, deleteCluster, displayName, exportAllBackup, exportAllExcel, exportingBackupAll, exportingExcelAll, followUpView, followUpsByDate, globalHousesIndex, handleLogoutClick, handleRestoreAllFile, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, newClusterName, newClusterSubtitle, openCluster, openKavlingFromSearch, pendingRestoreAll, recoverLegacyCluster, restoreAllError, restoreAllResult, restoringAll, saveAppTitle, saveHomeChanges, setAppTitle, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setConfirmDeleteClusterId, setFollowUpView, setHomeDirty, setKavlingSearch, setNewClusterName, setNewClusterSubtitle, setPendingRestoreAll, setRestoreAllResult, setShowArchivedClusters, setShowWhatsNew, showArchivedClusters, toggleArchiveCluster, togglePinCluster, updateClusterMeta } = useBoard();
+  const [fuRef, fuBox] = useSlideIndicator([followUpView, homeAllFollowUpList.length > 0]);
   const totalSumHarga = Object.values(clusterStats).reduce((s, x) => s + (x.sumHarga || 0), 0);
   const totalSumHpp = Object.values(clusterStats).reduce((s, x) => s + (x.sumHpp || 0), 0);
   const overallMarginPct = totalSumHarga ? ((totalSumHarga - totalSumHpp) / totalSumHarga) * 100 : 0;
@@ -310,9 +312,10 @@ export default function HomeScreen() {
                   <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, lineHeight: 1 }}>Perlu Ditindaklanjuti</span>
                   <Pill color={C.amber}>{homeFollowUpList.length}</Pill>
                 </div>
-                {homeAllFollowUpList.length > 0 && <div className="flex" style={{ background: C.pillFill, borderRadius: 10, padding: 3 }}>
-                  <button onClick={() => setFollowUpView("list")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "list" ? C.select : "transparent", color: followUpView === "list" ? C.selectInk : C.steel, border: "none" }}>Daftar</button>
-                  <button onClick={() => setFollowUpView("kalender")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "kalender" ? C.select : "transparent", color: followUpView === "kalender" ? C.selectInk : C.steel, border: "none" }}>Kalender</button>
+                {homeAllFollowUpList.length > 0 && <div ref={fuRef} className="flex slide-host" style={{ background: C.pillFill, borderRadius: 10, padding: 3 }}>
+                  <SlideInd box={fuBox} radius={8} />
+                  <button data-slide-active={followUpView === "list"} onClick={() => setFollowUpView("list")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: "transparent", color: followUpView === "list" ? C.selectInk : C.steel, border: "none" }}>Daftar</button>
+                  <button data-slide-active={followUpView === "kalender"} onClick={() => setFollowUpView("kalender")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: "transparent", color: followUpView === "kalender" ? C.selectInk : C.steel, border: "none" }}>Kalender</button>
                 </div>}
               </div>
 
