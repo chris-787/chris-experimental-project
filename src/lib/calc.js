@@ -35,6 +35,7 @@ export function makeCalc({ tipeOptions, blocks, houses, statusFields }) {
   function getSortValue(h, key) {
     if (statusFields.some((s) => s.key === key)) return h.status[key] ? 1 : 0;
     switch (key) {
+      case "statusGab": return statusFields.filter((f) => h.status[f.key]).length;
       case "kavling": return `${h.blok}-${String(h.noKavling).padStart(4, "0")}`;
       case "tipe": return h.tipe || "";
       case "kategori": return h.kategori || "";

@@ -3,10 +3,21 @@ import { Chip, Ic, cellInput, focusWhen, tint } from "../../components/ui";
 import { MONTHS } from "../../lib/constants";
 import React from "react";
 import { rupiah } from "../../lib/helpers";
+import StatusCell from "./StatusCell";
+import { statusColor } from "../../lib/palette";
 import { useBoard } from "./BoardContext";
 
 export default function DataTable() {
-  const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
+  const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
+  const [fillKey, setFillKey] = React.useState(null);
+  const fillOk = tableView === "ringkas" && canEdit && !hiddenCols.includes("statusGab");
+  React.useEffect(() => { if (!fillOk) setFillKey(null); }, [fillOk]);
+  React.useEffect(() => {
+    if (!fillKey) return undefined;
+    const onKey = (e) => { if (e.key === "Escape") setFillKey(null); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [fillKey]);
   return (
     <>
         <div className="rounded-xl p-2.5 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
@@ -168,10 +179,10 @@ export default function DataTable() {
                 {showColMenu && (
                   <div style={{ position: "absolute", right: 0, top: "110%", zIndex: 20, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 180, maxHeight: "min(420px, 62vh)", overflowY: "auto" }}>
                     <div className="text-xs font-semibold mb-1" style={{ color: C.ink }}>Tampilkan kolom</div>
-                    {columns.filter((c) => c.key !== "no" && c.key !== "kavling" && c.key !== "tipe" && c.key !== "select").map((c) => (
+                    {columns.filter((c) => c.key !== "no" && c.key !== "kavling" && c.key !== "tipe" && c.key !== "select" && (c.key !== "statusGab" || tableView === "ringkas")).map((c) => (
                       <label key={c.key} className="flex items-center gap-2 text-xs py-1" style={{ color: C.ink }}>
                         <input type="checkbox" checked={!hiddenCols.includes(c.key)} onChange={() => toggleColHidden(c.key)} />
-                        {c.key === "aksi" ? "Aksi (Duplikat, Hapus)" : c.label}
+                        {c.key === "aksi" ? "Aksi (Duplikat, Hapus)" : c.key === "statusGab" ? "Status (gabungan)" : c.label}
                       </label>
                     ))}
                   </div>
@@ -180,6 +191,28 @@ export default function DataTable() {
             </div>
           </div>
 
+          {fillOk && (
+            <div className="flex items-center gap-1.5 flex-wrap mb-2">
+              <span className="text-xs font-semibold" style={{ color: C.ink }}>Isi cepat:</span>
+              {statusFields.map((s, i) => {
+                const col = statusColor(i);
+                const on = fillKey === s.key;
+                return (
+                  <button
+                    key={s.key}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => setFillKey(on ? null : s.key)}
+                    className="text-xs px-2.5 py-1 rounded-full"
+                    style={on ? { background: col, border: `1px solid ${col}`, color: "#fff", fontWeight: 600 } : { background: C.panel, border: `1px solid ${C.line}`, color: C.steel }}
+                  >{s.label}</button>
+                );
+              })}
+              <span className="text-xs" style={{ color: C.steel }}>
+                {fillKey ? `Klik sel Status di baris mana pun untuk menyalakan atau mematikan ${(statusFields.find((s) => s.key === fillKey) || {}).label}. Klik tombolnya lagi atau tekan Esc untuk berhenti.` : "Pilih satu status, lalu klik sel Status di tiap baris."}
+              </span>
+            </div>
+          )}
           <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
             {/* Kolom yang disembunyikan: cell-nya ikut disembunyikan (display:none), kalau tidak isinya
                 (lingkaran status) meluap dan menimpa kolom di sebelahnya */}
@@ -224,7 +257,7 @@ export default function DataTable() {
               </thead>
               <tbody>
                 {pageRows.length === 0 && (
-                  <tr><td colSpan={16 + statusFields.length} className="text-center py-3" style={{ color: C.steel }}>
+                  <tr><td colSpan={17 + statusFields.length} className="text-center py-3" style={{ color: C.steel }}>
                     {houses.length === 0
                       ? "Belum ada data. Tambahkan lewat tombol Edit Site Plan di Main Mode."
                       : totalRows === 0
@@ -233,14 +266,14 @@ export default function DataTable() {
                   </td></tr>
                 )}
                 {pageRows.map((h, i) => (
-                  <tr key={h.id} ref={(el) => (rowRefs.current[h.id] = el)} style={{ background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
-                    <td className="text-center frz" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", left: frozenLeft.no, background: rowBg(h) }} onClick={(e) => e.stopPropagation()}>
+                  <tr key={h.id} ref={(el) => (rowRefs.current[h.id] = el)} style={{ background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
+                    <td className="text-center frz" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", left: frozenLeft.no, background: rowBg(h, i) }} onClick={(e) => e.stopPropagation()}>
                       {(pageSize === "all" ? 0 : (currentPage - 1) * pageSize) + i + 1}
                     </td>
-                    <td className="text-center frz" style={{ left: frozenLeft.select, background: rowBg(h) }} onClick={(e) => e.stopPropagation()}>
+                    <td className="text-center frz" style={{ left: frozenLeft.select, background: rowBg(h, i) }} onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={selectedRows.includes(h.id)} onChange={() => toggleRowSelect(h.id)} />
                     </td>
-                    <td className="frz" style={{ fontFamily: "IBM Plex Mono, monospace", overflow: "hidden", left: frozenLeft.kavling, background: rowBg(h), boxShadow: `inset -1px 0 0 ${C.line}` }} onClick={(e) => { if (calibrating) { e.stopPropagation(); setSelectedId(h.id); } }}>
+                    <td className="frz" style={{ fontFamily: "IBM Plex Mono, monospace", overflow: "hidden", left: frozenLeft.kavling, background: rowBg(h, i), boxShadow: `inset -1px 0 0 ${C.line}` }} onClick={(e) => { if (calibrating) { e.stopPropagation(); setSelectedId(h.id); } }}>
                       <div className="flex items-center justify-center gap-1">
                         {isDuplicateKavling(h) && <span title="Nomor kavling ini duplikat di bloknya" style={{ width: 7, height: 7, borderRadius: "50%", background: C.red, flexShrink: 0 }} />}
                         {!isDuplicateKavling(h) && isIncomplete(h) && <span title="Data harga/luas bangunan belum lengkap" style={{ width: 7, height: 7, borderRadius: "50%", background: C.gold, flexShrink: 0 }} />}
@@ -269,33 +302,37 @@ export default function DataTable() {
                         {kategoriOptions.map((k) => <option key={k} value={k}>{k}</option>)}
                       </select>
                     </td>
+                    <td>
+                      <StatusCell h={h} fillKey={fillKey} />
+                    </td>
                     {statusFields.map((s) => (
-                      <td key={s.key} className={s.hasDetail ? "" : "text-center"} style={s.hasDetail ? { minWidth: 170 } : undefined}>
-                        <div className="text-center">
-                          <input type="checkbox" className="status-dot" aria-label={s.label} checked={!!h.status[s.key]} onChange={(e) => { updateStatus(h.id, s.key, e.target.checked); if (s.hasDetail && e.target.checked) setDetailEditingKey(`${h.id}:${s.key}`); }} />
+                      <td key={s.key} className={s.hasDetail ? "" : "text-center"}>
+                        <div className="flex items-center gap-1.5" style={{ justifyContent: s.hasDetail ? "flex-start" : "center", minWidth: 0 }}>
+                          <input type="checkbox" className="status-dot" aria-label={s.label} checked={!!h.status[s.key]} onChange={(e) => { updateStatus(h.id, s.key, e.target.checked); if (s.hasDetail && e.target.checked) setDetailEditingKey(`${h.id}:${s.key}`); }} style={{ flexShrink: 0 }} />
+                          {s.hasDetail && h.status[s.key] && (
+                            detailEditingKey === `${h.id}:${s.key}` ? (
+                              <div className="flex items-center gap-1" style={{ flex: 1, minWidth: 0 }} onClick={(e) => e.stopPropagation()}>
+                                <input
+                                  ref={focusWhen(true, "table")}
+                                  style={{ ...cellInput, minWidth: 60, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                                  value={getDetail(h, s.key)}
+                                  onChange={(e) => setDetail(h.id, s.key, e.target.value)}
+                                  onKeyDown={(e) => { if (e.key === "Enter") setDetailEditingKey(null); }}
+                                  placeholder="mis. keterangan"
+                                />
+                                <button onClick={() => setDetailEditingKey(null)} style={{ fontSize: 11, color: "#fff", background: C.accent, borderRadius: 8, padding: "0 6px", height: 20, flexShrink: 0 }}>✓</button>
+                              </div>
+                            ) : (
+                              <div
+                                onClick={(e) => { e.stopPropagation(); setDetailEditingKey(`${h.id}:${s.key}`); }}
+                                title={getDetail(h, s.key) || "Klik untuk isi"}
+                                style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 11, color: getDetail(h, s.key) ? C.ink : C.steel, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, lineHeight: "18px" }}
+                              >
+                                {getDetail(h, s.key) || "Klik untuk isi"}
+                              </div>
+                            )
+                          )}
                         </div>
-                        {s.hasDetail && h.status[s.key] && (
-                          detailEditingKey === `${h.id}:${s.key}` ? (
-                            <div className="flex items-center gap-1" style={{ marginTop: 4 }} onClick={(e) => e.stopPropagation()}>
-                              <input
-                                ref={focusWhen(true, "table")}
-                                style={{ ...cellInput, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                                value={getDetail(h, s.key)}
-                                onChange={(e) => setDetail(h.id, s.key, e.target.value)}
-                                onKeyDown={(e) => { if (e.key === "Enter") setDetailEditingKey(null); }}
-                                placeholder="mis. keterangan"
-                              />
-                              <button onClick={() => setDetailEditingKey(null)} style={{ fontSize: 11, color: "#fff", background: C.accent, borderRadius: 8, padding: "2px 6px", flexShrink: 0 }}>✓</button>
-                            </div>
-                          ) : (
-                            <div
-                              onClick={(e) => { e.stopPropagation(); setDetailEditingKey(`${h.id}:${s.key}`); }}
-                              style={{ marginTop: 4, fontSize: 10, color: getDetail(h, s.key) ? C.ink : C.steel, cursor: "pointer", padding: "3px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, minHeight: 14 }}
-                            >
-                              {getDetail(h, s.key) || "Klik untuk isi"}
-                            </div>
-                          )
-                        )}
                       </td>
                     ))}
                     <td>
@@ -456,7 +493,7 @@ export default function DataTable() {
                 ))}
                 {Array.from({ length: Math.max(0, (typeof pageSize === "number" ? pageSize : 10) - pageRows.length) }).map((_, i) => (
                   <tr key={`fill-${i}`} style={{ height: 33 }}>
-                    <td colSpan={16 + statusFields.length}>&nbsp;</td>
+                    <td colSpan={17 + statusFields.length}>&nbsp;</td>
                   </tr>
                 ))}
               </tbody>
