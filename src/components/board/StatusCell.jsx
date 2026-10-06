@@ -62,7 +62,7 @@ export default function StatusCell({ h, fillKey }) {
         const key = `${h.id}:${s.key}`;
         const detail = getDetail(h, s.key);
         const editing = s.hasDetail && detailEditingKey === key;
-        const pill = { ...pillBase, background: tint(col, 16), color: `color-mix(in srgb, ${col} 72%, ${C.ink})` };
+        const pill = { ...pillBase, background: tint(col, 16), color: `color-mix(in srgb, ${col} var(--pill-mix), ${C.ink})` };
         if (editing) {
           return (
             <span key={s.key} style={{ ...pill, padding: "0 4px 0 8px", gap: 4 }} onClick={(e) => e.stopPropagation()}>

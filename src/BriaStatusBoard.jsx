@@ -1367,7 +1367,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   // No, kotak centang, dan Kavling. Posisi kiri tiap kolom = jumlah lebar
   // kolom beku sebelumnya yang sedang tampil.
   const FROZEN_KEYS = ["no", "select", "kavling"];
-  const zebraBg = `color-mix(in srgb, ${C.accent} 5%, ${C.panel})`;
+  const zebraBg = "var(--zebra)";
   const rowBg = (h, i = 0) => (selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : C.panel);
   const frozenLeft = {};
   let frozenAcc = 0;
@@ -1386,7 +1386,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       <style>{`
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 1px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
-        table.dataTbl th { text-align: center; color: #fff; font-weight: 600; padding: 4px 8px; background: ${C.accent}; border-bottom-color: transparent; position: sticky; top: 0; will-change: transform; }
+        table.dataTbl th { text-align: center; color: var(--thead-ink); font-weight: 600; padding: 4px 8px; background: var(--thead); border-bottom-color: transparent; position: sticky; top: 0; will-change: transform; }
         table.dataTbl th { white-space: normal; line-height: 1.2; }
         table.dataTbl th:not(:last-child) { border-right-color: rgba(255,255,255,.2) !important; }
         table.dataTbl th .col-resize-handle > span { background: transparent !important; }

@@ -33,36 +33,45 @@
   --chip-amber-bg: #FCEFD6;
   --chip-red-bg: #FBEDEA;
   --chip-blue-bg: #E3EAF6;
+  --zebra: #F5F7FB;
+  --thead: #2A4A8A;
+  --thead-ink: #FFFFFF;
+  --pill-mix: 72%;
 }
 
+/* Gelap: slate abu-kebiruan lembut (acuan: Finder macOS), kontras rendah, warna tidak menyala */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --ink: #E8EDF5;
-  --paper: #0E1420;
-  --panel: #161E2E;
-  --steel: #98A3B8;
-  --faint: #33425F;
-  --line: #243047;
-  --accent: #3F6FE0;
-  --accent2: #8FB0FF;
-  --select: #E8EDF5;
-  --select-ink: #0E1420;
-  --select-soft: #243047;
-  --data: #5FB3A8;
-  --green: #52A373;
-  --amber: #D9A441;
-  --red: #E0695C;
-  --gold: #D9B84C;
-  --card-shadow: 0 0 0 1px var(--line), 0 1px 3px rgba(0,0,0,.35);
-  --pill-fill: #1F2A3E;
-  --search-fill: #1B2538;
-  --alert-amber-bg: #3A2E14;
-  --alert-red-bg: #3A1E1C;
-  --info-blue-bg: #162238;
-  --row-selected-bg: #1B2A44;
-  --chip-amber-bg: #3D3018;
-  --chip-red-bg: #3D2220;
-  --chip-blue-bg: #1B2A4A;
+  --ink: #E6E9EB;
+  --paper: #202A30;
+  --panel: #222629;
+  --steel: #98A1A8;
+  --faint: #4A555D;
+  --line: #353D43;
+  --accent: #5878C4;
+  --accent2: #A9C0E8;
+  --select: #4A565E;
+  --select-ink: #F1F3F4;
+  --select-soft: #2F3A41;
+  --data: #7FB8B0;
+  --green: #5FA67E;
+  --amber: #D2A24A;
+  --red: #D9776A;
+  --gold: #D2B450;
+  --card-shadow: 0 0 0 1px var(--line), 0 1px 3px rgba(0,0,0,.3);
+  --pill-fill: #2B343A;
+  --search-fill: #263036;
+  --alert-amber-bg: #3A3322;
+  --alert-red-bg: #3A2826;
+  --info-blue-bg: #25313A;
+  --row-selected-bg: #2C3A47;
+  --chip-amber-bg: #3B3424;
+  --chip-red-bg: #3B2A28;
+  --chip-blue-bg: #28384A;
+  --zebra: #292D30;
+  --thead: #2F3A41;
+  --thead-ink: #C9D0D5;
+  --pill-mix: 40%;
 }
 
 html {
