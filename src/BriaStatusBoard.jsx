@@ -236,7 +236,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     let ringkasW = null;
     if (tableView === "ringkas") {
       const st = statusFields.find((s) => s.key === key);
-      ringkasW = ringkasWidths[key] || (st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 100, kontraktor: 192 }[key] || null));
+      ringkasW = ringkasWidths[key] || (st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 124, kontraktor: 240 }[key] || null));
     }
     // Judul kolom boleh turun ke baris berikutnya (seperti wrap text di Excel),
     // jadi batas terkecil kolom = kata terpanjang di judulnya.
@@ -1382,9 +1382,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
     <div style={{ background: C.paper, minHeight: "100%", fontFamily: "'Plus Jakarta Sans', sans-serif" }} className={currentClusterId ? "" : "p-4"}>
       <style>{`
         * { box-sizing: border-box; }
-        table.dataTbl th, table.dataTbl td { padding: 3px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
-        table.dataTbl th { text-align: center; color: #fff; font-weight: 600; padding: 8px 8px; background: ${C.accent}; border-bottom-color: transparent; position: sticky; top: 0; will-change: transform; }
-        table.dataTbl th { white-space: normal; line-height: 1.25; }
+        table.dataTbl th, table.dataTbl td { padding: 1px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
+        table.dataTbl th { text-align: center; color: #fff; font-weight: 600; padding: 4px 8px; background: ${C.accent}; border-bottom-color: transparent; position: sticky; top: 0; will-change: transform; }
+        table.dataTbl th { white-space: normal; line-height: 1.2; }
         table.dataTbl td { border-right: 1px solid ${C.line}; }
         table.dataTbl td:last-child { border-right: none; }
         table.dataTbl th:not(:last-child) { border-right-color: rgba(255,255,255,.2) !important; }
@@ -1402,11 +1402,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
         }
         table.dataTbl tr:hover td { background: ${C.rowSelectedBg} !important; }
         table.dataTbl input[type=checkbox] { accent-color: ${C.green}; width: 14px; height: 14px; }
-        table.dataTbl input.status-dot { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid ${C.faint}; background: transparent; cursor: pointer; display: inline-block; vertical-align: middle; position: relative; margin: 0; }
+        table.dataTbl input.status-dot { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid ${C.faint}; background: transparent; cursor: pointer; display: inline-block; vertical-align: middle; position: relative; margin: 0; }
         table.dataTbl input.status-dot:checked { background: ${C.green}; border-color: ${C.green}; }
-        table.dataTbl input.status-dot:checked::after { content: ""; position: absolute; left: 4.5px; top: 2px; width: 4px; height: 7px; border: solid #fff; border-width: 0 1.6px 1.6px 0; transform: rotate(45deg); }
+        table.dataTbl input.status-dot:checked::after { content: ""; position: absolute; left: 3.5px; top: 1px; width: 3.5px; height: 6.5px; border: solid #fff; border-width: 0 1.6px 1.6px 0; transform: rotate(45deg); }
         table.dataTbl input.status-dot:focus-visible { outline: 2px solid ${C.accent}; outline-offset: 2px; }
-        table.dataTbl td select, table.dataTbl td input:not([type=checkbox]) { height: 26px; box-sizing: border-box; padding-top: 0; padding-bottom: 0; }
+        table.dataTbl td select, table.dataTbl td input:not([type=checkbox]) { height: 20px; box-sizing: border-box; padding-top: 0; padding-bottom: 0; }
         table.dataTbl th { z-index: 3; }
         table.dataTbl th.frz { z-index: 4; }
         table.dataTbl td.frz { position: sticky; z-index: 2; }

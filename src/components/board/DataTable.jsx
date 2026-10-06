@@ -309,7 +309,7 @@ export default function DataTable() {
                           onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }}
                         />
                       ) : (
-                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:kontraktor`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:kontraktor`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
                           <span style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>{kontraktorColorOf(h.kontraktor) && <i style={{ width: 9, height: 9, borderRadius: 3, background: kontraktorColorOf(h.kontraktor), flexShrink: 0 }} />}{h.kontraktor}</span>
                         </div>
                       )}
@@ -324,7 +324,7 @@ export default function DataTable() {
                           onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }}
                         />
                       ) : (
-                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:spkNo`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:spkNo`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
                           {h.spkNo}
                         </div>
                       )}
@@ -339,7 +339,7 @@ export default function DataTable() {
                           onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }}
                         />
                       ) : (
-                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:spkTahun`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, fontFamily: "IBM Plex Mono, monospace", width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:spkTahun`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, fontFamily: "IBM Plex Mono, monospace", width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
                           {h.spkTahun}
                         </div>
                       )}
@@ -356,7 +356,7 @@ export default function DataTable() {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setMonthEditingKey(h.id); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, textAlign: "center" }}
+                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, textAlign: "center" }}
                         >
                           {MONTHS[h.spkBulan - 1]}
                         </div>
@@ -377,7 +377,7 @@ export default function DataTable() {
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:hpp`); }}
                           title="Klik untuk ubah"
-                          style={{ fontSize: 11, color: C.data, cursor: "pointer", padding: "4px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.data, 14) }}
+                          style={{ fontSize: 11, color: C.data, cursor: "pointer", padding: "1px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.data, 14) }}
                         >
                           <span style={{ opacity: 0.65 }}>{rupiah(h.hppPerM2)}</span>
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hppTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
@@ -407,7 +407,7 @@ export default function DataTable() {
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:harga`); }}
                           title="Klik untuk ubah"
-                          style={{ fontSize: 11, color: C.accent2, cursor: "pointer", padding: "4px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.accent, 14) }}
+                          style={{ fontSize: 11, color: C.accent2, cursor: "pointer", padding: "1px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.accent, 14) }}
                         >
                           <span style={{ opacity: 0.65 }}>{rupiah(h.hargaJualPerM2)}</span>
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hargaJualTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
@@ -434,7 +434,7 @@ export default function DataTable() {
                           placeholder="..."
                         />
                       ) : (
-                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:catatan`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "2px 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <div onClick={(e) => { e.stopPropagation(); setTextEditingKey(`${h.id}:catatan`); }} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, width: "100%", boxSizing: "border-box", whiteSpace: "normal", wordBreak: "break-word" }}>
                           {h.catatan}
                         </div>
                       )}
