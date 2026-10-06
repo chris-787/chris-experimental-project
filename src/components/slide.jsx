@@ -13,7 +13,11 @@ export function useSlideIndicator(deps) {
     const measure = () => {
       const a = host.querySelector('[data-slide-active="true"]');
       if (!a) { setBox(null); return; }
-      const next = { left: a.offsetLeft, top: a.offsetTop, width: a.offsetWidth, height: a.offsetHeight };
+      // Posisi dihitung relatif ke pembungkus (bukan offsetLeft), karena tombol aktif bisa berada di dalam elemen lain
+      // (mis. select di dalam span) yang punya acuan posisi sendiri.
+      const hr = host.getBoundingClientRect();
+      const ar = a.getBoundingClientRect();
+      const next = { left: Math.round(ar.left - hr.left + host.scrollLeft - host.clientLeft), top: Math.round(ar.top - hr.top + host.scrollTop - host.clientTop), width: Math.round(ar.width), height: Math.round(ar.height) };
       setBox((prev) => (prev && prev.left === next.left && prev.top === next.top && prev.width === next.width && prev.height === next.height ? prev : next));
     };
     measure();
