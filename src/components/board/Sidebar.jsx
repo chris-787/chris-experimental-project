@@ -8,6 +8,7 @@ const ITEMS = [
   { key: "home", label: "Home", icon: "home" },
   { key: "kerja", label: "Main Mode", icon: "map" },
   { key: "data", label: "Data Mode", icon: "table" },
+  { key: "dashboard", label: "Dashboard", icon: "chart" },
   { key: "pengaturan", label: "Settings", icon: "sliders" },
 ];
 

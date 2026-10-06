@@ -115,8 +115,15 @@ body {
   .app-shell { flex-direction: column; }
   .app-side, .app-side.collapsed { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: auto; flex-basis: auto; flex-direction: row; align-items: stretch; padding: .4rem .5rem calc(.5rem + env(safe-area-inset-bottom)); border-right: none; border-top: 1px solid var(--line); z-index: 60; overflow: visible; }
   .side-extra { display: none !important; }
-  .side-menu { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); flex-direction: row; gap: 2px; }
+  .side-menu { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); flex-direction: row; gap: 2px; }
   .side-item, .app-side.collapsed .side-item { flex-direction: column; justify-content: center; gap: 2px; width: auto; height: 52px; padding: 0; font-size: 11px; text-align: center; }
   .app-side.collapsed .side-label { display: inline; }
   .app-main { padding-bottom: 6rem; }
 }
+
+/* Halaman Dashboard */
+.dash-row { display: grid; grid-template-columns: 140px minmax(0, 1fr) 80px; gap: 12px; align-items: center; }
+.dash-row-s { display: grid; grid-template-columns: 130px minmax(0, 1fr) 30px; gap: 10px; align-items: center; }
+.dash-two { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+@media (max-width: 900px) { .dash-two { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .dash-row { grid-template-columns: 100px minmax(0, 1fr) 64px; gap: 8px; } }

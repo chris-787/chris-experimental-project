@@ -5,7 +5,7 @@ import ThemeToggle from "../../components/ThemeToggle";
 import { useBoard } from "./BoardContext";
 
 export default function ClusterHeader() {
-  const { SmallSpinner, activeBlock, activeCluster, activeTipe, blockProgress, blocks, calibrating, canEdit, colorMode, currentClusterId, dashboardPos, dirty, editMap,  mode, opacity, printSitePlan, reloadAfterRemoteUpdate, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setActionMenuId, setActiveBlock, setActiveTipe, setClusters, setColorMode, setConfirmDeleteId, setDashboardPos, setDraft, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, statusFields, subtitleWidth, tipeOptions, totalTarget, updateClusterMeta } = useBoard();
+  const { SmallSpinner, activeBlock, activeCluster, activeTipe, blockProgress, blocks, calibrating, canEdit, currentClusterId, dirty, editMap,  mode, opacity, printSitePlan, reloadAfterRemoteUpdate, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setActionMenuId, setActiveBlock, setActiveTipe, setClusters, setConfirmDeleteId, setDraft, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, subtitleWidth, tipeOptions, totalTarget, updateClusterMeta } = useBoard();
   const [showOpts, setShowOpts] = useState(false);
   return (
     <>
@@ -14,7 +14,7 @@ export default function ClusterHeader() {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <div className="text-base font-semibold" style={{ color: C.ink }}>
-              {mode === "kerja" ? (calibrating ? "Main Mode · Edit Site Plan" : "Main Mode") : mode === "data" ? "Data Mode" : "Settings"}
+              {mode === "kerja" ? (calibrating ? "Main Mode · Edit Site Plan" : "Main Mode") : mode === "data" ? "Data Mode" : mode === "dashboard" ? "Dashboard" : "Settings"}
             </div>
             <div className="text-xs" style={{ color: C.steel }}>{activeCluster.name}</div>
           </div>
@@ -84,13 +84,6 @@ export default function ClusterHeader() {
         <div className="flex gap-1.5 flex-wrap">
           {mode === "kerja" && (
             <div className="flex items-center gap-2 ml-auto flex-wrap">
-              <button
-                onClick={() => setDashboardPos((p) => (p === "kanan" ? "bawah" : "kanan"))}
-                className={BTN_PILL}
-                style={btnSecondary}
-              >
-                <Ic name={dashboardPos === "kanan" ? "layoutBottom" : "layoutRight"} size={14} /> Move Dashboard {dashboardPos === "kanan" ? "↓" : "→"}
-              </button>
               {canEdit && (
                 <button
                   onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
@@ -125,15 +118,6 @@ export default function ClusterHeader() {
         )}
         {mode === "kerja" && !calibrating && (
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <span className="text-xs" style={{ color: C.steel }}>Warna peta:</span>
-              <select value={colorMode} onChange={(e) => setColorMode(e.target.value)} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink }}>
-                <option value="blok">Per Blok</option>
-                <option value="tipe">Per Tipe</option>
-                <option value="kontraktor">Per Kontraktor</option>
-                {statusFields.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
-              </select>
-            </div>
             <button onClick={() => setShowOpts((v) => !v)} className={`opts-toggle ${BTN_PILL}`} style={btnSecondary} aria-expanded={showOpts}>
               Opsi {showOpts ? "▴" : "▾"}
             </button>

@@ -3,6 +3,7 @@ import { Field, cellInput, formInput } from "../../components/ui";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { centroid } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
+import ColorPills from "./ColorPills";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
@@ -70,6 +71,7 @@ export default function MapPanel() {
             )}
           </div>
 
+          {siteImage && !calibrating && <div className="mb-2"><ColorPills /></div>}
           {!siteImage ? (
             <div className="flex flex-col items-center justify-center gap-2.5 py-16" style={{ border: `1px dashed ${C.line}`, borderRadius: 8, background: C.paper }}>
               <div className="text-sm" style={{ color: C.steel }}>Cluster ini belum punya gambar site plan.</div>
