@@ -181,10 +181,15 @@ export default function DataTable() {
           </div>
 
           <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
+            {/* Kolom yang disembunyikan: cell-nya ikut disembunyikan (display:none), kalau tidak isinya
+                (lingkaran status) meluap dan menimpa kolom di sebelahnya */}
+            {hiddenCols.length > 0 && (
+              <style>{columns.map((c, i) => (hiddenCols.includes(c.key) ? `table.dataTbl > thead > tr > :nth-child(${i + 1}), table.dataTbl > tbody > tr > :nth-child(${i + 1}):not([colspan]) { display: none; }` : "")).join("\n")}</style>
+            )}
             <table className="dataTbl w-full" style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
-                {columns.map((c) => (
-                  <col key={c.key} style={{ width: colWidth(c.key), visibility: hiddenCols.includes(c.key) ? "collapse" : "visible" }} />
+                {columns.filter((c) => !hiddenCols.includes(c.key)).map((c) => (
+                  <col key={c.key} style={{ width: colWidth(c.key) }} />
                 ))}
               </colgroup>
               <thead>

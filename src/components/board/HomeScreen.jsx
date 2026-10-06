@@ -304,7 +304,7 @@ export default function HomeScreen() {
           <aside className="flex flex-col gap-3" style={{ minWidth: 0 }}>
           {(
             <div className="p-2.5 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-              <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
+              <div className="flex items-center justify-center mb-2.5 flex-wrap gap-2">
                 <div className="flex items-center gap-2.5">
                   <span style={{ width: 28, height: 28, borderRadius: 8, background: tint(C.amber, 18), color: C.amber, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Ic name="calendar" size={15} /></span>
                   <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, lineHeight: 1 }}>Perlu Ditindaklanjuti</span>
