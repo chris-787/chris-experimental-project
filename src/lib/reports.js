@@ -1,5 +1,6 @@
 // Laporan cetak (PDF), ekspor/impor Excel, dan backup/restore JSON.
 // Dipisah dari BriaStatusBoard; data yang dibutuhkan dikirim lewat parameter ctx.
+import { applyImportRows } from "./importRows";
 import { buildColorGroups } from "./colorGroups";
 import { DEFAULT_BLOCKS, DEFAULT_KATEGORI, DEFAULT_STATUS, DEFAULT_TIPE, LAST_BACKUP_KEY, LEGACY_CLUSTER_ID, MONTHS, SITE_IMAGE_DEFAULT, configKeyFor, housesKeyFor, imageKeyFor } from "../lib/constants";
 import { rupiah } from "../lib/helpers";
@@ -19,41 +20,7 @@ export function makeReports(ctx) {
         const wb = XLSX.read(data, { type: "array" });
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(sheet);
-        const updatedList = [];
-        const skippedList = [];
-        const next = [...houses];
-        rows.forEach((row) => {
-          const kavlingStr = String(row["Kavling"] || "").trim();
-          const idx = kavlingStr.lastIndexOf("-");
-          if (idx < 0) { skippedList.push(kavlingStr || "(kosong)"); return; }
-          const blok = kavlingStr.slice(0, idx);
-          const noKavling = kavlingStr.slice(idx + 1);
-          const hi = next.findIndex((h) => h.blok === blok && h.noKavling === noKavling);
-          if (hi === -1) { skippedList.push(kavlingStr); return; }
-          const h = { ...next[hi] };
-          if (row["Kategori"] !== undefined && row["Kategori"] !== "") h.kategori = String(row["Kategori"]);
-          if (row["Kontraktor"] !== undefined) h.kontraktor = String(row["Kontraktor"]);
-          if (row["No. SPK"] !== undefined) h.spkNo = String(row["No. SPK"]);
-          if (row["Th. SPK"] !== undefined && row["Th. SPK"] !== "") h.spkTahun = Number(row["Th. SPK"]) || null;
-          if (row["Bln. SPK"] !== undefined && row["Bln. SPK"] !== "") {
-            const mi = MONTHS.findIndex((m) => m.toLowerCase() === String(row["Bln. SPK"]).toLowerCase().slice(0, 3));
-            if (mi >= 0) h.spkBulan = mi + 1;
-          }
-          if (row["HPP/m2 (Rp)"] !== undefined && row["HPP/m2 (Rp)"] !== "") h.hppPerM2 = Number(row["HPP/m2 (Rp)"]) || 0;
-          if (row["Harga Jual/m2 (Rp)"] !== undefined && row["Harga Jual/m2 (Rp)"] !== "") h.hargaJualPerM2 = Number(row["Harga Jual/m2 (Rp)"]) || 0;
-          if (row["Adendum (Rp)"] !== undefined && row["Adendum (Rp)"] !== "") {
-            const amt = Number(row["Adendum (Rp)"]) || 0;
-            h.adendum = amt !== 0; h.adendumAmount = amt;
-          }
-          statusFields.forEach((s) => {
-            if (row[s.label] !== undefined) h.status = { ...h.status, [s.key]: String(row[s.label]).trim().toLowerCase().startsWith("s") };
-            if (s.hasDetail && row[`${s.label} - Detail`] !== undefined) {
-              h.details = { ...(h.details || {}), [s.key]: String(row[`${s.label} - Detail`]) };
-            }
-          });
-          next[hi] = h;
-          updatedList.push(kavlingStr);
-        });
+        const { next, updatedList, skippedList } = applyImportRows(rows, houses, statusFields);
         setHouses(next); saveHouses(next);
         setImportMsg({ updated: updatedList, skipped: skippedList });
       } catch (err) {

@@ -7,6 +7,10 @@ import StatusCell from "./StatusCell";
 import { statusColor } from "../../lib/palette";
 import { useBoard } from "./BoardContext";
 
+// Batas jumlah baris sebelum tabel memakai gambar-sebagian (virtual). 60 baris ke bawah digambar semua.
+const VIRTUAL_MIN = 60;
+const VIRTUAL_OVERSCAN = 12;
+
 export default function DataTable() {
   const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, tipeColor, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
   const [fillKey, setFillKey] = React.useState(null);
@@ -18,6 +22,42 @@ export default function DataTable() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [fillKey]);
+  // Tabel panjang (ratusan kavling): hanya baris yang terlihat (plus sedikit cadangan) yang digambar.
+  // Baris di luar layar diganti dua baris kosong setinggi baris aslinya, jadi gulir tetap mulus.
+  const virtual = pageRows.length > VIRTUAL_MIN;
+  const scrollRef = React.useRef(null);
+  const tbodyRef = React.useRef(null);
+  const [vRange, setVRange] = React.useState([0, VIRTUAL_MIN]);
+  const [rowH, setRowH] = React.useState(24);
+  const updateRange = React.useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const n = pageRows.length;
+    const units = n + 2;
+    const first = Math.floor((el.scrollTop / Math.max(1, el.scrollHeight)) * units);
+    const visible = Math.ceil((el.clientHeight / Math.max(1, el.scrollHeight)) * units) + 1;
+    const start = Math.max(0, first - VIRTUAL_OVERSCAN);
+    const end = Math.min(n, first + visible + VIRTUAL_OVERSCAN);
+    setVRange((prev) => (prev[0] === start && prev[1] === end ? prev : [start, end]));
+  }, [pageRows.length]);
+  React.useLayoutEffect(() => {
+    if (!virtual) return;
+    const tr = tbodyRef.current && tbodyRef.current.querySelector("tr[data-row]");
+    if (tr && tr.offsetHeight && Math.abs(tr.offsetHeight - rowH) > 0.5) setRowH(tr.offsetHeight);
+    updateRange();
+  });
+  React.useEffect(() => {
+    if (!virtual) return undefined;
+    window.addEventListener("resize", updateRange);
+    return () => window.removeEventListener("resize", updateRange);
+  }, [virtual, updateRange]);
+  const scrollRaf = React.useRef(0);
+  const onTableScroll = React.useCallback(() => {
+    if (!virtual || scrollRaf.current) return;
+    scrollRaf.current = requestAnimationFrame(() => { scrollRaf.current = 0; updateRange(); });
+  }, [virtual, updateRange]);
+  const vStart = virtual ? Math.min(vRange[0], pageRows.length) : 0;
+  const vEnd = virtual ? Math.min(Math.max(vRange[1], vStart), pageRows.length) : pageRows.length;
   return (
     <>
         <div className="rounded-xl p-2.5 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
@@ -213,7 +253,7 @@ export default function DataTable() {
               </span>
             </div>
           )}
-          <div style={{ overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
+          <div ref={scrollRef} onScroll={onTableScroll} style={{ overflowAnchor: "none", overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
             {/* Kolom yang disembunyikan: cell-nya ikut disembunyikan (display:none), kalau tidak isinya
                 (lingkaran status) meluap dan menimpa kolom di sebelahnya */}
             {hiddenCols.length > 0 && (
@@ -255,7 +295,7 @@ export default function DataTable() {
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody ref={tbodyRef}>
                 {pageRows.length === 0 && (
                   <tr><td colSpan={17 + statusFields.length} className="text-center py-3" style={{ color: C.steel }}>
                     {houses.length === 0
@@ -265,8 +305,11 @@ export default function DataTable() {
                         : "Tidak ada data di halaman ini."}
                   </td></tr>
                 )}
-                {pageRows.map((h, i) => (
-                  <tr key={h.id} ref={(el) => (rowRefs.current[h.id] = el)} style={{ background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
+                {virtual && vStart > 0 && (
+                  <tr aria-hidden="true"><td colSpan={17 + statusFields.length} style={{ height: vStart * rowH, padding: 0, border: 0 }} /></tr>
+                )}
+                {pageRows.slice(vStart, vEnd).map((h, k) => { const i = vStart + k; return (
+                  <tr key={h.id} data-row="1" ref={(el) => (rowRefs.current[h.id] = el)} style={{ background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
                     <td className="text-center frz" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", left: frozenLeft.no, background: rowBg(h, i) }} onClick={(e) => e.stopPropagation()}>
                       {(pageSize === "all" ? 0 : (currentPage - 1) * pageSize) + i + 1}
                     </td>
@@ -493,7 +536,10 @@ export default function DataTable() {
                       )}
                     </td>
                   </tr>
-                ))}
+                ); })}
+                {virtual && vEnd < pageRows.length && (
+                  <tr aria-hidden="true"><td colSpan={17 + statusFields.length} style={{ height: (pageRows.length - vEnd) * rowH, padding: 0, border: 0 }} /></tr>
+                )}
                 {Array.from({ length: Math.max(0, (typeof pageSize === "number" ? pageSize : 10) - pageRows.length) }).map((_, i) => (
                   <tr key={`fill-${i}`} style={{ height: 33 }}>
                     <td colSpan={17 + statusFields.length}>&nbsp;</td>
