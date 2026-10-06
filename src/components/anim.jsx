@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 const reduceMotion = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Angka yang "menghitung naik" dari nilai sebelumnya (atau 0 saat pertama tampil).
-export function CountUp({ value, format = (n) => String(Math.round(n)), duration = 800 }) {
+export function CountUp({ value, format = (n) => String(Math.round(n)), duration = 1150 }) {
   const target = Number.isFinite(value) ? value : 0;
   const [shown, setShown] = useState(() => (reduceMotion() ? target : 0));
   const fromRef = useRef(reduceMotion() ? target : 0);
