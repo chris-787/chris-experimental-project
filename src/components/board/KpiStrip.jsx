@@ -17,7 +17,7 @@ export default function KpiStrip() {
   const sold = houses.length ? (soldUnits.length / houses.length) * 100 : 0;
   const ok = avgMarginPct >= 20;
   return (
-    <div className="mb-3.5" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12, alignItems: "stretch" }}>
+    <div className="mb-3.5 kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12, alignItems: "stretch" }}>
       <div style={box}>
         <div style={{ fontSize: 12, color: C.steel }}>Kavling Terpetakan</div>
         <div style={{ fontFamily: MONO, fontSize: 22, fontWeight: 500, marginTop: 4, color: C.ink }}>{houses.length} <span style={{ fontSize: 15, color: C.steel }}>/ {totalTarget}</span></div>

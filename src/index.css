@@ -134,7 +134,7 @@ body {
 @media (max-width: 1000px) { .home-grid { grid-template-columns: minmax(0, 1fr); } }
 .dash-tabs { scrollbar-width: none; }
 .dash-tabs::-webkit-scrollbar { display: none; }
-@media (max-width: 560px) { .kpi-wide { grid-column: span 2; } }
+@media (max-width: 560px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } .kpi-wide { grid-column: span 2; } }
 
 /* Bentuk kartu mengikuti mockup: sudut lebih bulat, garis tipis */
 .rounded-xl { border-radius: 16px; }
