@@ -155,3 +155,12 @@ button, input, select, textarea { font-family: inherit; }
 .search-pill:focus-within { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(201, 74, 28, 0.15); }
 .search-pill input:focus { outline: none; box-shadow: none; }
 .app-side.collapsed .side-menu { align-items: center; }
+
+/* Bar geser (pengubah ukuran) dan scrollbar: satu warna dan ukuran di semua halaman */
+.drag-handle { background: var(--faint); transition: background .15s; }
+.drag-handle:hover { background: var(--steel); }
+* { scrollbar-width: thin; scrollbar-color: var(--faint) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--faint); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+*::-webkit-scrollbar-thumb:hover { background: var(--steel); background-clip: content-box; }

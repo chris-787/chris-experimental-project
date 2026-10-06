@@ -163,7 +163,7 @@ export default function DataTable() {
                     style={tableView === v ? { background: C.select, color: C.selectInk } : { background: C.panel, color: C.steel }}>{label}</button>
                 ))}
               </div>
-              {tableView === "lengkap" && <div style={{ position: "relative" }}>
+              <div style={{ position: "relative" }}>
                 <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Kolom</button>
                 {showColMenu && (
                   <div style={{ position: "absolute", right: 0, top: "110%", zIndex: 20, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 180, maxHeight: 260, overflowY: "auto" }}>
@@ -176,7 +176,7 @@ export default function DataTable() {
                     ))}
                   </div>
                 )}
-              </div>}
+              </div>
             </div>
           </div>
 
@@ -203,7 +203,7 @@ export default function DataTable() {
                           {c.label}{sortKey === c.key ? (sortDir === "asc" ? " ▲" : " ▼") : ""}
                         </span>
                       )}
-                      {tableView === "lengkap" && c.key !== "aksi" && c.key !== "select" && (
+                      {c.key !== "aksi" && c.key !== "select" && (
                         <span
                           onMouseDown={(e) => startColResize(c.key, e)}
                           title="Geser untuk ubah lebar kolom"

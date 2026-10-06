@@ -1,6 +1,7 @@
 import { C } from "../../theme";
-import { Ic } from "../ui";
+import { BrandMark, Ic } from "../ui";
 import { timeAgo } from "../../lib/calc";
+import { JAKARTA_TZ, timeFormatter, useJakartaClock } from "../../lib/jakartaClock";
 import { useBoard } from "./BoardContext";
 
 // Menu kiri (desktop) / bar menu bawah (HP). Bisa dilipat jadi ikon saja.
@@ -12,13 +13,33 @@ const ITEMS = [
   { key: "pengaturan", label: "Settings", icon: "sliders" },
 ];
 
+const sideDate = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "short", year: "numeric", timeZone: JAKARTA_TZ });
+
+// Jam WIB di sidebar. Komponen sendiri supaya detak tiap detik tidak me-render ulang halaman.
+function SideClock({ collapsed }) {
+  const now = useJakartaClock();
+  const time = timeFormatter.format(now);
+  if (collapsed) {
+    return <div title={`${sideDate.format(now)} ${time} WIB`} style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: C.steel, textAlign: "center", lineHeight: 1.2 }}>{time.slice(0, 5)}</div>;
+  }
+  return (
+    <div style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: "9px 12px" }}>
+      <div className="flex items-baseline gap-1.5">
+        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 17, fontWeight: 500, color: C.ink, letterSpacing: "-0.3px" }}>{time}</span>
+        <span style={{ fontSize: 11, color: C.steel, fontWeight: 600 }}>WIB</span>
+      </div>
+      <div style={{ fontSize: 11, color: C.steel, marginTop: 1 }}>{sideDate.format(now)}</div>
+    </div>
+  );
+}
+
 export default function Sidebar() {
   const { activeCluster, blocks, canEdit, displayName, goHome, goMode, handleLogoutClick, lastBackupAt, mode, sidebarCollapsed, toggleSidebar, totalTarget } = useBoard();
   const initials = (displayName || "?").slice(0, 2).toUpperCase();
   return (
     <nav className={`app-side ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Menu utama">
       <div className="side-extra flex items-center gap-2.5" style={{ width: "100%", justifyContent: sidebarCollapsed ? "center" : "flex-start", flexDirection: sidebarCollapsed ? "column" : "row" }}>
-        <div style={{ width: 32, height: 32, borderRadius: 9, background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 }}>CB</div>
+        <BrandMark size={34} />
         <div className="side-hide-collapsed" style={{ lineHeight: 1.15, flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 700, fontSize: 13, color: C.ink }}>Chris Project</div>
           <div style={{ fontSize: 12, color: C.steel }}>Version 2.0</div>
@@ -66,6 +87,7 @@ export default function Sidebar() {
       </div>
 
       <div className="side-extra" style={{ marginTop: "auto", width: "100%", display: "flex", flexDirection: "column", gap: 10, alignItems: sidebarCollapsed ? "center" : "stretch" }}>
+        <SideClock collapsed={sidebarCollapsed} />
         <div className="side-hide-collapsed" style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: 12, fontSize: 12, lineHeight: 1.5, color: C.steel }}>
           <span style={{ display: "block", color: C.ink, fontWeight: 600, marginBottom: 2 }}>Backup terakhir</span>
           {lastBackupAt ? timeAgo(lastBackupAt) : "Belum pernah. Backup hanya tersimpan saat Anda menekan tombol di Home."}

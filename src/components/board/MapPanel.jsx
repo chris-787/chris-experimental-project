@@ -7,7 +7,7 @@ import ColorPills from "./ColorPills";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
-  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setMapHeight, setSelectedId, setZoom, siteImage, startEditShape, startHeightDrag, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
+  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setSelectedId, setZoom, siteImage, startEditShape, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
   // Tinggi gambar yang sedang tampil. Di HP kotak Site Plan dipendekkan
   // sampai setinggi gambar (lihat .plan-box di index.css). Koordinat poligon
   // TIDAK disentuh: lapisan SVG tetap berbentuk persegi seperti semula,
@@ -311,15 +311,6 @@ export default function MapPanel() {
           </div>
         )}
     </div>
-    {siteImage && (
-      <div
-        onMouseDown={startHeightDrag}
-        onDoubleClick={() => setMapHeight(null)}
-        title="Tarik ke atas/bawah untuk mengubah tinggi Site Plan (klik 2x untuk kembali ke awal)"
-        className="panel-height-handle"
-        style={{ height: 8, margin: "6px 4px 0", borderRadius: 8, background: C.faint, cursor: "row-resize", userSelect: "none" }}
-      />
-    )}
     </div>
     </>
   );

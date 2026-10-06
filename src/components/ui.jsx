@@ -26,6 +26,8 @@ export function Chip({ active, onClick, children }) {
   );
 }
 export const ICON_PATHS = {
+  plus: <path d="M12 5v14M5 12h14" />,
+  brand: <><path d="M4 21V9l8-6 8 6v12" /><path d="M9 21v-6h6v6" /><path d="M9 11h.01M15 11h.01" /></>,
   search: <><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></>,
   chart: <><path d="M4 20V10" /><path d="M12 20V4" /><path d="M20 20v-7" /></>,
   home: <><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></>,
@@ -129,4 +131,13 @@ export function focusWhen(active, where) {
     const allowed = where === "inspector" ? editFrom === "inspector" : editFrom !== "inspector";
     if (allowed && document.activeElement !== el) el.focus({ preventScroll: true });
   };
+}
+
+// Logo aplikasi: kotak oranye dengan ikon bangunan (menggantikan tulisan "CB").
+export function BrandMark({ size = 34 }) {
+  return (
+    <div aria-hidden="true" style={{ width: size, height: size, borderRadius: Math.round(size * 0.28), background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <Ic name="brand" size={Math.round(size * 0.55)} />
+    </div>
+  );
 }

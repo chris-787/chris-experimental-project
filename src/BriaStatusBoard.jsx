@@ -203,6 +203,13 @@ export default function BriaStatusBoard({ onLogout, session }) {
   // Disimpan per perangkat, bukan di database, supaya pilihan satu orang
   // tidak mengubah tampilan orang lain.
   const [tableView, setTableViewState] = useState(() => { try { return localStorage.getItem("bria-table-view") === "lengkap" ? "lengkap" : "ringkas"; } catch (e) { return "ringkas"; } });
+  // Tampilan Ringkas bisa diatur sendiri: kolom mana yang tampil (null = bawaan)
+  // dan lebar kolomnya. Disimpan per perangkat, tidak mengubah tampilan orang lain.
+  const [ringkasCols, setRingkasColsState] = useState(() => { try { const v = JSON.parse(localStorage.getItem("bria-ringkas-cols")); return Array.isArray(v) ? v : null; } catch (e) { return null; } });
+  const [ringkasWidths, setRingkasWidthsState] = useState(() => { try { return JSON.parse(localStorage.getItem("bria-ringkas-widths")) || {}; } catch (e) { return {}; } });
+  const defaultRingkas = () => ["no", "select", "kavling", "tipe", ...statusFields.map((s) => s.key), "kontraktor", "hpp", "hargaJual", "margin"];
+  function saveRingkasCols(v) { setRingkasColsState(v); try { if (v) localStorage.setItem("bria-ringkas-cols", JSON.stringify(v)); else localStorage.removeItem("bria-ringkas-cols"); } catch (e) {} }
+  function saveRingkasWidths(v) { setRingkasWidthsState(v); try { localStorage.setItem("bria-ringkas-widths", JSON.stringify(v)); } catch (e) {} }
   function setTableView(v) { setTableViewState(v); try { localStorage.setItem("bria-table-view", v); } catch (e) {} }
   const [colWidths, setColWidths] = useState({});
   const [showColMenu, setShowColMenu] = useState(false);
@@ -218,7 +225,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     let ringkasW = null;
     if (tableView === "ringkas") {
       const st = statusFields.find((s) => s.key === key);
-      ringkasW = st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 100, kontraktor: 192 }[key] || null);
+      ringkasW = ringkasWidths[key] || (st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 100, kontraktor: 192 }[key] || null));
     }
     const stField = statusFields.find((s) => s.key === key);
     const stMin = stField ? Math.ceil(measureTextWidth(stField.label, "600 12px 'Plus Jakarta Sans', sans-serif")) + 26 : 0;
@@ -228,6 +235,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
   function resetColWidths() {
     setColWidths({});
+    saveRingkasWidths({});
+    saveRingkasCols(null);
     saveTableLayout({ colWidths: {} });
     setTableBlocks(blocks.map((b) => b.name));
     setTableTipes(tipeOptions.map((t) => t.name));
@@ -245,6 +254,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
     } catch (e) {}
   }
   function toggleColHidden(key) {
+    if (tableView === "ringkas") {
+      const cur = ringkasCols || defaultRingkas();
+      saveRingkasCols(cur.includes(key) ? cur.filter((k) => k !== key) : [...cur, key]);
+      return;
+    }
     setHiddenCols((prev) => {
       const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key];
       saveTableLayout({ hiddenCols: next });
@@ -255,15 +269,18 @@ export default function BriaStatusBoard({ onLogout, session }) {
     const startX = e.clientX;
     const startWidth = colWidth(key);
     let finalWidth = startWidth;
+    const inRingkas = tableView === "ringkas";
     function onMove(ev) {
       const w = Math.max(50, startWidth + (ev.clientX - startX));
       finalWidth = w;
-      setColWidths((prev) => ({ ...prev, [key]: w }));
+      if (inRingkas) setRingkasWidthsState((prev) => ({ ...prev, [key]: w }));
+      else setColWidths((prev) => ({ ...prev, [key]: w }));
     }
     function onUp() {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
-      saveTableLayout({ colWidths: { ...colWidths, [key]: finalWidth } });
+      if (inRingkas) saveRingkasWidths({ ...ringkasWidths, [key]: finalWidth });
+      else saveTableLayout({ colWidths: { ...colWidths, [key]: finalWidth } });
     }
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
@@ -1120,13 +1137,11 @@ export default function BriaStatusBoard({ onLogout, session }) {
     { key: "aksi", label: "" },
   ]), [statusFields]);
 
-  const RINGKAS_KEYS = ["no", "select", "kavling", "tipe", "kontraktor", "hpp", "hargaJual", "margin"];
-  const hiddenCols = useMemo(
-    () => (tableView === "ringkas"
-      ? columns.filter((c) => !RINGKAS_KEYS.includes(c.key) && !statusFields.some((s) => s.key === c.key)).map((c) => c.key)
-      : hiddenColsSaved),
-    [tableView, columns, statusFields, hiddenColsSaved]
-  );
+  const hiddenCols = useMemo(() => {
+    if (tableView !== "ringkas") return hiddenColsSaved;
+    const visible = [...(ringkasCols || defaultRingkas()), "no", "select", "kavling"];
+    return columns.filter((c) => !visible.includes(c.key)).map((c) => c.key);
+  }, [tableView, columns, statusFields, hiddenColsSaved, ringkasCols]);
 
   const tableRows = useMemo(() => {
     const in7Str = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);

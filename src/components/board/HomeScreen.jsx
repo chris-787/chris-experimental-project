@@ -1,16 +1,21 @@
 import { C } from "../../theme";
-import { GreetingText, Ic, IconChip, MONO, Pill, ProgressBar } from "../../components/ui";
+import { BrandMark, ClockText, GreetingText, Ic, IconChip, MONO, Pill, ProgressBar } from "../../components/ui";
 import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid } from "../../lib/helpers";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useBoard } from "./BoardContext";
 
 export default function HomeScreen() {
   const { KAVLING_SEARCH_LIMIT, SmallSpinner, addCluster, appTitle, applyRestoreAll, calendarMonth, calendarSelectedDate, canEdit, clusterSearch, clusterStats, clusters, confirmDeleteClusterId, deleteCluster, displayName, exportAllBackup, exportAllExcel, exportingBackupAll, exportingExcelAll, followUpView, followUpsByDate, globalHousesIndex, handleLogoutClick, handleRestoreAllFile, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, newClusterName, newClusterSubtitle, openCluster, openKavlingFromSearch, pendingRestoreAll, recoverLegacyCluster, restoreAllError, restoreAllResult, restoringAll, saveAppTitle, saveHomeChanges, setAppTitle, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setConfirmDeleteClusterId, setFollowUpView, setHomeDirty, setKavlingSearch, setNewClusterName, setNewClusterSubtitle, setPendingRestoreAll, setRestoreAllResult, setShowArchivedClusters, setShowWhatsNew, showArchivedClusters, toggleArchiveCluster, togglePinCluster, updateClusterMeta } = useBoard();
-  const todayLabel = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const totalSumHarga = Object.values(clusterStats).reduce((s, x) => s + (x.sumHarga || 0), 0);
   const totalSumHpp = Object.values(clusterStats).reduce((s, x) => s + (x.sumHpp || 0), 0);
   const overallMarginPct = totalSumHarga ? ((totalSumHarga - totalSumHpp) / totalSumHarga) * 100 : 0;
   const activeClusters = clusters.filter((c) => !c.archived);
+  function submitNewCluster() {
+    if (!newClusterName.trim()) return;
+    addCluster(newClusterName.trim(), newClusterSubtitle.trim());
+    setNewClusterName("");
+    setNewClusterSubtitle("");
+  }
   const backupDue = !lastBackupAt || (Date.now() - lastBackupAt) / 86400000 >= 3;
   const pillBtn = { height: 34, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
   return (
@@ -19,7 +24,7 @@ export default function HomeScreen() {
       <div style={{ margin: "-1rem -1rem 0", background: C.panel, borderBottom: `1px solid ${C.line}`, padding: "12px 24px" }}>
         <div className="flex items-center gap-3 flex-wrap" style={{ maxWidth: 1180, margin: "0 auto", position: "relative" }}>
           <div className="flex items-center gap-2.5" style={{ flex: "1 1 240px", minWidth: 0 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>CB</div>
+            <BrandMark size={36} />
             <div style={{ minWidth: 0 }}>
               <input
                 value={appTitle}
@@ -93,7 +98,7 @@ export default function HomeScreen() {
         {/* SAPAAN + AKSI */}
         <div className="flex items-end justify-between gap-3 flex-wrap mb-4">
           <div>
-            <div style={{ fontSize: 12, color: C.steel }}>{todayLabel}</div>
+            <div style={{ fontSize: 12, color: C.steel, fontFamily: "'IBM Plex Mono', monospace" }}><ClockText /></div>
             <h1 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.4px", color: C.ink }}><GreetingText name={displayName} /></h1>
           </div>
           {clusters.length > 0 && (
@@ -259,15 +264,18 @@ export default function HomeScreen() {
 
               {canEdit && (
                 <div className="rounded-2xl flex flex-col items-center justify-center gap-2.5" style={{ border: `2px dashed ${C.line}`, padding: 18, minHeight: 200 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: C.panel, border: `1px solid ${C.line}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: C.accent }}>+</div>
-                  <div style={{ fontWeight: 600, fontSize: 14, color: C.steel }}>Tambah Cluster Baru</div>
-                  <input value={newClusterName} onChange={(e) => setNewClusterName(e.target.value)} placeholder="Nama cluster baru..." aria-label="Nama cluster baru" className="text-sm px-3 py-2 rounded-full border w-full" style={{ borderColor: C.line, color: C.ink, background: C.panel }} />
-                  <input value={newClusterSubtitle} onChange={(e) => setNewClusterSubtitle(e.target.value)} placeholder="Lokasi / catatan (opsional)..." aria-label="Lokasi cluster baru" className="text-xs px-3 py-2 rounded-full border w-full" style={{ borderColor: C.line, color: C.ink, background: C.panel }} />
                   <button
-                    onClick={() => { if (!newClusterName.trim()) return; addCluster(newClusterName.trim(), newClusterSubtitle.trim()); setNewClusterName(""); setNewClusterSubtitle(""); }}
-                    className="text-xs px-3 py-2 rounded-full w-full font-semibold"
-                    style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}
-                  >+ Tambah Cluster</button>
+                    type="button"
+                    onClick={submitNewCluster}
+                    aria-label="Tambah cluster baru"
+                    title={newClusterName.trim() ? "Tambah cluster" : "Isi nama cluster dulu"}
+                    style={{ width: 44, height: 44, borderRadius: "50%", background: C.panel, border: `1px solid ${C.line}`, display: "flex", alignItems: "center", justifyContent: "center", color: newClusterName.trim() ? C.accent : C.steel, cursor: newClusterName.trim() ? "pointer" : "default", boxShadow: newClusterName.trim() ? C.cardShadow : "none", padding: 0 }}
+                  >
+                    <Ic name="plus" size={20} />
+                  </button>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: C.steel }}>Tambah Cluster Baru</div>
+                  <input value={newClusterName} onChange={(e) => setNewClusterName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submitNewCluster(); }} placeholder="Nama cluster baru..." aria-label="Nama cluster baru" className="text-sm px-3 py-2 rounded-full border w-full" style={{ borderColor: C.line, color: C.ink, background: C.panel }} />
+                  <input value={newClusterSubtitle} onChange={(e) => setNewClusterSubtitle(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submitNewCluster(); }} placeholder="Lokasi / catatan (opsional)..." aria-label="Lokasi cluster baru" className="text-xs px-3 py-2 rounded-full border w-full" style={{ borderColor: C.line, color: C.ink, background: C.panel }} />
                 </div>
               )}
             </div>
