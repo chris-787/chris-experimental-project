@@ -1,5 +1,6 @@
 import { C } from "../../theme";
 import { SlideInd, useSlideIndicator } from "../slide";
+import { measureTextWidth } from "../../lib/helpers";
 import { useBoard } from "./BoardContext";
 
 // Pilihan "Warna peta" berbentuk tombol bulat di atas peta. Status selain yang
@@ -13,6 +14,9 @@ export default function ColorPills() {
     background: "transparent", color: active ? C.selectInk : C.steel,
   });
   const otherActive = others.some((s) => s.key === colorMode);
+  // Lebar kotak "Status Lain" mengikuti teks yang tampil (nama status terpilih atau tulisan "Status Lain")
+  const shownLabel = otherActive ? (others.find((s) => s.key === colorMode) || {}).label : "Status Lain";
+  const selectWidth = Math.ceil(measureTextWidth(shownLabel || "Status Lain", "600 12px 'Plus Jakarta Sans', sans-serif")) + 14 + 30;
   const [slideRef, box] = useSlideIndicator([colorMode, others.length]);
   return (
     <div ref={slideRef} role="group" aria-label="Warna peta" className="flex items-center dash-tabs slide-host" style={{ gap: 4, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: 4, width: "fit-content", maxWidth: "100%", overflowX: "auto" }}>
@@ -28,7 +32,7 @@ export default function ColorPills() {
             aria-label="Status lain"
             value={otherActive ? colorMode : ""}
             onChange={(e) => e.target.value && setColorMode(e.target.value)}
-            style={{ ...pill(otherActive), appearance: "none", WebkitAppearance: "none", outline: "none", paddingRight: 28, width: otherActive ? 156 : 112 }}
+            style={{ ...pill(otherActive), appearance: "none", WebkitAppearance: "none", outline: "none", paddingRight: 28, width: selectWidth }}
           >
             <option value="" disabled>Status Lain</option>
             {others.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
