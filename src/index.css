@@ -125,7 +125,7 @@ body {
 /* Halaman Dashboard */
 .dash-row { display: grid; grid-template-columns: 140px minmax(0, 1fr) 80px; gap: 12px; align-items: center; }
 .dash-row-s { display: grid; grid-template-columns: 130px minmax(0, 1fr) 30px; gap: 10px; align-items: center; }
-.dash-two { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.dash-two { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 12px; align-items: stretch; }
 @media (max-width: 900px) { .dash-two { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 560px) { .dash-row { grid-template-columns: 100px minmax(0, 1fr) 64px; gap: 8px; } }
 
@@ -145,3 +145,4 @@ button, input, select, textarea { font-family: inherit; }
 /* Kotak cari: bingkai ikut membulat saat fokus (bukan kotak di dalam pil) */
 .search-pill:focus-within { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(201, 74, 28, 0.15); }
 .search-pill input:focus { outline: none; box-shadow: none; }
+.app-side.collapsed .side-menu { align-items: center; }

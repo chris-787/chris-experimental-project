@@ -21,7 +21,7 @@ export default function ClusterHeader() {
   const ghost = { background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 12, color: C.steel };
   return (
     <>
-      <div className="flex items-center gap-3 flex-wrap" style={{ marginBottom: 28 }}>
+      <div className="flex items-start gap-3 flex-wrap" style={{ marginBottom: 12 }}>
         <div style={{ flex: "1 1 240px", minWidth: 0 }}>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px", color: C.ink, lineHeight: 1.2 }}>
             {TITLES[mode]}{calibrating ? " · Edit Site Plan" : ""}
@@ -82,24 +82,26 @@ export default function ClusterHeader() {
           )}
         </div>
 
-        <div className="flex items-center gap-2" style={{ position: "relative" }}>
-          <div className="text-xs flex items-center gap-1.5" style={{ position: "absolute", right: 0, top: "100%", marginTop: 5, whiteSpace: "nowrap", color: saving ? C.steel : dirty ? C.amber : C.green }} role="status">
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+          <div className="flex items-center gap-2">
+            {canEdit ? (
+              <button
+                onClick={() => saveHouses()}
+                style={{ height: 36, padding: "0 16px", borderRadius: 999, fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", ...(dirty ? { background: C.amber, color: "#fff", border: `1px solid ${C.amber}` } : { background: C.panel, color: C.steel, border: `1px solid ${C.line}` }) }}
+                title={dirty ? "Ada perubahan yang belum tersimpan" : "Tidak ada perubahan"}
+              >
+                Simpan Perubahan
+              </button>
+            ) : (
+              <span style={{ height: 36, padding: "0 16px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>
+            )}
+            <ThemeToggle />
+          </div>
+          <div className="text-xs flex items-center gap-1.5" style={{ minHeight: 15, color: saving ? C.steel : dirty ? C.amber : C.green }} role="status">
             {saving && <><SmallSpinner /> Menyimpan...</>}
             {!saving && dirty && "Ada perubahan belum disimpan"}
             {!saving && !dirty && savedToast && "Tersimpan ✓"}
           </div>
-          {canEdit ? (
-            <button
-              onClick={() => saveHouses()}
-              style={{ height: 36, padding: "0 16px", borderRadius: 999, fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", ...(dirty ? { background: C.amber, color: "#fff", border: `1px solid ${C.amber}` } : { background: C.panel, color: C.steel, border: `1px solid ${C.line}` }) }}
-              title={dirty ? "Ada perubahan yang belum tersimpan" : "Tidak ada perubahan"}
-            >
-              Simpan Perubahan
-            </button>
-          ) : (
-            <span style={{ height: 36, padding: "0 16px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>
-          )}
-          <ThemeToggle />
         </div>
       </div>
 

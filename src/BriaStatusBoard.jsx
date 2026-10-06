@@ -220,7 +220,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
       const st = statusFields.find((s) => s.key === key);
       ringkasW = st ? Math.ceil(measureTextWidth(st.label, "500 12px 'Plus Jakarta Sans', sans-serif")) + 26 : ({ no: 44, tipe: 100, kontraktor: 192 }[key] || null);
     }
-    const w = ringkasW || colWidths[key] || DEFAULT_COL_WIDTH[key] || (key === "acOrder" ? 170 : 90);
+    const stField = statusFields.find((s) => s.key === key);
+    const stMin = stField ? Math.ceil(measureTextWidth(stField.label, "600 12px 'Plus Jakarta Sans', sans-serif")) + 26 : 0;
+    const w = Math.max(stMin, ringkasW || colWidths[key] || DEFAULT_COL_WIDTH[key] || (key === "acOrder" ? 170 : 90));
     if (key === "select") return w;
     return Math.max(MIN_COL_WIDTH[key] || 60, w);
   }
@@ -1351,8 +1353,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
     <div style={{ background: C.paper, minHeight: "100%", fontFamily: "'Plus Jakarta Sans', sans-serif" }} className={currentClusterId ? "" : "p-4"}>
       <style>{`
         * { box-sizing: border-box; }
-        table.dataTbl th, table.dataTbl td { padding: 6px 10px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
-        table.dataTbl th { text-align: left; color: ${C.steel}; font-weight: 600; padding: 10px 10px; background: ${C.panel}; position: sticky; top: 0; will-change: transform; }
+        table.dataTbl th, table.dataTbl td { padding: 3px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
+        table.dataTbl th { text-align: left; color: ${C.steel}; font-weight: 600; padding: 8px 8px; background: ${C.panel}; position: sticky; top: 0; will-change: transform; }
         table.dataTbl th.th-center { text-align: center; }
         .inspector-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
         .inspector-cols > div + div { border-left: 1px solid ${C.line}; padding-left: 24px; }
@@ -1370,6 +1372,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         table.dataTbl input.status-dot:checked { background: ${C.green}; border-color: ${C.green}; }
         table.dataTbl input.status-dot:checked::after { content: ""; position: absolute; left: 4.5px; top: 2px; width: 4px; height: 7px; border: solid #fff; border-width: 0 1.6px 1.6px 0; transform: rotate(45deg); }
         table.dataTbl input.status-dot:focus-visible { outline: 2px solid ${C.accent}; outline-offset: 2px; }
+        table.dataTbl td select, table.dataTbl td input:not([type=checkbox]) { height: 26px; box-sizing: border-box; padding-top: 0; padding-bottom: 0; }
         table.dataTbl th { z-index: 3; }
         table.dataTbl th.frz { z-index: 4; }
         table.dataTbl td.frz { position: sticky; z-index: 2; }

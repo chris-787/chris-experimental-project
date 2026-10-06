@@ -79,11 +79,11 @@ export default function HomeScreen() {
               {!homeSaving && homeDirty && "Ada perubahan belum disimpan"}
               {!homeSaving && !homeDirty && homeSavedToast && "Tersimpan ✓"}
             </div>
-            {canEdit && homeDirty && <button onClick={saveHomeChanges} style={{ ...pillBtn, height: 34, background: C.amber, color: "#fff", border: `1px solid ${C.amber}` }}>Simpan Perubahan</button>}
-            {!canEdit && <span style={{ height: 34, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>}
+            {canEdit && homeDirty && <button onClick={saveHomeChanges} style={{ ...pillBtn, height: 36, background: C.amber, color: "#fff", border: `1px solid ${C.amber}` }}>Simpan Perubahan</button>}
+            {!canEdit && <span style={{ height: 36, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>}
             <ThemeToggle />
-            <div title={displayName} style={{ width: 38, height: 34, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
-            <button onClick={handleLogoutClick} style={pillBtn}>Log Out</button>
+            <div title={displayName} style={{ width: 36, height: 36, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
+            <button onClick={handleLogoutClick} style={{ ...pillBtn, height: 36 }}>Log Out</button>
           </div>
         </div>
       </div>

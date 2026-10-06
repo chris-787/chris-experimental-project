@@ -12,8 +12,8 @@ export default function ThemeToggle() {
       type="button"
       onClick={() => setMode(toggleTheme())}
       title={mode === "dark" ? "Pakai mode terang" : "Pakai mode gelap"}
-      className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-      style={{ border: "none", background: C.pillFill, color: C.steel }}
+      className="flex items-center justify-center flex-shrink-0"
+      style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.ink, cursor: "pointer" }}
     >
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         {mode === "dark" ? (
