@@ -11,6 +11,7 @@ export default function HomeScreen() {
   const totalSumHpp = Object.values(clusterStats).reduce((s, x) => s + (x.sumHpp || 0), 0);
   const overallMarginPct = totalSumHarga ? ((totalSumHarga - totalSumHpp) / totalSumHarga) * 100 : 0;
   const activeClusters = clusters.filter((c) => !c.archived);
+  const backupDue = !lastBackupAt || (Date.now() - lastBackupAt) / 86400000 >= 3;
   const pillBtn = { height: 34, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
   return (
     <>
@@ -59,7 +60,7 @@ export default function HomeScreen() {
                           <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
                           <div style={{ color: C.steel }}>{r.clusterName}</div>
                         </div>
-                        <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.accent, color: "#fff", flexShrink: 0 }}>Buka</button>
+                        <button onClick={() => openKavlingFromSearch(r.clusterId, r.house.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}`, flexShrink: 0 }}>Buka</button>
                       </div>
                     ))
                   )}
@@ -82,7 +83,7 @@ export default function HomeScreen() {
             {canEdit && homeDirty && <button onClick={saveHomeChanges} style={{ ...pillBtn, height: 36, background: C.amber, color: "#fff", border: `1px solid ${C.amber}` }}>Simpan Perubahan</button>}
             {!canEdit && <span style={{ height: 36, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>}
             <ThemeToggle />
-            <div title={displayName} style={{ width: 36, height: 36, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
+            <div title={displayName} style={{ width: 36, height: 36, borderRadius: "50%", background: C.pillFill, color: C.ink, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
             <button onClick={handleLogoutClick} style={{ ...pillBtn, height: 36 }}>Log Out</button>
           </div>
         </div>
@@ -105,7 +106,7 @@ export default function HomeScreen() {
                   <input type="file" accept=".json" onChange={handleRestoreAllFile} style={{ display: "none" }} />
                 </label>
               )}
-              <button onClick={() => setShowWhatsNew(true)} style={{ ...pillBtn, background: C.accent, color: "#fff", border: `1px solid ${C.accent}` }}><Ic name="sparkle" size={15} /> What's New</button>
+              <button onClick={() => setShowWhatsNew(true)} style={pillBtn}><Ic name="sparkle" size={15} /> What's New</button>
             </div>
           )}
         </div>
@@ -222,7 +223,7 @@ export default function HomeScreen() {
                           {cs && (
                             <>
                               <div className="flex items-center gap-1.5 flex-wrap" style={{ marginTop: 12 }}>
-                                <Pill color={C.accent}>{hs.length} / {target || "—"} kavling</Pill>
+                                <Pill color={C.data}>{hs.length} / {target || "—"} kavling</Pill>
                                 <Pill color={cs.marginPct >= 20 ? C.green : C.red}>Margin {cs.marginPct.toFixed(2)}%</Pill>
                                 <Pill color={C.steel}>{cs.blockCount} blok</Pill>
                                 {due > 0 && <Pill color={C.amber}>{due} perlu ditindaklanjuti</Pill>}
@@ -231,7 +232,7 @@ export default function HomeScreen() {
                                 <div className="flex items-center justify-between" style={{ fontSize: 12, color: C.steel }}>
                                   <span>Kavling terpetakan</span><span>{target ? `${Math.round(mappedPct)}% dari target` : "target belum diisi"}</span>
                                 </div>
-                                <ProgressBar pct={mappedPct} color={C.accent} />
+                                <ProgressBar pct={mappedPct} color={C.data} />
                               </div>
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 14 }}>
                                 <div style={{ background: C.paper, borderRadius: 12, padding: "9px 12px" }}>
@@ -265,7 +266,7 @@ export default function HomeScreen() {
                   <button
                     onClick={() => { if (!newClusterName.trim()) return; addCluster(newClusterName.trim(), newClusterSubtitle.trim()); setNewClusterName(""); setNewClusterSubtitle(""); }}
                     className="text-xs px-3 py-2 rounded-full w-full font-semibold"
-                    style={{ background: C.accent, color: "#fff", border: "none" }}
+                    style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}
                   >+ Tambah Cluster</button>
                 </div>
               )}
@@ -284,7 +285,7 @@ export default function HomeScreen() {
                         <div className="text-sm" style={{ color: C.steel }}>{c.name}</div>
                         <div className="text-xs" style={{ color: C.faint }}>{c.subtitle}</div>
                       </div>
-                      <button onClick={() => toggleArchiveCluster(c.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.accent, background: C.panel, flexShrink: 0 }}>Buka Kembali</button>
+                      <button onClick={() => toggleArchiveCluster(c.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel, flexShrink: 0 }}>Buka Kembali</button>
                     </div>
                   ))}
                 </div>
@@ -301,8 +302,8 @@ export default function HomeScreen() {
                   <div className="text-sm font-semibold" style={{ color: C.ink }}>Perlu Ditindaklanjuti ({homeFollowUpList.length})</div>
                 </div>
                 {homeAllFollowUpList.length > 0 && <div className="flex" style={{ background: C.pillFill, borderRadius: 10, padding: 3 }}>
-                  <button onClick={() => setFollowUpView("list")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "list" ? C.accent : "transparent", color: followUpView === "list" ? "#fff" : C.steel, border: "none" }}>Daftar</button>
-                  <button onClick={() => setFollowUpView("kalender")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "kalender" ? C.accent : "transparent", color: followUpView === "kalender" ? "#fff" : C.steel, border: "none" }}>Kalender</button>
+                  <button onClick={() => setFollowUpView("list")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "list" ? C.select : "transparent", color: followUpView === "list" ? C.selectInk : C.steel, border: "none" }}>Daftar</button>
+                  <button onClick={() => setFollowUpView("kalender")} className="text-xs font-semibold px-2.5 py-1" style={{ borderRadius: 8, background: followUpView === "kalender" ? C.select : "transparent", color: followUpView === "kalender" ? C.selectInk : C.steel, border: "none" }}>Kalender</button>
                 </div>}
               </div>
 
@@ -422,7 +423,7 @@ export default function HomeScreen() {
                 );
               })()}
               {clusters.length > 0 && (
-                <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-2 rounded-full font-semibold mt-2.5 w-full flex items-center justify-center gap-1.5" style={{ background: C.accent, color: "#fff", border: "none" }}>
+                <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-2 rounded-full font-semibold mt-2.5 w-full flex items-center justify-center gap-1.5" style={backupDue ? { background: C.accent, color: "#fff", border: "none" } : { background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>
                   {exportingBackupAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Backup sekarang
                 </button>
               )}

@@ -74,7 +74,7 @@ export default function DataTable() {
           <div className="mb-2">
             <div className="flex items-center gap-2 flex-wrap mb-1.5">
               <span className="text-xs" style={{ color: C.steel, minWidth: 40 }}>Blok:</span>
-              <button onClick={() => setTableBlocks(blocks.map((b) => b.name))} className="text-xs" style={{ color: C.accent }}>Select All</button>
+              <button onClick={() => setTableBlocks(blocks.map((b) => b.name))} className="text-xs" style={{ color: C.ink, textDecoration: "underline" }}>Select All</button>
               <span className="text-xs" style={{ color: C.line }}>|</span>
               <button onClick={() => setTableBlocks([])} className="text-xs" style={{ color: C.steel }}>Clear All</button>
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -85,7 +85,7 @@ export default function DataTable() {
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs" style={{ color: C.steel, minWidth: 40 }}>Tipe:</span>
-              <button onClick={() => setTableTipes(tipeOptions.map((t) => t.name))} className="text-xs" style={{ color: C.accent }}>Select All</button>
+              <button onClick={() => setTableTipes(tipeOptions.map((t) => t.name))} className="text-xs" style={{ color: C.ink, textDecoration: "underline" }}>Select All</button>
               <span className="text-xs" style={{ color: C.line }}>|</span>
               <button onClick={() => setTableTipes([])} className="text-xs" style={{ color: C.steel }}>Clear All</button>
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -136,8 +136,8 @@ export default function DataTable() {
                   </React.Fragment>
                 ))}
               </select>
-              <button onClick={exportExcel} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.green, background: C.panel }}>Export Excel</button>
-              <label className="text-xs px-3 py-1.5 rounded-full border cursor-pointer" style={{ borderColor: C.line, color: C.accent, background: C.panel }}>
+              <button onClick={exportExcel} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Export Excel</button>
+              <label className="text-xs px-3 py-1.5 rounded-full border cursor-pointer" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>
                 Import Excel/CSV
                 <input type="file" accept=".xlsx,.xls,.csv" onChange={importExcel} style={{ display: "none" }} />
               </label>
@@ -160,7 +160,7 @@ export default function DataTable() {
               <div className="flex items-center rounded-lg overflow-hidden" style={{ border: `1px solid ${C.line}` }} role="group" aria-label="Tampilan kolom">
                 {[["ringkas", "Ringkas"], ["lengkap", "Lengkap"]].map(([v, label]) => (
                   <button key={v} onClick={() => { setTableView(v); setShowColMenu(false); }} className="text-xs px-2 py-1" aria-pressed={tableView === v}
-                    style={tableView === v ? { background: C.accent, color: "#fff" } : { background: C.panel, color: C.steel }}>{label}</button>
+                    style={tableView === v ? { background: C.select, color: C.selectInk } : { background: C.panel, color: C.steel }}>{label}</button>
                 ))}
               </div>
               {tableView === "lengkap" && <div style={{ position: "relative" }}>
@@ -440,7 +440,7 @@ export default function DataTable() {
                         </div>
                       ) : (
                         <div className="flex items-center gap-2" style={{ whiteSpace: "nowrap" }}>
-                          <button onClick={() => duplicateHouse(h.id)} className="text-xs" style={{ color: C.accent }} title="Salin data kavling ini jadi kavling baru">Duplikat</button>
+                          <button onClick={() => duplicateHouse(h.id)} className="text-xs" style={{ color: C.steel }} title="Salin data kavling ini jadi kavling baru">Duplikat</button>
                           <button onClick={() => setConfirmDeleteId(h.id)} className="text-xs" style={{ color: C.red }}>Hapus</button>
                         </div>
                       )}

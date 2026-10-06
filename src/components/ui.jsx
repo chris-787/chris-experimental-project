@@ -20,7 +20,7 @@ export function GreetingText({ name }) {
 export function Chip({ active, onClick, children }) {
   return (
     <button onClick={onClick} className="text-xs px-2.5 py-1 rounded-full border font-medium transition-colors"
-      style={{ borderColor: active ? C.accent : C.line, background: active ? C.accent : C.panel, color: active ? "#fff" : C.steel }}>
+      style={{ borderColor: active ? C.select : C.line, background: active ? C.selectSoft : C.panel, color: active ? C.ink : C.steel }}>
       {children}
     </button>
   );

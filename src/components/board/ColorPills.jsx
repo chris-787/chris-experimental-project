@@ -9,7 +9,7 @@ export default function ColorPills() {
   const others = statusFields.slice(1);
   const pill = (active) => ({
     height: 30, padding: "0 14px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit",
-    background: active ? C.accent : "transparent", color: active ? "#fff" : C.steel,
+    background: active ? C.select : "transparent", color: active ? C.selectInk : C.steel,
   });
   const otherActive = others.some((s) => s.key === colorMode);
   return (
@@ -29,7 +29,7 @@ export default function ColorPills() {
             <option value="" disabled>Status Lain</option>
             {others.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
           </select>
-          <span aria-hidden="true" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 11, color: otherActive ? "#fff" : C.steel }}>▾</span>
+          <span aria-hidden="true" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 11, color: otherActive ? C.selectInk : C.steel }}>▾</span>
         </span>
       )}
     </div>

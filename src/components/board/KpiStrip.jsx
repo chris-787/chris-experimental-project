@@ -21,7 +21,7 @@ export default function KpiStrip() {
       <div style={box}>
         <div style={{ fontSize: 11, color: C.steel }}>Kavling Terpetakan</div>
         <div style={{ fontFamily: MONO, fontSize: 19, fontWeight: 500, marginTop: 4, color: C.ink }}>{houses.length} <span style={{ fontSize: 13, color: C.steel }}>/ {totalTarget}</span></div>
-        {bar(mapped, C.accent)}
+        {bar(mapped, C.data)}
         <div style={{ fontSize: 11, color: C.steel, marginTop: 6 }}>{Math.round(mapped)}% dari target</div>
       </div>
       <div style={box}>
@@ -39,7 +39,7 @@ export default function KpiStrip() {
         <div style={{ fontSize: 11, color: C.steel }}>Rata-rata Margin</div>
         <div className="flex items-center gap-2" style={{ marginTop: 4 }}>
           <span style={{ fontFamily: MONO, fontSize: 19, fontWeight: 500, color: C.ink }}>{avgMarginPct.toFixed(2)}%</span>
-          <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 999, background: ok ? C.chipBlueBg : C.chipRedBg, color: ok ? C.green : C.red }}>{ok ? "di atas target" : "di bawah target"}</span>
+          <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 999, background: ok ? "color-mix(in srgb, var(--green) 16%, transparent)" : C.chipRedBg, color: ok ? C.green : C.red }}>{ok ? "di atas target" : "di bawah target"}</span>
         </div>
         <div style={{ fontSize: 11, color: C.steel, marginTop: 14 }}>target minimal 20%</div>
       </div>

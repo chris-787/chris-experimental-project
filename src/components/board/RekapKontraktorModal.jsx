@@ -33,7 +33,7 @@ export default function RekapKontraktorModal() {
                   <div className="text-xs p-2.5" style={{ color: C.steel }}>Belum ada kavling di cluster ini.</div>
                 )}
               </div>
-              <button onClick={() => setShowRekapKontraktor(false)} className="text-sm w-full px-2.5 py-1.5 rounded-lg mt-3" style={{ background: C.accent, color: "#fff" }}>Tutup</button>
+              <button onClick={() => setShowRekapKontraktor(false)} className="text-sm w-full px-2.5 py-1.5 rounded-lg mt-3" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>Tutup</button>
             </div>
           </div>
         </div>

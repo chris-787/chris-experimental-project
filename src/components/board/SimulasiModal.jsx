@@ -101,7 +101,7 @@ export default function SimulasiModal() {
 
                 <div className="flex gap-2 mt-3">
                   <button onClick={() => { setSimScope("all"); setSimHargaMode("persen"); setSimHargaValue(""); setSimHppMode("persen"); setSimHppValue(""); }} className="text-sm flex-1 px-2.5 py-1.5 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Reset</button>
-                  <button onClick={() => setShowSimulasi(false)} className="text-sm flex-1 px-2.5 py-1.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tutup</button>
+                  <button onClick={() => setShowSimulasi(false)} className="text-sm flex-1 px-2.5 py-1.5 rounded-lg" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>Tutup</button>
                 </div>
               </div>
             </div>

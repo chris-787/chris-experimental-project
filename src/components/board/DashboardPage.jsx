@@ -42,12 +42,12 @@ function Ringkasan() {
         <div style={{ ...card, minWidth: 0 }}>
           <div className="flex items-center justify-between flex-wrap gap-2 mb-3.5">
             <div style={{ fontSize: 14, fontWeight: 700, color: C.ink }}>Alur status kavling</div>
-            {firstEmpty && houses.length > 0 && <Pill color={C.accent}>{houses.length} kavling menunggu {firstEmpty.label}</Pill>}
+            {firstEmpty && houses.length > 0 && <Pill color={C.data}>{houses.length} kavling menunggu {firstEmpty.label}</Pill>}
           </div>
           <div className="flex flex-col gap-2.5">
             <div className="dash-row">
               <span className="text-xs" style={{ color: C.ink }}>Terpetakan</span>
-              <Bar pct={totalTarget ? (houses.length / totalTarget) * 100 : 0} color={C.accent} />
+              <Bar pct={totalTarget ? (houses.length / totalTarget) * 100 : 0} color={C.data} />
               <span className="text-xs" style={{ fontFamily: MONO, textAlign: "right" }}>{houses.length} / {totalTarget}</span>
             </div>
             {rows.map((r) => (
@@ -75,7 +75,7 @@ function Ringkasan() {
                 {margins.map((t) => (
                   <div key={t.tipe} style={colTop()}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: t.margin >= 20 ? C.ink : C.red }}>{t.margin}%</span>
-                    <div style={{ width: "100%", maxWidth: 44, height: Math.max(3, (Math.max(0, t.margin) / mTop) * CH), borderRadius: "8px 8px 0 0", background: t.margin >= 20 ? C.accent : t.margin > 0 ? C.amber : C.red }} />
+                    <div style={{ width: "100%", maxWidth: 44, height: Math.max(3, (Math.max(0, t.margin) / mTop) * CH), borderRadius: "8px 8px 0 0", background: t.margin >= 20 ? C.data : t.margin > 0 ? C.amber : C.red }} />
                   </div>
                 ))}
               </div>
@@ -92,7 +92,7 @@ function Ringkasan() {
           <div className="flex items-center justify-between flex-wrap gap-2" style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.ink }}>Kavling terpetakan per blok</div>
             <div className="flex items-center gap-3 text-xs" style={{ color: C.steel }}>
-              <span className="flex items-center gap-1.5"><i style={{ width: 10, height: 10, borderRadius: 3, background: C.accent, display: "inline-block" }} />Terpetakan</span>
+              <span className="flex items-center gap-1.5"><i style={{ width: 10, height: 10, borderRadius: 3, background: C.data, display: "inline-block" }} />Terpetakan</span>
               <span className="flex items-center gap-1.5"><i style={{ width: 10, height: 10, borderRadius: 3, background: C.line, display: "inline-block", boxShadow: `inset 0 0 0 1px ${C.faint}` }} />Target</span>
             </div>
           </div>
@@ -103,7 +103,7 @@ function Ringkasan() {
                 <div key={b.blok} style={colTop()} title={`${b.blok}: ${b.Terpetakan} terpetakan dari target ${tgt}`}>
                   <span style={{ fontSize: 11, color: C.steel, whiteSpace: "nowrap" }}><b style={{ color: b.Terpetakan ? C.ink : C.steel, fontWeight: 600 }}>{b.Terpetakan}</b>/{tgt}</span>
                   <div style={{ width: "100%", maxWidth: 40, height: Math.max(4, (tgt / maxBlok) * CH), borderRadius: "6px 6px 0 0", background: C.line, boxShadow: `inset 0 0 0 1px ${C.faint}`, position: "relative", overflow: "hidden" }}>
-                    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: `${tgt ? (b.Terpetakan / tgt) * 100 : 0}%`, background: C.accent }} />
+                    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: `${tgt ? (b.Terpetakan / tgt) * 100 : 0}%`, background: C.data }} />
                   </div>
                 </div>
               );
@@ -298,7 +298,7 @@ export default function DashboardPage() {
             role="tab"
             aria-selected={tab === t.key}
             onClick={() => setDashTab(t.key)}
-            style={{ height: 32, padding: "0 16px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", background: tab === t.key ? C.accent : "transparent", color: tab === t.key ? "#fff" : C.steel }}
+            style={{ height: 32, padding: "0 16px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", background: tab === t.key ? C.select : "transparent", color: tab === t.key ? C.selectInk : C.steel }}
           >{t.label}</button>
         ))}
       </div>

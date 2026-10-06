@@ -71,7 +71,7 @@ export default function Sidebar() {
           {lastBackupAt ? timeAgo(lastBackupAt) : "Belum pernah. Backup hanya tersimpan saat Anda menekan tombol di Home."}
         </div>
         <div className="flex items-center gap-2.5" style={{ padding: "2px 4px", flexDirection: sidebarCollapsed ? "column" : "row" }}>
-          <div title={canEdit ? "Admin" : "View Mode"} style={{ width: 30, height: 30, borderRadius: "50%", background: C.chipBlueBg, color: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>{initials}</div>
+          <div title={canEdit ? "Admin" : "View Mode"} style={{ width: 30, height: 30, borderRadius: "50%", background: C.pillFill, color: C.ink, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>{initials}</div>
           <div className="side-hide-collapsed" style={{ lineHeight: 1.25, flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: 600, color: C.ink, fontSize: 13 }}>{displayName}</div>
             <div style={{ fontSize: 12, color: C.steel }}>{canEdit ? "Admin" : "View Mode"}</div>

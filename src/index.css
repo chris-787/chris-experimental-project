@@ -15,6 +15,10 @@
   --line: #E7E2D9;
   --accent: #C94A1C;
   --accent2: #A83A12;
+  --select: #1E1B18;
+  --select-ink: #FFFFFF;
+  --select-soft: #ECE8DF;
+  --data: #3E5C7E;
   --green: #3F7D58;
   --amber: #B8791E;
   --red: #BD3B2E;
@@ -41,6 +45,10 @@
   --line: #2F2A25;
   --accent: #D75A2C;
   --accent2: #F4986F;
+  --select: #F1EDE7;
+  --select-ink: #151210;
+  --select-soft: #2F2A25;
+  --data: #7C9CC4;
   --green: #52A373;
   --amber: #D9A441;
   --red: #E0695C;
@@ -108,7 +116,8 @@ body {
 .app-main { flex: 1 1 0; min-width: 0; padding: 1rem; }
 .side-item { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 38px; padding: 0 .65rem; border: none; border-radius: 10px; background: transparent; color: var(--steel); font-size: 12.5px; font-weight: 500; cursor: pointer; text-align: left; font-family: inherit; }
 .side-item:hover { background: var(--pill-fill); color: var(--ink); }
-.side-item[aria-current="page"] { background: var(--chip-blue-bg); color: var(--accent); font-weight: 600; }
+.side-item[aria-current="page"] { background: var(--select-soft); color: var(--ink); font-weight: 600; box-shadow: inset 3px 0 0 var(--accent); }
+.app-side.collapsed .side-item[aria-current="page"] { box-shadow: none; }
 .app-side.collapsed .side-item { justify-content: center; padding: 0; width: 40px; min-height: 40px; }
 .app-side.collapsed .side-label, .app-side.collapsed .side-hide-collapsed { display: none; }
 .side-menu { display: flex; flex-direction: column; gap: 4px; width: 100%; }

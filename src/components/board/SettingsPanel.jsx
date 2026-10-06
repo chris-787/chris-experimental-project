@@ -53,7 +53,7 @@ export default function SettingsPanel() {
             <div className="flex gap-2">
               <input placeholder="Nama blok, mis. RB/K" style={formInput} value={newBlock.name} onChange={(e) => setNewBlock({ ...newBlock, name: e.target.value })} />
               <input placeholder="Target unit" type="number" style={{ ...formInput, maxWidth: 100 }} value={newBlock.target} onChange={(e) => setNewBlock({ ...newBlock, target: e.target.value })} />
-              <button onClick={addBlock} className="text-xs px-2.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
+              <button onClick={addBlock} className="text-xs px-2.5 rounded-lg" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>Tambah</button>
             </div>
           </div>
 
@@ -62,7 +62,7 @@ export default function SettingsPanel() {
             <p className="text-xs mb-2.5" style={{ color: C.steel }}>Ganti dengan revisi terbaru kapan saja. Titik-titik kavling yang sudah dikalibrasi tetap tersimpan (posisinya persentase, jadi sesuaikan lagi kalau layout gambarnya berubah total).</p>
             <img src={siteImage} alt="Preview site plan" loading="lazy" decoding="async" style={{ width: "100%", maxHeight: 140, objectFit: "cover", borderRadius: 8, border: `1px solid ${C.line}`, marginBottom: 10 }} />
             <div className="flex items-center gap-2 flex-wrap">
-              <label className="text-xs px-2.5 py-1 rounded-lg cursor-pointer" style={{ background: C.accent, color: "#fff" }}>
+              <label className="text-xs px-2.5 py-1 rounded-lg cursor-pointer" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>
                 {imgUploading ? "Memproses..." : "Unggah Gambar Baru"}
                 <input type="file" accept="image/*,.pdf" onChange={handleImageUpload} style={{ display: "none" }} disabled={imgUploading} />
               </label>
@@ -110,7 +110,7 @@ export default function SettingsPanel() {
             <div className="flex gap-2">
               <input placeholder="Tipe baru, mis. Standar 8x12" style={formInput} value={newTipe} onChange={(e) => setNewTipe(e.target.value)} />
               <input placeholder="Luas Bangunan m²" type="number" min="0" style={{ ...formInput, maxWidth: 140 }} value={newTipeLuas} onChange={(e) => setNewTipeLuas(e.target.value)} />
-              <button onClick={addTipe} className="text-xs px-2.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
+              <button onClick={addTipe} className="text-xs px-2.5 rounded-lg" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>Tambah</button>
             </div>
           </div>
 
@@ -152,7 +152,7 @@ export default function SettingsPanel() {
               <label className="flex items-center gap-1.5 text-xs whitespace-nowrap" style={{ color: C.steel }}>
                 <input type="checkbox" checked={newStatusHasDetail} onChange={(e) => setNewStatusHasDetail(e.target.checked)} /> Punya detail
               </label>
-              <button onClick={addStatus} className="text-xs px-2.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
+              <button onClick={addStatus} className="text-xs px-2.5 rounded-lg" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>Tambah</button>
             </div>
             <p className="text-xs mt-2" style={{ color: C.steel }}>Kavling yang sudah ada otomatis dapat status baru = "belum", tinggal dicentang di tabel.</p>
           </div>
@@ -180,7 +180,7 @@ export default function SettingsPanel() {
             </div>
             <div className="flex gap-2">
               <input placeholder="Kategori baru" style={formInput} value={newKategori} onChange={(e) => setNewKategori(e.target.value)} />
-              <button onClick={addKategori} className="text-xs px-2.5 rounded-lg" style={{ background: C.accent, color: "#fff" }}>Tambah</button>
+              <button onClick={addKategori} className="text-xs px-2.5 rounded-lg" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>Tambah</button>
             </div>
           </div>
 

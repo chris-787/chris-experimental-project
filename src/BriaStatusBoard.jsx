@@ -1377,7 +1377,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         table.dataTbl th.frz { z-index: 4; }
         table.dataTbl td.frz { position: sticky; z-index: 2; }
         table.dataTbl tr:hover .kavling-link { text-decoration-color: currentColor; }
-        input[type=range] { accent-color: ${C.accent}; }
+        input[type=range] { accent-color: ${C.steel}; }
         .col-resize-handle:hover { background: ${C.accent}33; }
         .col-resize-handle:active { background: ${C.accent}55; }
         .editable-heading:hover, .editable-heading:focus { border-bottom-color: ${C.line} !important; }
