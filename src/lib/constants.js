@@ -11,6 +11,8 @@ export const WHATS_NEW_GROUPS = [
     versionNote: "Tampilan baru: sidebar, Dashboard, mode gelap",
     date: "7 Oktober 2026",
     items: [
+      { icon: "✋", title: "Geser Site Plan dengan ditarik", desc: "Saat peta di-zoom, tarik di area kosong untuk menggeser peta (kursor jadi tangan terbuka, lalu menggenggam saat ditarik). Di atas kavling kursor tetap tangan menunjuk dan klik tetap memilih kavling." },
+      { icon: "🖨️", title: "Print ringkasan memuat posisi di Site Plan", desc: "Print ringkasan kavling kini menyertakan potongan peta diperbesar dan peta utuh dengan bingkai merah di kavling tersebut. Tombol Cetak diganti Print." },
       { icon: "⭐", title: "Pin cluster berwarna emas", desc: "Tombol bintang di kartu cluster (Home) kini berwarna emas, lengkap dengan garis tepi kartu emas, saat cluster di-pin, sehingga mudah dibedakan dari yang belum." },
       { icon: "🔦", title: "Kavling terpilih di peta lebih jelas", desc: "Penanda kavling yang dipilih tidak lagi garis emas tipis. Sekarang bingkainya merah terang dengan garis luar gelap, dan tebalnya menyesuaikan zoom dan ukuran layar (tipis di HP). Isinya berkedip merah terang pelan supaya langsung terlihat mana yang sedang dipilih, dan diam otomatis di perangkat dengan pengaturan kurangi gerakan." },
       { icon: "🎯", title: "Baris terpilih di tabel lebih jelas", desc: "Baris yang dipilih sekarang berlatar biru yang tegas dengan penanda tebal di sisi kiri, berbeda dari warna saat kursor melewati baris (lebih lembut) dan dari baris selang-seling. Berlaku di mode terang dan gelap, di Main Mode maupun Data Mode." },

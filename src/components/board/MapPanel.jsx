@@ -75,6 +75,37 @@ export default function MapPanel() {
     });
     // eslint-disable-next-line
   }, [houses, editingShapeId, colorMode, blocks, tipeOptions, kontraktorLegend, hiddenKeys, calibrating, statusFields]);
+  // Geser peta dengan ditarik (mouse): tangan terbuka di area kosong, menggenggam saat ditarik.
+  // Tarikan lebih dari 4px tidak dihitung sebagai klik, supaya kavling tidak ikut terpilih.
+  const [canPan, setCanPan] = useState(false);
+  const [panning, setPanning] = useState(false);
+  const panRef = useRef({ active: false, moved: false, x: 0, y: 0, left: 0, top: 0, suppress: false });
+  const panBlocked = calibrating || !!editingShapeId;
+  function checkCanPan() {
+    const box = planBoxRef.current;
+    setCanPan(!!box && (box.scrollWidth > box.clientWidth + 1 || box.scrollHeight > box.clientHeight + 1));
+  }
+  function startPan(e) {
+    const box = planBoxRef.current;
+    if (e.button !== 0 || panBlocked || !box) return;
+    const st = panRef.current;
+    st.active = true; st.moved = false; st.suppress = false;
+    st.x = e.clientX; st.y = e.clientY; st.left = box.scrollLeft; st.top = box.scrollTop;
+    const move = (ev) => {
+      const dx = ev.clientX - st.x, dy = ev.clientY - st.y;
+      if (!st.moved && Math.hypot(dx, dy) > 4) { st.moved = true; setPanning(true); }
+      if (st.moved) { box.scrollLeft = st.left - dx; box.scrollTop = st.top - dy; }
+    };
+    const up = () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+      st.active = false;
+      if (st.moved) { st.suppress = true; setTimeout(() => { st.suppress = false; }, 0); }
+      setPanning(false);
+    };
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+  }
   // Kode kavling (Show Blok): satu ukuran huruf, anti-bentrok. Dihitung ulang hanya bila data, zoom, atau ukuran peta berubah.
   const labelData = useMemo(() => {
     if (!showNumbers || calibrating || zoom < 150) return null;
@@ -196,7 +227,10 @@ export default function MapPanel() {
           <div style={{ position: "relative" }}>
           <div
             ref={planBoxRef}
-            className="plan-box"
+            className={`plan-box${panning ? " panning" : ""}${canPan && !panBlocked ? " pannable" : ""}`}
+            onMouseEnter={checkCanPan}
+            onMouseDown={startPan}
+            onClickCapture={(e) => { if (panRef.current.suppress) { e.stopPropagation(); e.preventDefault(); } }}
             style={{ "--img-h": imgH ? `${imgH + 2}px` : "auto", overflow: "auto", ...(mapHeight ? { height: mapHeight } : { maxHeight: 640 }), border: `1px solid ${C.line}`, borderRadius: 8, touchAction: "pan-x pan-y" }}
             onWheel={handleWheelZoom}
             onTouchStart={handleTouchStart}

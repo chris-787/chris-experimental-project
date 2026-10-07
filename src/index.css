@@ -249,3 +249,7 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 @media (prefers-reduced-motion: no-preference) {
   .sel-pulse { animation: sel-pulse 1.4s ease-in-out infinite; }
 }
+
+/* Geser peta dengan ditarik: tangan terbuka di area kosong, menggenggam saat ditarik (kavling tetap tangan menunjuk). */
+.plan-box.pannable, .plan-box.pannable > div { cursor: grab !important; }
+.plan-box.panning, .plan-box.panning * { cursor: grabbing !important; user-select: none; }
