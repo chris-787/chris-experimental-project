@@ -7,7 +7,18 @@ import { timeAgo } from "../../lib/calc";
 import { statusColor } from "../../lib/palette";
 import { useBoard } from "./BoardContext";
 
+// Judul kolom: ikon berlatar warna sendiri + teks, supaya tiap kolom punya identitas warna.
+function ColHead({ icon, color, children }) {
+  return (
+    <div className="col-head" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <span style={{ width: 22, height: 22, borderRadius: 7, background: tint(color, 18), color, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Ic name={icon} size={14} /></span>
+      {children}
+    </div>
+  );
+}
+
 // Arah geser terakhir dari tombol Prev/Next: isi Detail Kavling masuk dari sisi yang sesuai; dari klik peta, memudar naik saja.
+const KONTRAKTOR_COLOR = "#8B6FD6";
 let navDir = { id: null, dir: "" };
 
 export default function InspectorPanel() {
@@ -49,7 +60,7 @@ export default function InspectorPanel() {
         <div key={h.id} className={`insp-in${navDir.id === h.id && navDir.dir ? ` insp-${navDir.dir}` : ""}`}>
         <div className="inspector-cols">
         <div>
-        <div className="col-head"><i className="col-dot" style={{ background: C.data }} />Data dan status</div>
+        <ColHead icon="sliders" color={C.accent}>Data dan status</ColHead>
         <Field label="Tipe / Ukuran">
           <select style={formInput} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
             {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
@@ -63,9 +74,9 @@ export default function InspectorPanel() {
         </Field>
 
         <div className="my-2 pt-2" style={{ borderTop: `1px solid ${C.line}` }}>
-          {statusFields.map((s) => (
+          {statusFields.map((s, si) => (
             <React.Fragment key={s.key}>
-              <StatusRow label={s.label} value={!!h.status[s.key]} onToggle={() => { const next = !h.status[s.key]; updateStatus(h.id, s.key, next); if (s.hasDetail && next) setDetailEditingKey(`${h.id}:${s.key}`); }} />
+              <StatusRow color={s.key === "terjual" ? C.green : statusColor(si)} label={s.label} value={!!h.status[s.key]} onToggle={() => { const next = !h.status[s.key]; updateStatus(h.id, s.key, next); if (s.hasDetail && next) setDetailEditingKey(`${h.id}:${s.key}`); }} />
               {s.hasDetail && h.status[s.key] && (
                 <div className="mb-2 mt-1 p-2 rounded-lg" style={{ background: C.paper, border: `1px solid ${C.line}` }}>
                   <div className="text-xs mb-1" style={{ color: C.steel }}>Detail {s.label}</div>
@@ -107,7 +118,7 @@ export default function InspectorPanel() {
         </div>
         <div>
         <div>
-        <div className="col-head"><i className="col-dot" style={{ background: kColor || C.steel }} />Kontraktor dan SPK</div>
+        <ColHead icon="hardhat" color={KONTRAKTOR_COLOR}>Kontraktor dan SPK</ColHead>
           {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
             <Field label="Kontraktor">
               <input ref={focusWhen(textEditingKey === `${h.id}:kontraktor`, "inspector")} list="kontraktor-options" style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
@@ -115,7 +126,7 @@ export default function InspectorPanel() {
           ) : (
             <div className="mb-2">
               <div className="text-xs mb-1" style={{ color: C.steel }}>Kontraktor</div>
-              <div onClick={() => setTextEditingKey(`${h.id}:kontraktor`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${C.line}`, borderRadius: 8, background: C.panel, display: "flex", alignItems: "center", gap: 8, fontWeight: 600 }}>{kColor && <i style={{ width: 10, height: 10, borderRadius: 3, background: kColor, flexShrink: 0 }} />}{h.kontraktor}</div>
+              <div onClick={() => setTextEditingKey(`${h.id}:kontraktor`)} style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "6px 8px", border: `1px dashed ${kColor ? tint(kColor, 55) : C.line}`, borderRadius: 8, background: kColor ? tint(kColor, 12) : C.panel, display: "flex", alignItems: "center", gap: 8, fontWeight: 600 }}>{kColor && <i style={{ width: 10, height: 10, borderRadius: 3, background: kColor, flexShrink: 0 }} />}{h.kontraktor}</div>
             </div>
           )}
           {textEditingKey === `${h.id}:spkNo` || !h.spkNo ? (
@@ -165,7 +176,7 @@ export default function InspectorPanel() {
         </div>
         <div>
         <div>
-        <div className="col-head"><i className="col-dot" style={{ background: C.green }} />Harga dan HPP</div>
+        <ColHead icon="wallet" color={C.green}>Harga dan HPP</ColHead>
           <div className="grid grid-cols-2 gap-2">
             <div className="text-xs mb-2" style={{ color: C.steel }}>
               Luas Bangunan: <b style={{ color: C.ink }}>{luasBangunanOf(h)} m²</b> <span style={{ color: C.steel }}>(ikut Tipe "{h.tipe}", atur di Pengaturan)</span>
@@ -183,7 +194,7 @@ export default function InspectorPanel() {
               </div>
             </div>
           )}
-          <StatusRow label="Ada Adendum" value={h.adendum} onToggle={() => updateHouse(h.id, { adendum: !h.adendum })} />
+          <StatusRow color={C.amber} label="Ada Adendum" value={h.adendum} onToggle={() => updateHouse(h.id, { adendum: !h.adendum })} />
           {h.adendum && (
             <Field label="Jumlah Adendum (+/- Rp)">
               <input type="number" style={formInput} value={h.adendumAmount || ""} onChange={(e) => updateHouse(h.id, { adendumAmount: Number(e.target.value) || 0 })} />
@@ -211,17 +222,18 @@ export default function InspectorPanel() {
               <span style={{ fontFamily: "IBM Plex Mono, monospace", color: C.ink }}>{rupiah(Math.round(finalHppPerM2(h)))}</span>
             </div>
           )}
-          <div className="flex justify-between items-baseline">
-            <span className="text-sm font-semibold" style={{ color: C.ink }}>Margin</span>
-            {!luasBangunanOf(h) ? (
+          {!luasBangunanOf(h) ? (
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm font-semibold" style={{ color: C.ink }}>Margin</span>
               <span className="text-xs" style={{ color: C.steel }}>atur Luas Bangunan Tipe</span>
-            ) : (
-              <span style={{ textAlign: "right" }}>
-                <div style={{ display: "inline-block", fontFamily: "IBM Plex Mono, monospace", fontWeight: 700, fontSize: 15, padding: "2px 12px", borderRadius: 999, background: tint(marginPct(h) >= 20 ? C.green : C.red, 16), color: marginPct(h) >= 20 ? C.green : C.red }}>{marginPct(h).toFixed(2)}%</div>
-                <div className="text-xs" style={{ color: C.steel }}>{rupiah(marginOf(h))}</div>
-              </span>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div style={{ borderRadius: 12, padding: "10px 12px", textAlign: "center", background: tint(marginPct(h) >= 20 ? C.green : C.red, 14), border: `1px solid ${tint(marginPct(h) >= 20 ? C.green : C.red, 35)}` }}>
+              <div className="text-xs" style={{ color: marginPct(h) >= 20 ? C.green : C.red, fontWeight: 600 }}>Margin</div>
+              <div style={{ fontFamily: "IBM Plex Mono, monospace", fontWeight: 700, fontSize: 24, lineHeight: 1.2, color: marginPct(h) >= 20 ? C.green : C.red }}>{marginPct(h).toFixed(2)}%</div>
+              <div className="text-xs" style={{ color: C.steel }}>{rupiah(marginOf(h))}</div>
+            </div>
+          )}
         </div>
 
         </div>

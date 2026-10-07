@@ -74,7 +74,7 @@ export function IconChip({ name, bg, color, size = 34 }) {
 export function Field({ label, children }) {
   return (<div className="mb-2"><div className="text-xs mb-1" style={{ color: C.steel }}>{label}</div>{children}</div>);
 }
-export function StatusRow({ label, value, onToggle }) {
+export function StatusRow({ label, value, onToggle, color }) {
   return (
     <div className="flex items-center justify-between select-none" style={{ padding: "6px 0" }}>
       <span style={{ fontSize: 13, color: C.ink }}>{label}</span>
@@ -84,7 +84,7 @@ export function StatusRow({ label, value, onToggle }) {
         aria-checked={!!value}
         aria-label={label}
         onClick={onToggle}
-        style={{ width: 36, height: 20, borderRadius: 999, border: "none", padding: 0, position: "relative", cursor: "pointer", flexShrink: 0, background: value ? C.green : C.faint, transition: "background .15s" }}
+        style={{ width: 36, height: 20, borderRadius: 999, border: "none", padding: 0, position: "relative", cursor: "pointer", flexShrink: 0, background: value ? (color || C.green) : C.faint, transition: "background .15s" }}
       >
         <span style={{ position: "absolute", top: 2, left: value ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left .15s" }} />
       </button>
