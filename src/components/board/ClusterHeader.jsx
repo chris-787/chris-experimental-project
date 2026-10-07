@@ -92,10 +92,10 @@ export default function ClusterHeader() {
                 </button>
               ))}
               {pageCount > 1 && (
-                <div className="flex items-center justify-between gap-2" style={{ padding: "5px 12px", background: C.paper, borderTop: `1px solid ${C.line}` }}>
-                  <button type="button" disabled={page === 0} onClick={() => setSearchPage(page - 1)} className="search-row" style={{ height: 18, padding: "0 8px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page === 0 ? C.faint : C.ink, fontWeight: 600, fontSize: 10, cursor: page === 0 ? "default" : "pointer", fontFamily: "inherit" }}>&lsaquo; Prev</button>
-                  <span style={{ fontSize: 10, color: C.steel }}>Page <b style={{ color: C.ink, fontWeight: 600 }}>{page + 1}</b> / {pageCount}</span>
-                  <button type="button" disabled={page >= pageCount - 1} onClick={() => setSearchPage(page + 1)} className="search-row" style={{ height: 18, padding: "0 8px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page >= pageCount - 1 ? C.faint : C.ink, fontWeight: 600, fontSize: 10, cursor: page >= pageCount - 1 ? "default" : "pointer", fontFamily: "inherit" }}>Next &rsaquo;</button>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 8, padding: "5px 12px", background: C.paper, borderTop: `1px solid ${C.line}` }}>
+                  <button type="button" disabled={page === 0} onClick={() => setSearchPage(page - 1)} className="search-row" style={{ justifySelf: "start", height: 18, padding: "0 8px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page === 0 ? C.faint : C.ink, fontWeight: 600, fontSize: 10, cursor: page === 0 ? "default" : "pointer", fontFamily: "inherit" }}>&lsaquo; Prev</button>
+                  <span style={{ fontSize: 10, color: C.steel, textAlign: "center" }}>Page <b style={{ color: C.ink, fontWeight: 600 }}>{page + 1}</b> / {pageCount}</span>
+                  <button type="button" disabled={page >= pageCount - 1} onClick={() => setSearchPage(page + 1)} className="search-row" style={{ justifySelf: "end", height: 18, padding: "0 8px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page >= pageCount - 1 ? C.faint : C.ink, fontWeight: 600, fontSize: 10, cursor: page >= pageCount - 1 ? "default" : "pointer", fontFamily: "inherit" }}>Next &rsaquo;</button>
                 </div>
               )}
             </div>
