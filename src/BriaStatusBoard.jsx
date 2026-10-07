@@ -1459,7 +1459,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         table.dataTbl th .col-resize-handle > span { background: transparent !important; }
         table.dataTbl th.th-center { text-align: center; }
         .inspector-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
-        .inspector-cols > div { border: 1px solid ${C.line}; border-radius: 12px; padding: 14px; background: ${C.panel}; min-width: 0; }
+        .inspector-cols > div { border: 1px solid transparent; border-radius: 12px; padding: 14px; min-width: 0; }
         @media (max-width: 1000px) {
           .inspector-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }

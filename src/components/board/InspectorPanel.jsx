@@ -7,18 +7,17 @@ import { timeAgo } from "../../lib/calc";
 import { statusColor } from "../../lib/palette";
 import { useBoard } from "./BoardContext";
 
-// Judul kolom: ikon berlatar warna sendiri + teks, supaya tiap kolom punya identitas warna.
-function ColHead({ icon, color, children }) {
+// Judul kolom: ikon + teks; warnanya mengikuti warna kolom (diatur lewat CSS per kolom).
+function ColHead({ icon, children }) {
   return (
-    <div className="col-head" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <span style={{ width: 22, height: 22, borderRadius: 7, background: tint(color, 18), color, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Ic name={icon} size={14} /></span>
+    <div className="col-head" style={{ display: "flex", alignItems: "center", gap: 7 }}>
+      <Ic name={icon} size={15} />
       {children}
     </div>
   );
 }
 
 // Arah geser terakhir dari tombol Prev/Next: isi Detail Kavling masuk dari sisi yang sesuai; dari klik peta, memudar naik saja.
-const KONTRAKTOR_COLOR = "#8B6FD6";
 let navDir = { id: null, dir: "" };
 
 export default function InspectorPanel() {
@@ -60,7 +59,7 @@ export default function InspectorPanel() {
         <div key={h.id} className={`insp-in${navDir.id === h.id && navDir.dir ? ` insp-${navDir.dir}` : ""}`}>
         <div className="inspector-cols">
         <div>
-        <ColHead icon="sliders" color={C.accent}>Data dan status</ColHead>
+        <ColHead icon="sliders">Data dan status</ColHead>
         <Field label="Tipe / Ukuran">
           <select style={formInput} value={h.tipe} onChange={(e) => updateHouse(h.id, { tipe: e.target.value })}>
             {tipeOptions.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
@@ -118,7 +117,7 @@ export default function InspectorPanel() {
         </div>
         <div>
         <div>
-        <ColHead icon="hardhat" color={KONTRAKTOR_COLOR}>Kontraktor dan SPK</ColHead>
+        <ColHead icon="hardhat">Kontraktor dan SPK</ColHead>
           {textEditingKey === `${h.id}:kontraktor` || !h.kontraktor ? (
             <Field label="Kontraktor">
               <input ref={focusWhen(textEditingKey === `${h.id}:kontraktor`, "inspector")} list="kontraktor-options" style={formInput} value={h.kontraktor || ""} onChange={(e) => { setTextEditingKey(`${h.id}:kontraktor`); updateHouse(h.id, { kontraktor: e.target.value }); }} onKeyDown={(e) => { if (e.key === "Enter") setTextEditingKey(null); }} />
@@ -176,7 +175,7 @@ export default function InspectorPanel() {
         </div>
         <div>
         <div>
-        <ColHead icon="wallet" color={C.green}>Harga dan HPP</ColHead>
+        <ColHead icon="wallet">Harga dan HPP</ColHead>
           <div className="grid grid-cols-2 gap-2">
             <div className="text-xs mb-2" style={{ color: C.steel }}>
               Luas Bangunan: <b style={{ color: C.ink }}>{luasBangunanOf(h)} m²</b> <span style={{ color: C.steel }}>(ikut Tipe "{h.tipe}", atur di Pengaturan)</span>
@@ -222,18 +221,17 @@ export default function InspectorPanel() {
               <span style={{ fontFamily: "IBM Plex Mono, monospace", color: C.ink }}>{rupiah(Math.round(finalHppPerM2(h)))}</span>
             </div>
           )}
-          {!luasBangunanOf(h) ? (
-            <div className="flex justify-between items-baseline">
-              <span className="text-sm font-semibold" style={{ color: C.ink }}>Margin</span>
+          <div className="flex justify-between items-baseline">
+            <span className="text-sm font-semibold" style={{ color: C.ink }}>Margin</span>
+            {!luasBangunanOf(h) ? (
               <span className="text-xs" style={{ color: C.steel }}>atur Luas Bangunan Tipe</span>
-            </div>
-          ) : (
-            <div style={{ borderRadius: 12, padding: "10px 12px", textAlign: "center", background: tint(marginPct(h) >= 20 ? C.green : C.red, 14), border: `1px solid ${tint(marginPct(h) >= 20 ? C.green : C.red, 35)}` }}>
-              <div className="text-xs" style={{ color: marginPct(h) >= 20 ? C.green : C.red, fontWeight: 600 }}>Margin</div>
-              <div style={{ fontFamily: "IBM Plex Mono, monospace", fontWeight: 700, fontSize: 24, lineHeight: 1.2, color: marginPct(h) >= 20 ? C.green : C.red }}>{marginPct(h).toFixed(2)}%</div>
-              <div className="text-xs" style={{ color: C.steel }}>{rupiah(marginOf(h))}</div>
-            </div>
-          )}
+            ) : (
+              <span style={{ textAlign: "right" }}>
+                <div style={{ display: "inline-block", fontFamily: "IBM Plex Mono, monospace", fontWeight: 700, fontSize: 15, padding: "2px 12px", borderRadius: 999, background: tint(marginPct(h) >= 20 ? C.green : C.red, 16), color: marginPct(h) >= 20 ? C.green : C.red }}>{marginPct(h).toFixed(2)}%</div>
+                <div className="text-xs" style={{ color: C.steel }}>{rupiah(marginOf(h))}</div>
+              </span>
+            )}
+          </div>
         </div>
 
         </div>

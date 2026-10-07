@@ -295,3 +295,13 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
   .hl-group:has(.hl-row:hover, .hl-col:hover, .hl-on) > .hl-row:not(:hover):not(.hl-on),
   .hl-group:has(.hl-row:hover, .hl-col:hover, .hl-on) > .hl-col:not(:hover) { opacity: .5; }
 }
+
+/* Detail Kavling: tiga kolom berlatar warna lembut (biru = data, ungu = kontraktor, hijau = harga) */
+.inspector-cols > div:nth-child(1) { --col-bg: #E6F1FB; --col-ink: #0C447C; }
+.inspector-cols > div:nth-child(2) { --col-bg: #EEEDFE; --col-ink: #3C3489; }
+.inspector-cols > div:nth-child(3) { --col-bg: #EAF3DE; --col-ink: #27500A; }
+:root[data-theme="dark"] .inspector-cols > div:nth-child(1) { --col-bg: rgba(55, 138, 221, .16); --col-ink: #A9C8F0; }
+:root[data-theme="dark"] .inspector-cols > div:nth-child(2) { --col-bg: rgba(127, 119, 221, .18); --col-ink: #C3BFF5; }
+:root[data-theme="dark"] .inspector-cols > div:nth-child(3) { --col-bg: rgba(99, 153, 34, .18); --col-ink: #B5D98C; }
+.inspector-cols > div { background: var(--col-bg); }
+.inspector-cols > div .col-head { color: var(--col-ink); }
