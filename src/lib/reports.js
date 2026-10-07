@@ -230,7 +230,7 @@ export function makeReports(ctx) {
       planHtml = `<div class="section-title" style="margin-top:20px">Posisi di Site Plan</div>
   <div class="plans">
     <div class="plan-crop" style="aspect-ratio:${cw.toFixed(3)} / ${ch.toFixed(3)}"><div class="plan-inner" style="width:${(10000 / cw).toFixed(3)}%; left:${(-cx0 / cw * 100).toFixed(3)}%; margin-top:${(-cy0 / cw * 100).toFixed(3)}%">${layer(7, 3.5)}</div></div>
-    <div class="plan-full"><div class="plan-inner" style="position:relative; width:100%">${layer(5, 2.5)}</div></div>
+    <div class="plan-full"><div class="plan-inner" style="position:relative; width:100%">${layer(2.4, 1.1)}</div></div>
   </div>`;
     }
     const html = `<!DOCTYPE html>
