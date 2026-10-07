@@ -21,7 +21,10 @@ function SideClock({ collapsed }) {
   const now = useJakartaClock();
   const time = timeFormatter.format(now);
   if (collapsed) {
-    return <div title={`${sideDate.format(now)} ${time} WIB`} style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: C.steel, textAlign: "center", lineHeight: 1.2 }}>{time.slice(0, 5)}</div>;
+    return <div title={`${sideDate.format(now)} ${time} WIB`} style={{ fontFamily: "'IBM Plex Mono', monospace", color: C.steel, textAlign: "center", lineHeight: 1.15 }}>
+      <div style={{ fontSize: 11 }}>{time.slice(0, 5)}</div>
+      <div style={{ fontSize: 9, color: C.faint }}>{time.slice(5)}</div>
+    </div>;
   }
   return (
     <div style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: "9px 12px" }}>
