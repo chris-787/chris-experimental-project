@@ -92,10 +92,10 @@ export default function ClusterHeader() {
                 </button>
               ))}
               {pageCount > 1 && (
-                <div className="flex items-center justify-between gap-2" style={{ padding: "8px 10px", background: C.paper }}>
-                  <button type="button" disabled={page === 0} onClick={() => setSearchPage(page - 1)} className="search-row" style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page === 0 ? C.faint : C.ink, fontWeight: 600, fontSize: 12, cursor: page === 0 ? "default" : "pointer", fontFamily: "inherit" }}>&lsaquo; Prev</button>
-                  <span style={{ fontSize: 12, color: C.steel }}>Page <b style={{ color: C.ink, fontWeight: 600 }}>{page + 1}</b> / {pageCount}</span>
-                  <button type="button" disabled={page >= pageCount - 1} onClick={() => setSearchPage(page + 1)} className="search-row" style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page >= pageCount - 1 ? C.faint : C.ink, fontWeight: 600, fontSize: 12, cursor: page >= pageCount - 1 ? "default" : "pointer", fontFamily: "inherit" }}>Next &rsaquo;</button>
+                <div className="flex items-center justify-between gap-2" style={{ padding: "5px 12px", background: C.paper, borderTop: `1px solid ${C.line}` }}>
+                  <button type="button" disabled={page === 0} onClick={() => setSearchPage(page - 1)} className="search-row" style={{ height: 20, padding: "0 8px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page === 0 ? C.faint : C.ink, fontWeight: 600, fontSize: 11, cursor: page === 0 ? "default" : "pointer", fontFamily: "inherit" }}>&lsaquo; Prev</button>
+                  <span style={{ fontSize: 11, color: C.steel }}>Page <b style={{ color: C.ink, fontWeight: 600 }}>{page + 1}</b> / {pageCount}</span>
+                  <button type="button" disabled={page >= pageCount - 1} onClick={() => setSearchPage(page + 1)} className="search-row" style={{ height: 20, padding: "0 8px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page >= pageCount - 1 ? C.faint : C.ink, fontWeight: 600, fontSize: 11, cursor: page >= pageCount - 1 ? "default" : "pointer", fontFamily: "inherit" }}>Next &rsaquo;</button>
                 </div>
               )}
             </div>
