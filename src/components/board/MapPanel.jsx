@@ -186,7 +186,7 @@ export default function MapPanel() {
                       const pts = h.points.map((p) => `${p.x},${p.y}`).join(" ");
                       return (
                         <>
-                          {/* Penanda kavling terpilih: garis dalam merah terang di atas garis luar gelap, dengan isi kuning yang berkedip pelan; garis gelapnya yang memisahkannya dari poligon merah di sekitarnya */}
+                          {/* Penanda kavling terpilih: garis dalam merah terang di atas garis luar gelap, dengan isi putih yang berkedip pelan; garis gelapnya yang memisahkannya dari poligon merah di sekitarnya */}
                           <polygon className="sel-pulse" points={pts} stroke="none" style={{ pointerEvents: "none" }} />
                           <polygon points={pts} fill="none" stroke="#0B1220" strokeWidth={outer} strokeLinejoin="round" vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }} />
                           <polygon points={pts} fill="none" stroke="#FF1744" strokeWidth={inner} strokeLinejoin="round" vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }} />
