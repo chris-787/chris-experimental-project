@@ -14,23 +14,40 @@ function usernameToEmail(username) {
   return `${username.trim().toLowerCase()}@${USERNAME_DOMAIN}`;
 }
 
+// Pesan kegagalan login dibedakan menurut penyebabnya, supaya "password salah" tidak
+// dipakai untuk masalah koneksi atau terlalu banyak percobaan.
+function loginErrorMessage(err) {
+  const status = err && err.status;
+  const code = (err && err.code) || "";
+  const msg = (err && err.message) || "";
+  if (code === "invalid_credentials" || status === 400) return "Username atau password salah. Coba lagi.";
+  if (status === 429 || code.includes("rate_limit")) return "Terlalu banyak percobaan. Tunggu beberapa menit, lalu coba lagi.";
+  if (status === 0 || (err && err.name === "AuthRetryableFetchError") || /fetch|network|failed to/i.test(msg)) return "Tidak bisa terhubung ke server. Periksa koneksi internet, lalu coba lagi.";
+  return `Gagal masuk (${msg || "penyebab tidak diketahui"}). Coba lagi.`;
+}
+
 export default function Login() {
   const now = useJakartaClock();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPw, setShowPw] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: usernameToEmail(username),
-      password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: usernameToEmail(username),
+        password,
+      });
+      if (error) setError(loginErrorMessage(error));
+    } catch (err) {
+      setError(loginErrorMessage(err));
+    }
     setLoading(false);
-    if (error) setError("Username atau password salah. Coba lagi.");
   }
 
   return (
@@ -84,6 +101,10 @@ export default function Login() {
           autoFocus
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          autoComplete="username"
           placeholder="mis. admin"
           style={{
             width: "100%",
@@ -98,23 +119,35 @@ export default function Login() {
         />
 
         <label style={{ display: "block", fontSize: 12, color: C.steel, marginBottom: 4 }}>Password</label>
-        <input
-          type="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
-          style={{
-            width: "100%",
-            padding: "10px 12px",
-            fontSize: 14,
-            border: "none",
-            borderRadius: 10,
-            marginBottom: 16,
-            color: C.ink,
-            background: C.pillFill,
-          }}
-        />
+        <div style={{ position: "relative", marginBottom: 16 }}>
+          <input
+            type={showPw ? "text" : "password"}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            autoComplete="current-password"
+            placeholder="••••••••"
+            style={{
+              width: "100%",
+              padding: "10px 64px 10px 12px",
+              fontSize: 14,
+              border: "none",
+              borderRadius: 10,
+              color: C.ink,
+              background: C.pillFill,
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw((v) => !v)}
+            aria-label={showPw ? "Sembunyikan password" : "Tampilkan password"}
+            aria-pressed={showPw}
+            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", border: "none", background: "transparent", color: C.steel, fontSize: 12, fontWeight: 600, cursor: "pointer", padding: "4px 6px", fontFamily: "inherit" }}
+          >{showPw ? "Sembunyi" : "Lihat"}</button>
+        </div>
 
         {error && (
           <div
