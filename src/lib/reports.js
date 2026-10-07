@@ -1,9 +1,10 @@
 // Laporan cetak (PDF), ekspor/impor Excel, dan backup/restore JSON.
 // Dipisah dari BriaStatusBoard; data yang dibutuhkan dikirim lewat parameter ctx.
 import { applyImportRows, diffHouses } from "./importRows";
+import { layoutHouseLabels } from "./labelLayout";
 import { buildColorGroups } from "./colorGroups";
 import { DEFAULT_BLOCKS, DEFAULT_KATEGORI, DEFAULT_STATUS, DEFAULT_TIPE, LAST_BACKUP_KEY, LEGACY_CLUSTER_ID, MONTHS, SITE_IMAGE_DEFAULT, configKeyFor, housesKeyFor, imageKeyFor } from "../lib/constants";
-import { rupiah } from "../lib/helpers";
+import { rupiah, shortKavlingLabel } from "../lib/helpers";
 import { storage } from "../lib/storage";
 
 export function makeReports(ctx) {
@@ -145,6 +146,17 @@ export function makeReports(ctx) {
       const pts = h.points.map((p) => `${p.x},${p.y}`).join(" ");
       return `<polygon points="${pts}" fill="${concrete(polyColor(h))}" fill-opacity="${opacity / 100}" stroke="#00000066" stroke-width="0.2" vector-effect="non-scaling-stroke" />`;
     }).join("");
+    // Kode kavling (mis. B-01) ikut tercetak bila "Show Blok" di peta sedang aktif. Posisi dan ukurannya memakai
+    // tata letak yang sama dengan di layar dan PNG; teks digambar di dalam SVG persegi supaya ikut skala halaman.
+    let showBlok = true;
+    try { showBlok = localStorage.getItem("bria-map-numbers") !== "0"; } catch (e) { /* abaikan */ }
+    let labelsSvg = "";
+    if (showBlok) {
+      const VW = 3000; // lebar acuan (piksel) untuk menentukan ukuran huruf; hasilnya diubah ke satuan viewBox
+      const { font, labels } = layoutHouseLabels(houses, { labelOf: shortKavlingLabel, size: VW, min: VW / 300, max: VW / 150, step: 0.5 });
+      const fu = (font / VW) * 100;
+      labelsSvg = labels.map((l) => `<text x="${l.cx.toFixed(3)}" y="${l.cy.toFixed(3)}" font-size="${fu.toFixed(3)}" text-anchor="middle" dominant-baseline="central" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#141A24" stroke="#ffffff" stroke-width="${(fu / 3).toFixed(3)}" stroke-linejoin="round" paint-order="stroke"${l.vertical ? ` transform="rotate(90 ${l.cx.toFixed(3)} ${l.cy.toFixed(3)})"` : ""}>${esc(l.text)}</text>`).join("");
+    }
     const legendHtml = legendItems.map((l) => `<div class="legend-item"><span class="swatch" style="background-color:${l.color}"></span>${l.label}</div>`).join("");
     // Rincian di bawah legenda: untuk tiap kelompok warna, daftar kavling
     // dikelompokkan per tipe, mis. "Tipe 6x12 (2 unit) : RB/A-01, RB/A-03".
@@ -183,7 +195,7 @@ export function makeReports(ctx) {
   <div class="sub">${activeCluster.subtitle} · Warna: ${colorModeLabel} · dicetak ${tanggal}</div>
   <div class="plan-wrap">
     <img src="${imgSrc}" />
-    <svg viewBox="0 0 100 100" preserveAspectRatio="none">${shapesSvg}</svg>
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none">${shapesSvg}${labelsSvg}</svg>
   </div>
   <div class="legend">${legendHtml}</div>
   <div class="details"><div class="dtotal">Total unit : ${houses.length}</div>${detailHtml}</div>

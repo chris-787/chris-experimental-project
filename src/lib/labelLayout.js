@@ -32,3 +32,28 @@ export function layoutLabels(items, { min = 6.5, max = 12, step = 0.25 } = {}) {
   });
   return { font: min, shown: kept.map((i) => i.id) };
 }
+
+// Kode kavling untuk satu daftar rumah. Koordinat poligon tersimpan dalam ruang PERSEGI (sisi = lebar gambar),
+// jadi 1% sumbu x maupun y sama dengan 1% lebar gambar -- `size` adalah panjang sisi persegi itu dalam piksel.
+// Mengembalikan ukuran huruf (piksel pada `size` tsb) dan daftar label dengan posisi dalam persen.
+export function layoutHouseLabels(houses, { labelOf, isHidden = () => false, size, min, max, step }) {
+  const items = [];
+  houses.forEach((h) => {
+    if (isHidden(h) || !h.points || h.points.length < 3) return;
+    const xs = h.points.map((p) => p.x), ys = h.points.map((p) => p.y);
+    const wpx = ((Math.max(...xs) - Math.min(...xs)) / 100) * size;
+    const hpx = ((Math.max(...ys) - Math.min(...ys)) / 100) * size;
+    const text = labelOf(h);
+    const len = text.length * 0.6;
+    // Arah tulisan (mendatar atau tegak) dipilih yang memberi huruf lebih besar di poligon itu
+    const fitH = Math.min(wpx / len, hpx / 1.25);
+    const fitV = Math.min(wpx / 1.25, hpx / len);
+    const vertical = fitV > fitH * 1.1;
+    const cx = xs.reduce((a, c) => a + c, 0) / xs.length;
+    const cy = ys.reduce((a, c) => a + c, 0) / ys.length;
+    items.push({ id: h.id, house: h, text, vertical, fit: Math.max(fitH, fitV), cx, cy, x: (cx / 100) * size, y: (cy / 100) * size });
+  });
+  const { font, shown } = layoutLabels(items, { min, max, step });
+  const set = new Set(shown);
+  return { font, labels: items.filter((i) => set.has(i.id)) };
+}

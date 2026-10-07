@@ -1,4 +1,4 @@
-import { layoutLabels } from "./labelLayout";
+import { layoutHouseLabels } from "./labelLayout";
 
 // Ekspor Site Plan jadi gambar PNG: gambar dasar + poligon berwarna + (opsional) nomor kavling + legenda.
 // Koordinat poligon disimpan dalam persen dari lebar/tinggi gambar (lihat catatan di MapPanel),
@@ -70,7 +70,8 @@ export async function renderSitePlanCanvas({ siteImage, houses, polyColor, opaci
     if (isHidden(h) || !h.points || h.points.length < 3) return;
     ctx.beginPath();
     h.points.forEach((p, i) => {
-      const x = (p.x / 100) * W, y = headH + (p.y / 100) * H;
+      // Koordinat poligon memakai ruang persegi (sisi = lebar gambar), jadi sumbu y juga dikalikan lebar, bukan tinggi.
+      const x = (p.x / 100) * W, y = headH + (p.y / 100) * W;
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     });
     ctx.closePath();
@@ -85,39 +86,25 @@ export async function renderSitePlanCanvas({ siteImage, houses, polyColor, opaci
 
   // Kode kavling: satu ukuran huruf untuk semua, diatur supaya tidak saling menimpa (sama dengan tampilan di layar)
   if (showNumbers) {
-    const items = [];
-    houses.forEach((h) => {
-      if (isHidden(h) || !h.points || h.points.length < 3) return;
-      const xs = h.points.map((p) => p.x), ys = h.points.map((p) => p.y);
-      const wpx = ((Math.max(...xs) - Math.min(...xs)) / 100) * W;
-      const hpx = ((Math.max(...ys) - Math.min(...ys)) / 100) * H;
-      const text = labelOf ? labelOf(h) : String(h.noKavling);
-      const len = text.length * 0.6;
-      const fitH = Math.min(wpx / len, hpx / 1.25);
-      const fitV = Math.min(wpx / 1.25, hpx / len);
-      const vertical = fitV > fitH * 1.1;
-      const fit = Math.max(fitH, fitV);
-      const cx = (xs.reduce((a, c) => a + c, 0) / xs.length / 100) * W;
-      const cy = (ys.reduce((a, c) => a + c, 0) / ys.length / 100) * H;
-      items.push({ id: h.id, text, vertical, fit, x: cx, y: cy });
-    });
-    const { font, shown } = layoutLabels(items, { min: Math.max(8, W / 300), max: Math.max(12, W / 150), step: 0.5 });
-    const showSet = new Set(shown);
-    ctx.font = `bold ${font}px sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    items.filter((i) => showSet.has(i.id)).forEach((it) => {
-      ctx.save();
-      ctx.translate(it.x, headH + it.y);
-      if (it.vertical) ctx.rotate(Math.PI / 2);
-      ctx.lineWidth = Math.max(2, font / 3);
-      ctx.strokeStyle = "rgba(255,255,255,0.92)";
-      ctx.strokeText(it.text, 0, 0);
-      ctx.fillStyle = "#141A24";
-      ctx.fillText(it.text, 0, 0);
-      ctx.restore();
-    });
-    ctx.textAlign = "start";
+    const { font, labels } = layoutHouseLabels(houses, { labelOf: labelOf || ((h) => String(h.noKavling)), isHidden, size: W, min: Math.max(8, W / 300), max: Math.max(12, W / 150), step: 0.5 });
+    if (labels.length) {
+      ctx.font = `bold ${font}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      labels.forEach((it) => {
+        ctx.save();
+        ctx.translate((it.cx / 100) * W, headH + (it.cy / 100) * W);
+        if (it.vertical) ctx.rotate(Math.PI / 2);
+        ctx.lineWidth = Math.max(2, font / 3);
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = "rgba(255,255,255,0.92)";
+        ctx.strokeText(it.text, 0, 0);
+        ctx.fillStyle = "#141A24";
+        ctx.fillText(it.text, 0, 0);
+        ctx.restore();
+      });
+      ctx.textAlign = "start";
+    }
   }
 
   // Legenda

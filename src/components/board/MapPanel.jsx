@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { centroid, shortKavlingLabel } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
 import { downloadSitePlanPng } from "../../lib/mapExport";
-import { layoutLabels } from "../../lib/labelLayout";
+import { layoutHouseLabels } from "../../lib/labelLayout";
 import ColorPills from "./ColorPills";
 import { useBoard } from "./BoardContext";
 
@@ -212,35 +212,15 @@ export default function MapPanel() {
                 )}
               </svg>
               {showNumbers && !calibrating && zoom >= 150 && (() => {
-                // Semua kode memakai SATU ukuran huruf yang sama (supaya konsisten). Ukurannya dipilih dari ukuran poligon
-                // di layar: yang muat dengan ukuran itu ditampilkan, sisanya (terlalu sempit) disembunyikan sampai di-zoom lebih besar.
-                // Poligon sempit dan tinggi memakai tulisan tegak.
+                // Semua kode memakai SATU ukuran huruf, diatur supaya tidak saling menimpa; arah tulisan (mendatar atau tegak)
+                // mengikuti bentuk poligon. Kode yang tetap tidak muat disembunyikan sampai peta di-zoom lebih besar.
                 const wrapW = (planBoxRef.current ? planBoxRef.current.clientWidth : 0) * (zoom / 100);
-                const im = imgRef.current;
-                const wrapH = im && im.naturalWidth ? wrapW * (im.naturalHeight / im.naturalWidth) : 0;
-                if (!wrapW || !wrapH) return null;
-                const items = [];
-                houses.forEach((h) => {
-                  if (isHidden(h) || h.id === editingShapeId || !h.points || h.points.length < 3) return;
-                  const xs = h.points.map((p) => p.x), ys = h.points.map((p) => p.y);
-                  const wpx = ((Math.max(...xs) - Math.min(...xs)) / 100) * wrapW;
-                  const hpx = ((Math.max(...ys) - Math.min(...ys)) / 100) * wrapH;
-                  const text = shortKavlingLabel(h);
-                  const len = text.length * 0.6;
-                  // Pilih arah tulisan (mendatar atau tegak) yang memberi huruf lebih besar di poligon itu
-                  const fitH = Math.min(wpx / len, hpx / 1.25);
-                  const fitV = Math.min(wpx / 1.25, hpx / len);
-                  const vertical = fitV > fitH * 1.1;
-                  const fit = Math.max(fitH, fitV);
-                  const { cx, cy } = centroid(h.points);
-                  items.push({ id: h.id, h, text, vertical, fit, cx, cy, x: (cx / 100) * wrapW, y: (cy / 100) * wrapH });
-                });
-                const { font, shown } = layoutLabels(items, { min: 6.5, max: 12 });
-                if (!font || !shown.length) return null;
-                const showSet = new Set(shown);
+                if (!wrapW) return null;
+                const { font, labels } = layoutHouseLabels(houses, { labelOf: shortKavlingLabel, isHidden: (h) => isHidden(h) || h.id === editingShapeId, size: wrapW, min: 6.5, max: 12 });
+                if (!font || !labels.length) return null;
                 return (
                   <div aria-hidden="true" style={{ gridArea: "1 / 1", position: "relative", pointerEvents: "none" }}>
-                    {items.filter((i) => showSet.has(i.id)).map(({ h, text, vertical, cx, cy }) => (
+                    {labels.map(({ house: h, text, vertical, cx, cy }) => (
                       <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: font, fontWeight: 700, letterSpacing: "-0.2px", color: "#141A24", background: "rgba(255,255,255,0.88)", borderRadius: 3, padding: "1px 1.5px", lineHeight: 1, whiteSpace: "nowrap", writingMode: vertical ? "vertical-rl" : undefined }}>{text}</span>
                     ))}
                   </div>
