@@ -11,6 +11,7 @@ export const WHATS_NEW_GROUPS = [
     versionNote: "Tampilan baru: sidebar, Dashboard, mode gelap",
     date: "7 Oktober 2026",
     items: [
+      { icon: "🧩", title: "Duplikat cluster dan atur urutan kartu", desc: "Di kartu cluster (Home) ada tombol Duplikat yang menyalin cluster lengkap dengan kavling, blok, tipe, status, dan gambar petanya, bernama \"(salinan)\" dan bisa diganti namanya, cocok untuk bereksperimen. Kartu juga bisa diseret lewat pegangan titik-titik di kiri atas untuk mengubah urutan; urutannya tersimpan." },
       { icon: "🌙", title: "Peta hitam di mode gelap", desc: "Di mode gelap, gambar Site Plan kini berlatar hitam dengan garis dan tulisan terang, jadi tidak silau. Warna kavling tetap berwarna, sedangkan hasil Cetak dan PNG tetap memakai peta putih asli." },
       { icon: "⌨️", title: "Pintasan keyboard untuk pop up dan menggambar poligon", desc: "Esc menutup semua pop up, menu, dan konfirmasi; Enter di pop up Kavling baru menekan Tambahkan. Saat menggambar poligon: Ctrl/Cmd+Z untuk undo titik, Ctrl/Cmd+Shift+Z atau Ctrl+Y untuk redo, Enter untuk menyelesaikan poligon, dan Esc memunculkan pop up Hapus poligon (Enter = hapus, Esc = lanjut menggambar)." },
       { icon: "🎨", title: "Detail Kavling lebih berwarna", desc: "Tiga kolom (Data dan status, Kontraktor dan SPK, Harga dan HPP) kini berupa kartu dengan ikon berwarna sendiri. Saklar status memakai warna statusnya masing-masing (sama dengan label di header), kontraktor tampil dengan latar warna kontraktornya, dan Margin menjadi kotak besar hijau atau merah." },

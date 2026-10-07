@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { C } from "../../theme";
 import { BrandMark, ClockText, GreetingText, Ic, IconChip, MONO, Pill, ProgressBar, tint } from "../../components/ui";
 import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid } from "../../lib/helpers";
@@ -7,7 +8,7 @@ import { Chevron, Collapse } from "../anim";
 import { useBoard } from "./BoardContext";
 
 export default function HomeScreen() {
-  const { KAVLING_SEARCH_LIMIT, SmallSpinner, addCluster, appTitle, applyRestoreAll, calendarMonth, calendarSelectedDate, canEdit, clusterSearch, clusterStats, clusters, confirmDeleteClusterId, deleteCluster, displayName, exportAllBackup, exportAllExcel, exportingBackupAll, exportingExcelAll, followUpView, followUpsByDate, globalHousesIndex, handleLogoutClick, handleRestoreAllFile, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, newClusterName, newClusterSubtitle, openCluster, openKavlingFromSearch, pendingRestoreAll, recoverLegacyCluster, restoreAllError, restoreAllResult, restoringAll, saveAppTitle, saveHomeChanges, setAppTitle, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setConfirmDeleteClusterId, setFollowUpView, setHomeDirty, setKavlingSearch, setNewClusterName, setNewClusterSubtitle, setPendingRestoreAll, setRestoreAllResult, setShowArchivedClusters, setShowWhatsNew, showArchivedClusters, toggleArchiveCluster, togglePinCluster, updateClusterMeta } = useBoard();
+  const { KAVLING_SEARCH_LIMIT, SmallSpinner, addCluster, appTitle, applyRestoreAll, calendarMonth, calendarSelectedDate, canEdit, clusterSearch, clusterStats, clusters, confirmDeleteClusterId, deleteCluster, duplicateCluster, moveCluster, displayName, exportAllBackup, exportAllExcel, exportingBackupAll, exportingExcelAll, followUpView, followUpsByDate, globalHousesIndex, handleLogoutClick, handleRestoreAllFile, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, newClusterName, newClusterSubtitle, openCluster, openKavlingFromSearch, pendingRestoreAll, recoverLegacyCluster, restoreAllError, restoreAllResult, restoringAll, saveAppTitle, saveHomeChanges, setAppTitle, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setConfirmDeleteClusterId, setFollowUpView, setHomeDirty, setKavlingSearch, setNewClusterName, setNewClusterSubtitle, setPendingRestoreAll, setRestoreAllResult, setShowArchivedClusters, setShowWhatsNew, showArchivedClusters, toggleArchiveCluster, togglePinCluster, updateClusterMeta } = useBoard();
   const [fuRef, fuBox] = useSlideIndicator([followUpView, homeAllFollowUpList.length > 0]);
   const totalSumHarga = Object.values(clusterStats).reduce((s, x) => s + (x.sumHarga || 0), 0);
   const totalSumHpp = Object.values(clusterStats).reduce((s, x) => s + (x.sumHpp || 0), 0);
@@ -20,6 +21,9 @@ export default function HomeScreen() {
     setNewClusterSubtitle("");
   }
   const backupDue = !lastBackupAt || (Date.now() - lastBackupAt) / 86400000 >= 3;
+  const [dragId, setDragId] = useState(null);
+  const [overId, setOverId] = useState(null);
+  const [duplicatingId, setDuplicatingId] = useState(null);
   const pillBtn = { height: 34, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
   return (
     <>
@@ -189,7 +193,14 @@ export default function HomeScreen() {
                   const in7 = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
                   const due = hs.filter((h) => h.followUpDate && h.followUpDate <= in7).length;
                   return (
-                    <div key={c.id} className="rounded-2xl" style={{ background: C.panel, boxShadow: c.pinned ? `0 0 0 1.5px ${C.gold}` : C.cardShadow, padding: 18 }}>
+                    <div
+                      key={c.id}
+                      data-cluster-card
+                      className="rounded-2xl"
+                      onDragOver={(e) => { if (dragId && dragId !== c.id) { e.preventDefault(); if (overId !== c.id) setOverId(c.id); } }}
+                      onDrop={(e) => { e.preventDefault(); if (dragId) moveCluster(dragId, c.id); setDragId(null); setOverId(null); }}
+                      style={{ background: C.panel, boxShadow: overId === c.id && dragId ? `0 0 0 2px ${C.accent}` : c.pinned ? `0 0 0 1.5px ${C.gold}` : C.cardShadow, padding: 18, opacity: dragId === c.id ? 0.45 : 1, transition: "opacity .15s ease, box-shadow .15s ease" }}
+                    >
                       {confirmDeleteClusterId === c.id ? (
                         <div>
                           <div className="text-xs mb-2" style={{ color: C.red }}>Hapus "{c.name}"? Semua data cluster ini (kavling, blok, tipe, gambar) akan hilang permanen.</div>
@@ -201,6 +212,18 @@ export default function HomeScreen() {
                       ) : (
                         <>
                           <div className="flex items-start justify-between gap-2">
+                            {canEdit && !clusterSearch.trim() && (
+                              <span
+                                draggable
+                                onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", c.id); const card = e.currentTarget.closest("[data-cluster-card]"); if (card) e.dataTransfer.setDragImage(card, 24, 24); setDragId(c.id); }}
+                                onDragEnd={() => { setDragId(null); setOverId(null); }}
+                                title="Tarik untuk mengubah urutan kartu"
+                                aria-label="Tarik untuk mengubah urutan kartu"
+                                style={{ cursor: "grab", color: C.faint, padding: "4px 2px", marginLeft: -6, lineHeight: 0, flexShrink: 0, userSelect: "none" }}
+                              >
+                                <svg width="12" height="18" viewBox="0 0 12 18" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1.5" /><circle cx="9" cy="3" r="1.5" /><circle cx="3" cy="9" r="1.5" /><circle cx="9" cy="9" r="1.5" /><circle cx="3" cy="15" r="1.5" /><circle cx="9" cy="15" r="1.5" /></svg>
+                              </span>
+                            )}
                             <div style={{ minWidth: 0, flex: 1 }}>
                               <input
                                 value={c.name}
@@ -256,6 +279,7 @@ export default function HomeScreen() {
                           )}
                           <div className="flex items-center gap-2" style={{ marginTop: 16 }}>
                             <button onClick={() => openCluster(c.id)} style={{ flex: 1, height: 36, borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Buka Cluster</button>
+                            {canEdit && <button disabled={duplicatingId === c.id} onClick={async () => { setDuplicatingId(c.id); await duplicateCluster(c.id); setDuplicatingId(null); }} title="Salin cluster ini lengkap dengan datanya" style={{ ...pillBtn, height: 36, color: C.steel }}>{duplicatingId === c.id ? "Menyalin..." : "Duplikat"}</button>}
                             {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" style={{ ...pillBtn, height: 36, color: C.steel }}>Arsip</button>}
                             {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} style={{ ...pillBtn, height: 36, color: C.red }}>Hapus</button>}
                           </div>
