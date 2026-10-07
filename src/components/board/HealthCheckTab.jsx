@@ -13,7 +13,7 @@ export default function HealthCheckTab() {
   const total = healthCount(groups);
   const [vals, setVals] = useState({});
   const [openIds, setOpenIds] = useState({});
-  const isOpen = (g, i) => (openIds[g.id] === undefined ? i === 0 : openIds[g.id]);
+  const isOpen = (g, i) => (openIds[g.id] === undefined ? true : openIds[g.id]);
   const set = (key, v) => setVals((p) => ({ ...p, [key]: v }));
 
   function openKavling(id) { setSelectedId(id); goMode("kerja"); window.scrollTo({ top: 0, behavior: "smooth" }); }
