@@ -53,6 +53,7 @@
   --accent: #5879B4;
   --accent2: #A9C0E8;
   --select: #4A565E;
+  --slide-bg: #4A565E;
   --select-ink: #F1F3F4;
   --select-soft: #2F3A41;
   --data: #7FB8B0;
@@ -227,7 +228,7 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 /* Kontrol segmen dengan latar terpilih yang bergeser */
 .slide-host { position: relative; }
 .slide-host > *:not(.slide-ind) { position: relative; z-index: 1; }
-.slide-ind { position: absolute; z-index: 0; background: var(--select); pointer-events: none; }
+.slide-ind { position: absolute; z-index: 0; background: var(--slide-bg, var(--accent)); pointer-events: none; }
 @media (prefers-reduced-motion: no-preference) {
   .slide-ind { transition: left .4s cubic-bezier(.3, .8, .2, 1), width .4s cubic-bezier(.3, .8, .2, 1), top .4s cubic-bezier(.3, .8, .2, 1), height .4s cubic-bezier(.3, .8, .2, 1); }
   .slide-host button, .slide-host select { transition: color .3s ease; }
