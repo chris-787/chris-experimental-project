@@ -175,21 +175,23 @@ export default function MapPanel() {
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ gridArea: "1 / 1", width: "100%", height: "100%" }}>
                 {houses.filter((h) => h.id !== editingShapeId).map((h, hi) => (
                   <React.Fragment key={h.id}>
-                    {selectedId === h.id && (
-                      <>
-                        {/* Penanda kavling terpilih: garis dalam merah terang di atas garis luar gelap, tanpa isi; garis gelapnya yang membuatnya terpisah dari poligon merah di sekitarnya */}
-                        <polygon
-                          points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
-                          fill="none" stroke="#0B1220" strokeWidth="6" strokeLinejoin="round"
-                          vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }}
-                        />
-                        <polygon
-                          points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
-                          fill="none" stroke="#FF1744" strokeWidth="3" strokeLinejoin="round"
-                          vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }}
-                        />
-                      </>
-                    )}
+                    {selectedId === h.id && (() => {
+                      // Tebal bingkai mengikuti ukuran poligon di layar (zoom dan perangkat): tipis saat peta kecil atau di HP,
+                      // lebih tebal saat di-zoom besar.
+                      const wrapW = (planBoxRef.current ? planBoxRef.current.clientWidth : 0) * (zoom / 100);
+                      const xs = h.points.map((p) => p.x), ys = h.points.map((p) => p.y);
+                      const d = Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 100 * wrapW;
+                      const inner = Math.max(1, Math.min(3, d * 0.1));
+                      const outer = inner + 2 * Math.max(0.7, Math.min(1.4, inner * 0.5));
+                      const pts = h.points.map((p) => `${p.x},${p.y}`).join(" ");
+                      return (
+                        <>
+                          {/* Penanda kavling terpilih: garis dalam merah terang di atas garis luar gelap, tanpa isi; garis gelapnya yang memisahkannya dari poligon merah di sekitarnya */}
+                          <polygon points={pts} fill="none" stroke="#0B1220" strokeWidth={outer} strokeLinejoin="round" vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }} />
+                          <polygon points={pts} fill="none" stroke="#FF1744" strokeWidth={inner} strokeLinejoin="round" vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }} />
+                        </>
+                      );
+                    })()}
                     <polygon className="poly-in" points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
                       fill={polyColor(h)} fillOpacity={opacity / 100}
                       stroke="#00000066" strokeWidth="0.2"
