@@ -33,6 +33,9 @@ export default function DataTable() {
   const scrollRef = React.useRef(null);
   const tbodyRef = React.useRef(null);
   const [vRange, setVRange] = React.useState([0, VIRTUAL_MIN]);
+  // Rentang terakhir disimpan di ref: setVRange hanya dipanggil bila rentang benar-benar berubah. Memanggilnya terus
+  // (walau nilainya sama) dari efek yang jalan di setiap render membuat React menggambar ulang tanpa henti, dan halaman macet.
+  const vRangeRef = React.useRef([0, VIRTUAL_MIN]);
   const [rowH, setRowH] = React.useState(24);
   const updateRange = React.useCallback(() => {
     const el = scrollRef.current;
@@ -43,12 +46,25 @@ export default function DataTable() {
     const visible = Math.ceil((el.clientHeight / Math.max(1, el.scrollHeight)) * units) + 1;
     const start = Math.max(0, first - VIRTUAL_OVERSCAN);
     const end = Math.min(n, first + visible + VIRTUAL_OVERSCAN);
-    setVRange((prev) => (prev[0] === start && prev[1] === end ? prev : [start, end]));
+    if (vRangeRef.current[0] !== start || vRangeRef.current[1] !== end) {
+      vRangeRef.current = [start, end];
+      setVRange([start, end]);
+    }
   }, [pageRows.length]);
+  // Tinggi baris diukur dari rata-rata semua baris yang sedang digambar (bukan baris pertama saja: baris dengan chip status
+  // yang membungkus bisa lebih tinggi, dan itu pernah membuat ukuran bolak-balik tanpa henti). Ada batas jumlah penyesuaian
+  // berturut-turut sebagai pengaman; hitungan diulang saat pengguna menggulir atau jumlah baris berubah.
+  const rowAdjust = React.useRef(0);
+  React.useLayoutEffect(() => { rowAdjust.current = 0; }, [pageRows.length]);
   React.useLayoutEffect(() => {
     if (!virtual) return;
-    const tr = tbodyRef.current && tbodyRef.current.querySelector("tr[data-row]");
-    if (tr && tr.offsetHeight && Math.abs(tr.offsetHeight - rowH) > 0.5) setRowH(tr.offsetHeight);
+    const trs = tbodyRef.current ? tbodyRef.current.querySelectorAll("tr[data-row]") : [];
+    if (trs.length && rowAdjust.current < 4) {
+      let sum = 0;
+      trs.forEach((t) => { sum += t.offsetHeight; });
+      const avg = Math.round(sum / trs.length);
+      if (avg && Math.abs(avg - rowH) > 1.5) { rowAdjust.current += 1; setRowH(avg); }
+    }
     updateRange();
   });
   React.useEffect(() => {
@@ -76,6 +92,7 @@ export default function DataTable() {
   const scrollRaf = React.useRef(0);
   const onTableScroll = React.useCallback(() => {
     if (!virtual || scrollRaf.current) return;
+    rowAdjust.current = 0;
     scrollRaf.current = requestAnimationFrame(() => { scrollRaf.current = 0; updateRange(); });
   }, [virtual, updateRange]);
   const vStart = virtual ? Math.min(vRange[0], pageRows.length) : 0;
