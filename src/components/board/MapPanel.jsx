@@ -176,11 +176,19 @@ export default function MapPanel() {
                 {houses.filter((h) => h.id !== editingShapeId).map((h, hi) => (
                   <React.Fragment key={h.id}>
                     {selectedId === h.id && (
-                      <polygon
-                        points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
-                        fill="none" stroke={C.gold} strokeWidth="3.5" strokeLinejoin="round"
-                        vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }}
-                      />
+                      <>
+                        {/* Penanda kavling terpilih: garis dalam cyan terang di atas garis luar gelap, jelas di atas warna merah, hijau, biru, maupun gambar putih */}
+                        <polygon
+                          points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
+                          fill="none" stroke="#0B1220" strokeWidth="6" strokeLinejoin="round"
+                          vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }}
+                        />
+                        <polygon
+                          points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
+                          fill="rgba(34,211,238,0.18)" stroke="#22D3EE" strokeWidth="2.6" strokeLinejoin="round"
+                          vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }}
+                        />
+                      </>
                     )}
                     <polygon className="poly-in" points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
                       fill={polyColor(h)} fillOpacity={opacity / 100}

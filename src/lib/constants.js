@@ -11,6 +11,7 @@ export const WHATS_NEW_GROUPS = [
     versionNote: "Tampilan baru: sidebar, Dashboard, mode gelap",
     date: "7 Oktober 2026",
     items: [
+      { icon: "🔦", title: "Kavling terpilih di peta lebih jelas", desc: "Penanda kavling yang dipilih tidak lagi garis emas tipis. Sekarang garis dalam cyan terang dengan garis luar gelap dan isi cyan tipis, sehingga terlihat jelas di atas warna merah, hijau, biru, maupun gambar putih, di mode terang dan gelap." },
       { icon: "🎯", title: "Baris terpilih di tabel lebih jelas", desc: "Baris yang dipilih sekarang berlatar biru yang tegas dengan penanda tebal di sisi kiri, berbeda dari warna saat kursor melewati baris (lebih lembut) dan dari baris selang-seling. Berlaku di mode terang dan gelap, di Main Mode maupun Data Mode." },
       { icon: "🏷️", title: "Status lengkap di header Detail Kavling", desc: "Header Detail Kavling kini menampilkan semua status yang sedang aktif sebagai label berwarna (mis. Marketing, AC: 2 PK 1 unit), termasuk status baru yang ditambahkan di Settings, dan menunjukkan siapa yang terakhir mengubah." },
       { icon: "🖨️", title: "Show Blok ikut tercetak dan ter-ekspor", desc: "Bila tombol Show Blok aktif, kode kavling (mis. B-01) kini tampil juga di hasil Cetak dan PNG, dengan tata letak yang sama seperti di layar; bila nonaktif, tidak ada kode. Posisi poligon di PNG yang sebelumnya bergeser ke atas sudah diperbaiki." },
