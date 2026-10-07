@@ -1509,8 +1509,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
         table.dataTbl tr:hover td { background: var(--row-hover) !important; }
         table.dataTbl tr.row-sel td, table.dataTbl tr.row-sel:hover td { background: var(--row-selected) !important; }
         table.dataTbl tr.row-sel td:first-child { box-shadow: inset 4px 0 0 ${C.accent}; }
-        table.dataTbl td select, table.dataTbl td input:not([type=checkbox]):not(.status-dot), table.dataTbl td textarea { border: 1.5px solid color-mix(in srgb, var(--steel) 42%, transparent) !important; }
-        table.dataTbl td select:hover, table.dataTbl td input:not([type=checkbox]):not(.status-dot):hover { border-color: color-mix(in srgb, var(--steel) 65%, transparent) !important; }
+        table.dataTbl td select, table.dataTbl td input:not([type=checkbox]):not(.status-dot), table.dataTbl td textarea { border: 1px solid color-mix(in srgb, var(--steel) 30%, transparent) !important; }
+        table.dataTbl td select, table.dataTbl td input:not([type=checkbox]):not(.status-dot) { height: 22px !important; padding-top: 0 !important; padding-bottom: 0 !important; line-height: 20px !important; }
+        table.dataTbl td select:hover, table.dataTbl td input:not([type=checkbox]):not(.status-dot):hover { border-color: color-mix(in srgb, var(--steel) 55%, transparent) !important; }
         table.dataTbl td select:focus, table.dataTbl td input:not([type=checkbox]):not(.status-dot):focus { border-color: ${C.accent} !important; outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, ${C.accent} 18%, transparent); }
         table.dataTbl input[type=checkbox] { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; margin: 0; border-radius: 4px; border: 1.5px solid color-mix(in srgb, var(--steel) 42%, transparent); background: color-mix(in srgb, var(--panel) 55%, transparent); cursor: pointer; position: relative; vertical-align: middle; transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease; }
         table.dataTbl input[type=checkbox]:hover { border-color: ${C.accent}; box-shadow: 0 0 0 2px color-mix(in srgb, ${C.accent} 14%, transparent); }
