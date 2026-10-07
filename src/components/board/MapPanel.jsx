@@ -244,8 +244,8 @@ export default function MapPanel() {
             onTouchEnd={handleTouchEnd}
           >
             <div ref={imgWrapRef} style={{ position: "relative", display: "grid", width: `${zoom}%`, cursor: calibrating ? "crosshair" : "default" }} onClick={handleImageClick}>
-              <img ref={imgRef} src={siteImage} alt="Site plan" style={{ gridArea: "1 / 1", width: "100%", display: "block", userSelect: "none" }} draggable={false} />
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ gridArea: "1 / 1", width: "100%", height: "100%" }}>
+              <img ref={imgRef} className="map-img" src={siteImage} alt="Site plan" style={{ gridArea: "1 / 1", width: "100%", display: "block", userSelect: "none" }} draggable={false} />
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ gridArea: "1 / 1", width: "100%", height: "100%", position: "relative" }}>
                 {polyItems.map((it) => (
                   <PolyShape key={it.id} id={it.id} pts={it.pts} fill={it.fill} opacity={opacity} clickable={polygonsClickable} hidden={it.hidden} delay={it.delay} tdelay={it.tdelay} title={it.title} onPick={onPick} />
                 ))}

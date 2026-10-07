@@ -304,3 +304,6 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
   .pop-out { animation: pop-out .16s ease-in both; pointer-events: none; }
 }
 @media (prefers-reduced-motion: reduce) { .pop-out { display: none; } }
+
+/* Mode gelap: gambar site plan dibalik jadi latar hitam (hanya gambar; warna kavling dan hasil cetak/PNG tidak ikut) */
+:root[data-theme="dark"] .map-img { filter: invert(1) hue-rotate(180deg); }
