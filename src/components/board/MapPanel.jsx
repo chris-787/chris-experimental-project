@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { centroid, shortKavlingLabel } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
 import { downloadSitePlanPng } from "../../lib/mapExport";
+import { layoutLabels } from "../../lib/labelLayout";
 import ColorPills from "./ColorPills";
 import { useBoard } from "./BoardContext";
 
@@ -226,24 +227,22 @@ export default function MapPanel() {
                   const hpx = ((Math.max(...ys) - Math.min(...ys)) / 100) * wrapH;
                   const text = shortKavlingLabel(h);
                   const len = text.length * 0.6;
-                  const vertical = hpx > wpx * 1.8;
-                  const fit = vertical ? Math.min(wpx / 1.25, hpx / len) : Math.min(wpx / len, hpx / 1.25);
-                  items.push({ h, text, vertical, fit });
+                  // Pilih arah tulisan (mendatar atau tegak) yang memberi huruf lebih besar di poligon itu
+                  const fitH = Math.min(wpx / len, hpx / 1.25);
+                  const fitV = Math.min(wpx / 1.25, hpx / len);
+                  const vertical = fitV > fitH * 1.1;
+                  const fit = Math.max(fitH, fitV);
+                  const { cx, cy } = centroid(h.points);
+                  items.push({ id: h.id, h, text, vertical, fit, cx, cy, x: (cx / 100) * wrapW, y: (cy / 100) * wrapH });
                 });
-                if (!items.length) return null;
-                const sorted = items.map((i) => i.fit).sort((x, y) => x - y);
-                // Bila poligon tersempit pun masih memberi huruf yang terbaca (7px ke atas), semua kode ditampilkan; kalau tidak, sebagian kecil yang paling sempit disembunyikan.
-                const base = sorted[0] >= 7 ? sorted[0] : sorted[Math.floor(sorted.length * 0.15)];
-                const font = Math.min(12, Math.round(base * 10) / 10);
-                if (font < 6.5) return null;
+                const { font, shown } = layoutLabels(items, { min: 6.5, max: 12 });
+                if (!font || !shown.length) return null;
+                const showSet = new Set(shown);
                 return (
                   <div aria-hidden="true" style={{ gridArea: "1 / 1", position: "relative", pointerEvents: "none" }}>
-                    {items.filter((i) => i.fit >= font).map(({ h, text, vertical }) => {
-                      const { cx, cy } = centroid(h.points);
-                      return (
-                        <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: font, fontWeight: 700, letterSpacing: "-0.2px", color: "#141A24", background: "rgba(255,255,255,0.88)", borderRadius: 3, padding: "1px 1.5px", lineHeight: 1, whiteSpace: "nowrap", writingMode: vertical ? "vertical-rl" : undefined }}>{text}</span>
-                      );
-                    })}
+                    {items.filter((i) => showSet.has(i.id)).map(({ h, text, vertical, cx, cy }) => (
+                      <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: font, fontWeight: 700, letterSpacing: "-0.2px", color: "#141A24", background: "rgba(255,255,255,0.88)", borderRadius: 3, padding: "1px 1.5px", lineHeight: 1, whiteSpace: "nowrap", writingMode: vertical ? "vertical-rl" : undefined }}>{text}</span>
+                    ))}
                   </div>
                 );
               })()}
