@@ -238,7 +238,7 @@ export default function DataTable() {
                 ))}
               </div>
               <div style={{ position: "relative" }}>
-                <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Kolom</button>
+                <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-3 py-1.5 rounded-full border" title="Pilih kolom yang ditampilkan" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Filter</button>
                 {showColMenu && (
                   <div style={{ position: "absolute", right: 0, top: "110%", zIndex: 20, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 180, maxHeight: "min(420px, 62vh)", overflowY: "auto" }}>
                     <div className="text-xs font-semibold mb-1" style={{ color: C.ink }}>Tampilkan kolom</div>
