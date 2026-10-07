@@ -4,6 +4,7 @@ import { MONTHS } from "../../lib/constants";
 import React from "react";
 import { rupiah } from "../../lib/helpers";
 import { timeAgo } from "../../lib/calc";
+import { statusColor } from "../../lib/palette";
 import { useBoard } from "./BoardContext";
 
 export default function InspectorPanel() {
@@ -23,7 +24,18 @@ export default function InspectorPanel() {
           <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
           <span style={{ background: tint(tipeColor(h.tipe), 18), color: C.ink, fontWeight: 600, fontSize: 11, padding: "3px 10px 3px 8px", borderRadius: 999, display: "inline-flex", alignItems: "center", gap: 6 }}><i style={{ width: 8, height: 8, borderRadius: 3, background: tipeColor(h.tipe), display: "inline-block" }} />{h.tipe}</span>
           <span style={{ background: h.status.terjual ? tint(C.green, 18) : C.pillFill, color: h.status.terjual ? C.green : C.steel, fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 999 }}>{h.status.terjual ? "Sudah terjual" : "Belum terjual"}</span>
-          {h.lastEditedAt && <span className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}</span>}
+          {/* Status lain yang sedang aktif (Marketing, Pancang, SPK, AC, dan status baru yang ditambahkan di Settings) ikut tampil di header */}
+          {statusFields.map((s, i) => {
+            if (s.key === "terjual" || !h.status[s.key]) return null;
+            const col = statusColor(i);
+            const detail = s.hasDetail ? getDetail(h, s.key) : "";
+            return (
+              <span key={s.key} title={s.label} style={{ background: tint(col, 16), color: `color-mix(in srgb, ${col} var(--pill-mix), ${C.ink})`, fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                {s.label}{detail ? `: ${detail}` : ""}
+              </span>
+            );
+          })}
+          {h.lastEditedAt && <span className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}{h.lastEditedBy ? ` oleh ${h.lastEditedBy}` : ""}</span>}
           <span style={{ flex: 1 }} />
           <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: prevRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: prevRow ? "pointer" : "default" }} title="Kavling sebelumnya (←)">&lsaquo; Prev</button>
           <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: nextRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: nextRow ? "pointer" : "default" }} title="Kavling berikutnya (→)">Next &rsaquo;</button>
