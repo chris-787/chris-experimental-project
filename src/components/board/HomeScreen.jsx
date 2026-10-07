@@ -109,8 +109,8 @@ export default function HomeScreen() {
         {/* SAPAAN + AKSI */}
         <div className="flex items-end justify-between gap-3 flex-wrap mb-4">
           <div>
-            <div style={{ fontSize: 12, color: C.steel, fontFamily: "'IBM Plex Mono', monospace" }}><ClockText /></div>
-            <h1 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.4px", color: C.ink }}><GreetingText name={displayName} /></h1>
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: "-0.4px", color: C.ink }}><GreetingText name={displayName} /></h1>
+            <div style={{ fontSize: 12, color: C.steel, fontFamily: "'IBM Plex Mono', monospace", marginTop: 3 }}><ClockText /></div>
           </div>
           {clusters.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
