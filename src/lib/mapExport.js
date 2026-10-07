@@ -23,7 +23,7 @@ function concrete(color) {
   return color;
 }
 
-export async function renderSitePlanCanvas({ siteImage, houses, polyColor, opacity, isHidden, showNumbers, legend, title, subtitle }) {
+export async function renderSitePlanCanvas({ siteImage, houses, polyColor, opacity, isHidden, showNumbers, labelOf, legend, title, subtitle }) {
   const img = await loadImage(siteImage);
   const k = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
   const W = Math.round(img.naturalWidth * k);
@@ -83,7 +83,7 @@ export async function renderSitePlanCanvas({ siteImage, houses, polyColor, opaci
 
   // Nomor kavling
   if (showNumbers) {
-    const nf = Math.max(9, Math.round(W / 190));
+    const nf = Math.max(9, Math.round(W / 200));
     ctx.font = `bold ${nf}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -93,9 +93,9 @@ export async function renderSitePlanCanvas({ siteImage, houses, polyColor, opaci
       const cy = headH + (h.points.reduce((s, p) => s + p.y, 0) / h.points.length / 100) * H;
       ctx.lineWidth = Math.max(2, nf / 3);
       ctx.strokeStyle = "rgba(255,255,255,0.92)";
-      ctx.strokeText(String(h.noKavling), cx, cy);
+      ctx.strokeText(labelOf ? labelOf(h) : String(h.noKavling), cx, cy);
       ctx.fillStyle = "#141A24";
-      ctx.fillText(String(h.noKavling), cx, cy);
+      ctx.fillText(labelOf ? labelOf(h) : String(h.noKavling), cx, cy);
     });
     ctx.textAlign = "start";
   }

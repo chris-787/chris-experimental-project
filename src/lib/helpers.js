@@ -23,6 +23,13 @@ export function buildCalendarGrid(year, month) {
   while (cells.length % 7 !== 0) cells.push(null);
   return cells;
 }
+// Label pendek kavling untuk peta: nama blok tanpa awalan sebelum "/" lalu nomor, mis. "RB/B" + "01" -> "B-01".
+export function shortKavlingLabel(h) {
+  const blok = String(h.blok || "");
+  const short = blok.includes("/") ? blok.split("/").pop() : blok;
+  return `${short}-${h.noKavling}`;
+}
+
 export function centroid(points) {
   const cx = points.reduce((s, p) => s + p.x, 0) / points.length;
   const cy = points.reduce((s, p) => s + p.y, 0) / points.length;

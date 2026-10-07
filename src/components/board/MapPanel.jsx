@@ -1,7 +1,7 @@
 import { C } from "../../theme";
 import { BTN_PILL, Chip, Field, Ic, btnPrimary, btnSecondary, cellInput, formInput } from "../../components/ui";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { centroid } from "../../lib/helpers";
+import { centroid, shortKavlingLabel } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
 import { downloadSitePlanPng } from "../../lib/mapExport";
 import ColorPills from "./ColorPills";
@@ -48,7 +48,7 @@ export default function MapPanel() {
     try {
       const name = ((activeCluster && activeCluster.name) || "cluster").trim() || "cluster";
       await downloadSitePlanPng({
-        siteImage, houses, polyColor, opacity, isHidden, showNumbers,
+        siteImage, houses, polyColor, opacity, isHidden, showNumbers, labelOf: shortKavlingLabel,
         legend: legendItems.filter((l) => !hiddenKeys.includes(l.key)),
         title: `Site Plan ${name}`,
         subtitle: `Warna: ${modeLabel} · ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`,
@@ -113,7 +113,7 @@ export default function MapPanel() {
                 <button onClick={() => setZoom((z) => Math.max(50, z - 20))} aria-label="Perkecil peta" style={zoomBtn}>−</button>
                 <button onClick={() => setZoom((z) => Math.min(400, z + 20))} aria-label="Perbesar peta" style={zoomBtn}>+</button>
                 <button onClick={() => setZoom(100)} title="Kembali ke 100%" aria-label="Setel ulang zoom" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600 }}>{Math.round(zoom)}%</button>
-                <button onClick={toggleNumbers} aria-pressed={showNumbers} title="Nomor kavling muncul di peta saat di-zoom 250% ke atas" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600, background: showNumbers ? C.selectSoft : C.panel }}>No.</button>
+                <button onClick={toggleNumbers} aria-pressed={showNumbers} title="Kode kavling (mis. B-01) muncul di peta saat di-zoom, hanya bila cukup muat" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600, background: showNumbers ? C.selectSoft : C.panel }}>Show Blok</button>
                 {selectedId && (
                   <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Clear</button>
                 )}
@@ -210,14 +210,43 @@ export default function MapPanel() {
                   <polygon points={draft.points.map((p) => `${p.x},${p.y}`).join(" ")} fill={C.red} fillOpacity="0.35" stroke={C.red} strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
                 )}
               </svg>
-              {showNumbers && !calibrating && zoom >= 250 && (
-                <div aria-hidden="true" style={{ gridArea: "1 / 1", position: "relative", pointerEvents: "none" }}>
-                  {houses.filter((h) => !isHidden(h) && h.id !== editingShapeId && h.points && h.points.length >= 3).map((h) => {
-                    const { cx, cy } = centroid(h.points);
-                    return <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: zoom >= 360 ? 11 : zoom >= 300 ? 10 : 9, fontWeight: 700, color: "#141A24", background: "rgba(255,255,255,0.88)", borderRadius: 3, padding: "1px 2px", lineHeight: 1, whiteSpace: "nowrap" }}>{h.noKavling}</span>;
-                  })}
-                </div>
-              )}
+              {showNumbers && !calibrating && zoom >= 150 && (() => {
+                // Semua kode memakai SATU ukuran huruf yang sama (supaya konsisten). Ukurannya dipilih dari ukuran poligon
+                // di layar: yang muat dengan ukuran itu ditampilkan, sisanya (terlalu sempit) disembunyikan sampai di-zoom lebih besar.
+                // Poligon sempit dan tinggi memakai tulisan tegak.
+                const wrapW = (planBoxRef.current ? planBoxRef.current.clientWidth : 0) * (zoom / 100);
+                const im = imgRef.current;
+                const wrapH = im && im.naturalWidth ? wrapW * (im.naturalHeight / im.naturalWidth) : 0;
+                if (!wrapW || !wrapH) return null;
+                const items = [];
+                houses.forEach((h) => {
+                  if (isHidden(h) || h.id === editingShapeId || !h.points || h.points.length < 3) return;
+                  const xs = h.points.map((p) => p.x), ys = h.points.map((p) => p.y);
+                  const wpx = ((Math.max(...xs) - Math.min(...xs)) / 100) * wrapW;
+                  const hpx = ((Math.max(...ys) - Math.min(...ys)) / 100) * wrapH;
+                  const text = shortKavlingLabel(h);
+                  const len = text.length * 0.6;
+                  const vertical = hpx > wpx * 1.8;
+                  const fit = vertical ? Math.min(wpx / 1.25, hpx / len) : Math.min(wpx / len, hpx / 1.25);
+                  items.push({ h, text, vertical, fit });
+                });
+                if (!items.length) return null;
+                const sorted = items.map((i) => i.fit).sort((x, y) => x - y);
+                // Bila poligon tersempit pun masih memberi huruf yang terbaca (7px ke atas), semua kode ditampilkan; kalau tidak, sebagian kecil yang paling sempit disembunyikan.
+                const base = sorted[0] >= 7 ? sorted[0] : sorted[Math.floor(sorted.length * 0.15)];
+                const font = Math.min(12, Math.round(base * 10) / 10);
+                if (font < 6.5) return null;
+                return (
+                  <div aria-hidden="true" style={{ gridArea: "1 / 1", position: "relative", pointerEvents: "none" }}>
+                    {items.filter((i) => i.fit >= font).map(({ h, text, vertical }) => {
+                      const { cx, cy } = centroid(h.points);
+                      return (
+                        <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: font, fontWeight: 700, letterSpacing: "-0.2px", color: "#141A24", background: "rgba(255,255,255,0.88)", borderRadius: 3, padding: "1px 1.5px", lineHeight: 1, whiteSpace: "nowrap", writingMode: vertical ? "vertical-rl" : undefined }}>{text}</span>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
               {actionMenuId && calibrating && (() => {
                 const target = houses.find((h) => h.id === actionMenuId);
                 if (!target) return null;
