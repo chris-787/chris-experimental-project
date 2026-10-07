@@ -92,7 +92,7 @@ export default function HomeScreen() {
             {!canEdit && <span style={{ height: 36, padding: "0 14px", borderRadius: 999, display: "inline-flex", alignItems: "center", fontWeight: 600, fontSize: 12, background: C.pillFill, color: C.steel }}>View Mode</span>}
             <ThemeToggle />
             <div title={displayName} style={{ width: 36, height: 36, borderRadius: "50%", background: C.pillFill, color: C.ink, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>{(displayName || "?").slice(0, 2).toUpperCase()}</div>
-            <button onClick={handleLogoutClick} style={{ ...pillBtn, height: 36 }}>Log Out</button>
+            <button onClick={handleLogoutClick} style={{ ...pillBtn, height: 36, background: tint(C.red, 12), border: `1px solid ${tint(C.red, 38)}`, color: C.red }}><Ic name="logout" size={14} /> Log Out</button>
           </div>
         </div>
       </div>

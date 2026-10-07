@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { BrandMark, Ic } from "../ui";
+import { BrandMark, Ic, tint } from "../ui";
 import { timeAgo } from "../../lib/calc";
 import { JAKARTA_TZ, timeFormatter, useJakartaClock } from "../../lib/jakartaClock";
 import { SlideInd, useSlideIndicator } from "../slide";
@@ -103,7 +103,7 @@ export default function Sidebar() {
             <div style={{ fontWeight: 600, color: C.ink, fontSize: 13 }}>{displayName}</div>
             <div style={{ fontSize: 12, color: C.steel }}>{canEdit ? "Admin" : "View Mode"}</div>
           </div>
-          <button onClick={handleLogoutClick} aria-label="Log out" title="Log out" style={{ border: "none", background: "transparent", color: C.steel, cursor: "pointer", padding: 8, minWidth: 36, minHeight: 36 }}>
+          <button onClick={handleLogoutClick} aria-label="Log out" title="Log out" style={{ border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, cursor: "pointer", padding: 8, minWidth: 36, minHeight: 36, borderRadius: 10, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
             <Ic name="logout" size={18} />
           </button>
         </div>
