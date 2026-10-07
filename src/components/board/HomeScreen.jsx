@@ -24,6 +24,8 @@ export default function HomeScreen() {
   const [dragId, setDragId] = useState(null);
   const [overId, setOverId] = useState(null);
   const [duplicatingId, setDuplicatingId] = useState(null);
+  const [colorPickId, setColorPickId] = useState(null);
+  const CLUSTER_COLORS = ["#7F77DD", "#378ADD", "#1D9E75", "#639922", "#EF9F27", "#D85A30", "#D4537E", "#888780"];
   const pillBtn = { height: 34, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
   return (
     <>
@@ -199,8 +201,9 @@ export default function HomeScreen() {
                       className="rounded-2xl"
                       onDragOver={(e) => { if (dragId && dragId !== c.id) { e.preventDefault(); if (overId !== c.id) setOverId(c.id); } }}
                       onDrop={(e) => { e.preventDefault(); if (dragId) moveCluster(dragId, c.id); setDragId(null); setOverId(null); }}
-                      style={{ background: C.panel, boxShadow: overId === c.id && dragId ? `0 0 0 2px ${C.accent}` : c.pinned ? `0 0 0 1.5px ${C.gold}` : C.cardShadow, padding: 18, opacity: dragId === c.id ? 0.45 : 1, transition: "opacity .15s ease, box-shadow .15s ease" }}
+                      style={{ background: C.panel, boxShadow: overId === c.id && dragId ? `0 0 0 2px ${C.accent}` : c.pinned ? `0 0 0 1.5px ${C.gold}` : C.cardShadow, padding: 18, position: "relative", overflow: "hidden", opacity: dragId === c.id ? 0.45 : 1, transition: "opacity .15s ease, box-shadow .15s ease" }}
                     >
+                      {c.color && <div aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, top: 0, height: 5, background: c.color }} />}
                       {confirmDeleteClusterId === c.id ? (
                         <div>
                           <div className="text-xs mb-2" style={{ color: C.red }}>Hapus "{c.name}"? Semua data cluster ini (kavling, blok, tipe, gambar) akan hilang permanen.</div>
@@ -263,7 +266,7 @@ export default function HomeScreen() {
                                 <div className="flex items-center justify-between" style={{ fontSize: 12, color: C.steel }}>
                                   <span>Kavling terpetakan</span><span>{target ? `${Math.round(mappedPct)}% dari target` : "target belum diisi"}</span>
                                 </div>
-                                <ProgressBar pct={mappedPct} color={C.data} />
+                                <ProgressBar pct={mappedPct} color={c.color || C.data} />
                               </div>
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 14 }}>
                                 <div style={{ background: C.paper, borderRadius: 12, padding: "9px 12px" }}>
@@ -280,9 +283,18 @@ export default function HomeScreen() {
                           <div className="flex items-center gap-2" style={{ marginTop: 16 }}>
                             <button onClick={() => openCluster(c.id)} style={{ flex: 1, height: 36, borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Buka Cluster</button>
                             {canEdit && <button disabled={duplicatingId === c.id} aria-label="Duplikat cluster" onClick={async () => { setDuplicatingId(c.id); await duplicateCluster(c.id); setDuplicatingId(null); }} data-tip={duplicatingId === c.id ? "Menyalin...|Mohon tunggu sebentar" : "Duplikat|Salin cluster ini lengkap dengan datanya"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.accent, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0, opacity: duplicatingId === c.id ? 0.5 : 1 }}><Ic name="copy" size={16} /></button>}
+                            {canEdit && <button onClick={() => setColorPickId((v) => (v === c.id ? null : c.id))} aria-label="Warna kartu" data-tip="Warna kartu|Pilih warna penanda cluster" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: c.color || C.steel, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="palette" size={16} /></button>}
                             {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} aria-label="Arsipkan cluster" data-tip="Arsipkan|Sembunyikan tanpa menghapus" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.amber, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="archive" size={16} /></button>}
                             {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} aria-label="Hapus cluster" data-tip="Hapus cluster|Perlu konfirmasi dulu" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="trash" size={16} /></button>}
                           </div>
+                          {canEdit && colorPickId === c.id && (
+                            <div className="flex items-center gap-2 flex-wrap pop-in" style={{ marginTop: 10 }}>
+                              {CLUSTER_COLORS.map((col) => (
+                                <button key={col} type="button" aria-label={`Warna ${col}`} onClick={() => { updateClusterMeta(c.id, { color: col }); setColorPickId(null); }} style={{ width: 22, height: 22, borderRadius: "50%", background: col, border: "2px solid " + C.panel, boxShadow: c.color === col ? `0 0 0 2px ${col}` : `0 0 0 1px ${C.line}`, cursor: "pointer", padding: 0 }} />
+                              ))}
+                              <button type="button" aria-label="Tanpa warna" data-tip="Tanpa warna" onClick={() => { updateClusterMeta(c.id, { color: null }); setColorPickId(null); }} style={{ width: 22, height: 22, borderRadius: "50%", background: C.panel, border: `1.5px dashed ${C.faint}`, color: C.faint, fontSize: 12, lineHeight: "18px", cursor: "pointer", padding: 0 }}>×</button>
+                            </div>
+                          )}
                         </>
                       )}
                     </div>
