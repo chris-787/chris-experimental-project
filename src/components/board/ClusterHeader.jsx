@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { C } from "../../theme";
 import { Ic } from "../ui";
 import { measureTextWidth } from "../../lib/helpers";
@@ -10,20 +10,15 @@ import { useBoard } from "./BoardContext";
 const TITLES = { kerja: "Main Mode", data: "Data Mode", dashboard: "Dashboard", pengaturan: "Settings" };
 
 export default function ClusterHeader() {
-  const { SmallSpinner, activeCluster, calibrating, canEdit, currentClusterId, dirty, goMode, houses, mode, setSelectedId, reloadAfterRemoteUpdate, openConflict, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setClusters, setTableSearchQuery, tableSearchQuery, updateClusterMeta } = useBoard();
+  const { KAVLING_SEARCH_LIMIT, SmallSpinner, activeCluster, calibrating, canEdit, currentClusterId, dirty, goMode, houses, mode, setSelectedId, reloadAfterRemoteUpdate, openConflict, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setClusters, setTableSearchQuery, tableSearchQuery, updateClusterMeta } = useBoard();
   const textW = (t, ph) => Math.ceil(measureTextWidth(t || ph || "", "12px 'Plus Jakarta Sans', sans-serif")) + 8;
   const q = tableSearchQuery.trim().toLowerCase();
   const allMatches = useMemo(
     () => (q ? houses.filter((h) => `${h.blok}-${h.noKavling}`.toLowerCase().includes(q)) : []),
     [houses, q]
   );
-  // Hasil dibagi per halaman (8 kavling); kembali ke halaman 1 setiap kata kunci berubah.
-  const PER = 8;
-  const [searchPage, setSearchPage] = useState(0);
-  useEffect(() => { setSearchPage(0); }, [q]);
-  const pageCount = Math.max(1, Math.ceil(allMatches.length / PER));
-  const page = Math.min(searchPage, pageCount - 1);
-  const results = useMemo(() => allMatches.slice(page * PER, page * PER + PER), [allMatches, page]);
+  // Sama seperti pencarian di Home: daftar bisa digulir, dibatasi KAVLING_SEARCH_LIMIT hasil, dengan keterangan bila ada yang terpotong.
+  const results = useMemo(() => allMatches.slice(0, KAVLING_SEARCH_LIMIT), [allMatches, KAVLING_SEARCH_LIMIT]);
   const pick = (id) => { setSelectedId(id); setTableSearchQuery(""); if (mode !== "kerja") goMode("kerja"); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const ghost = { background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 12, color: C.steel };
   return (
@@ -76,26 +71,25 @@ export default function ClusterHeader() {
             />
           </label>
           {q && mode !== "data" && (
-            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 40, marginTop: 6, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 14, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", overflow: "hidden" }}>
-              {results.length === 0 ? (
-                <div className="text-xs p-2.5" style={{ color: C.steel }}>Tidak ada kavling yang cocok dengan “{tableSearchQuery.trim()}”.</div>
-              ) : (
-                <div className="text-xs" style={{ padding: "7px 12px", color: C.steel, background: C.paper, borderBottom: `1px solid ${C.line}` }}>
-                  <b style={{ color: C.ink, fontWeight: 600 }}>{allMatches.length} kavling</b> cocok dengan “{tableSearchQuery.trim()}”
-                  {allMatches.length > results.length ? ` · tampil ${page * PER + 1}–${page * PER + results.length}` : " · Enter untuk buka yang pertama"}
-                </div>
-              )}
-              {results.map((h) => (
-                <button key={h.id} onClick={() => pick(h.id)} className="search-row flex items-center justify-between w-full text-xs" style={{ padding: "8px 12px", border: "none", borderBottom: `1px solid ${C.line}`, background: "transparent", cursor: "pointer", textAlign: "left", color: C.ink }}>
-                  <span style={{ fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace" }}>{h.blok}-{h.noKavling}</span>
-                  <span style={{ color: C.steel }}>{h.tipe}</span>
-                </button>
-              ))}
-              {pageCount > 1 && (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 8, padding: "5px 12px", background: C.paper, borderTop: `1px solid ${C.line}` }}>
-                  <button type="button" disabled={page === 0} onClick={() => setSearchPage(page - 1)} className="search-row" style={{ justifySelf: "start", height: 18, padding: "0 8px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page === 0 ? C.faint : C.ink, fontWeight: 600, fontSize: 10, cursor: page === 0 ? "default" : "pointer", fontFamily: "inherit" }}>&lsaquo; Prev</button>
-                  <span style={{ fontSize: 10, color: C.steel, textAlign: "center" }}>Page <b style={{ color: C.ink, fontWeight: 600 }}>{page + 1}</b> / {pageCount}</span>
-                  <button type="button" disabled={page >= pageCount - 1} onClick={() => setSearchPage(page + 1)} className="search-row" style={{ justifySelf: "end", height: 18, padding: "0 8px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page >= pageCount - 1 ? C.faint : C.ink, fontWeight: 600, fontSize: 10, cursor: page >= pageCount - 1 ? "default" : "pointer", fontFamily: "inherit" }}>Next &rsaquo;</button>
+            <div className="rounded-lg" style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 40, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", marginTop: 6, border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
+              <div className="search-scroll" style={{ maxHeight: 320, overflowY: "auto" }}>
+                {results.length === 0 ? (
+                  <div className="text-xs p-2.5" style={{ color: C.steel }}>Tidak ditemukan.</div>
+                ) : (
+                  results.map((h) => (
+                    <div key={h.id} className="search-row flex items-center justify-between text-xs px-2.5 py-1.5" style={{ borderBottom: `1px solid ${C.line}` }}>
+                      <div>
+                        <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
+                        <div style={{ color: C.steel }}>{h.tipe}</div>
+                      </div>
+                      <button onClick={() => pick(h.id)} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.panel, color: C.ink, border: `1px solid ${C.line}`, flexShrink: 0 }}>Buka</button>
+                    </div>
+                  ))
+                )}
+              </div>
+              {allMatches.length > KAVLING_SEARCH_LIMIT && (
+                <div className="text-xs px-2.5 py-1.5" style={{ color: C.steel, background: C.paper, borderTop: `1px solid ${C.line}` }}>
+                  Menampilkan {KAVLING_SEARCH_LIMIT} dari {allMatches.length} hasil — ketik lebih spesifik untuk mempersempit.
                 </div>
               )}
             </div>

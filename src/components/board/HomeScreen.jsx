@@ -66,7 +66,7 @@ export default function HomeScreen() {
           </label>
             {kavlingSearch.trim() && (
               <div className="rounded-lg" style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 40, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", marginTop: 6, border: `1px solid ${C.line}`, background: C.panel, overflow: "hidden" }}>
-                <div style={{ maxHeight: 320, overflowY: "auto" }}>
+                <div className="search-scroll" style={{ maxHeight: 320, overflowY: "auto" }}>
                   {kavlingSearchResults.length === 0 ? (
                     <div className="text-xs p-2.5" style={{ color: C.steel }}>Tidak ditemukan.</div>
                   ) : (
