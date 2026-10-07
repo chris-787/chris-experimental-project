@@ -11,24 +11,47 @@ export function layoutLabels(items, { min = 6.5, max = 12, step = 0.25 } = {}) {
     return it.vertical ? { w: thick, h: len } : { w: len, h: thick };
   };
   const overlaps = (a, ba, b, bb) => Math.abs(a.x - b.x) < (ba.w + bb.w) / 2 && Math.abs(a.y - b.y) < (ba.h + bb.h) / 2;
-  const collides = (list, f) => {
-    const boxes = list.map((it) => box(it, f));
-    for (let i = 0; i < list.length; i++) {
-      for (let j = i + 1; j < list.length; j++) {
-        if (overlaps(list[i], boxes[i], list[j], boxes[j])) return true;
+  // Ada tabrakan pada ukuran f? Memakai kisi (grid) supaya tiap kotak hanya dibandingkan dengan tetangganya (cepat untuk ratusan kavling).
+  const collides = (f) => {
+    const boxes = items.map((it) => box(it, f));
+    let cs = 1;
+    boxes.forEach((b) => { cs = Math.max(cs, b.w, b.h); });
+    const grid = new Map();
+    for (let i = 0; i < items.length; i++) {
+      const gx = Math.floor(items[i].x / cs), gy = Math.floor(items[i].y / cs);
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dy = -1; dy <= 1; dy++) {
+          const list = grid.get(`${gx + dx},${gy + dy}`);
+          if (!list) continue;
+          for (let k = 0; k < list.length; k++) {
+            const j = list[k];
+            if (overlaps(items[i], boxes[i], items[j], boxes[j])) return true;
+          }
+        }
       }
+      const key = `${gx},${gy}`;
+      if (grid.has(key)) grid.get(key).push(i); else grid.set(key, [i]);
     }
     return false;
   };
-  for (let f = max; f >= min - 1e-9; f -= step) {
-    if (!collides(items, f)) return { font: Math.round(f * 100) / 100, shown: items.map((i) => i.id) };
+  // Tabrakan hanya bertambah bila huruf membesar, jadi ukuran terbesar yang aman dicari dengan pencarian biner.
+  const n = Math.max(0, Math.floor((max - min) / step + 1e-9));
+  const sizeAt = (k) => Math.round((min + k * step) * 100) / 100;
+  if (!collides(sizeAt(0))) {
+    let lo = 0, hi = n;
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi) / 2);
+      if (collides(sizeAt(mid))) hi = mid - 1; else lo = mid;
+    }
+    return { font: sizeAt(lo), shown: items.map((i) => i.id) };
   }
   // Ukuran terkecil pun masih bertabrakan: pertahankan poligon yang lebih lebar, buang yang bertabrakan
   const sorted = [...items].sort((a, b) => b.fit - a.fit);
   const kept = [];
+  const bMin = new Map(sorted.map((it) => [it.id, box(it, min)]));
   sorted.forEach((it) => {
-    const bi = box(it, min);
-    if (!kept.some((k) => overlaps(it, bi, k, box(k, min)))) kept.push(it);
+    const bi = bMin.get(it.id);
+    if (!kept.some((k) => overlaps(it, bi, k, bMin.get(k.id)))) kept.push(it);
   });
   return { font: min, shown: kept.map((i) => i.id) };
 }

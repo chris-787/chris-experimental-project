@@ -1,11 +1,12 @@
 import { C } from "../../theme";
 import { BTN_PILL, Chip, Field, Ic, btnPrimary, btnSecondary, cellInput, formInput } from "../../components/ui";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { centroid, shortKavlingLabel } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
 import { downloadSitePlanPng } from "../../lib/mapExport";
 import { layoutHouseLabels } from "../../lib/labelLayout";
 import ColorPills from "./ColorPills";
+import PolyShape from "./PolyShape";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
@@ -59,6 +60,38 @@ export default function MapPanel() {
     }
     setExporting(false);
   }
+  // Poligon dihitung sekali per perubahan datanya (bukan tiap render), dan tiap poligon dibungkus React.memo.
+  const ptsCache = useRef(new WeakMap());
+  const polyItems = useMemo(() => {
+    const blockIdx = new Map(blocks.map((b, i) => [b.name, i]));
+    return houses.filter((h) => h.id !== editingShapeId).map((h, hi) => {
+      let pts = ptsCache.current.get(h.points);
+      if (!pts) { pts = h.points.map((p) => `${p.x},${p.y}`).join(" "); ptsCache.current.set(h.points, pts); }
+      return {
+        id: h.id, pts, fill: polyColor(h), hidden: isHidden(h),
+        delay: `${Math.max(0, blockIdx.get(h.blok) ?? 0) * 110 + (hi % 9) * 30}ms`,
+        title: `${h.blok}-${h.noKavling}`,
+      };
+    });
+    // eslint-disable-next-line
+  }, [houses, editingShapeId, colorMode, blocks, tipeOptions, kontraktorLegend, hiddenKeys, calibrating, statusFields]);
+  // Kode kavling (Show Blok): satu ukuran huruf, anti-bentrok. Dihitung ulang hanya bila data, zoom, atau ukuran peta berubah.
+  const labelData = useMemo(() => {
+    if (!showNumbers || calibrating || zoom < 150) return null;
+    const wrapW = (planBoxRef.current ? planBoxRef.current.clientWidth : 0) * (zoom / 100);
+    if (!wrapW) return null;
+    const { font, labels } = layoutHouseLabels(houses, { labelOf: shortKavlingLabel, isHidden: (h) => isHidden(h) || h.id === editingShapeId, size: wrapW, min: 6.5, max: 12 });
+    return font && labels.length ? { font, labels } : null;
+    // eslint-disable-next-line
+  }, [showNumbers, calibrating, zoom, houses, editingShapeId, hiddenKeys, colorMode, imgH]);
+  const pickRef = useRef(null);
+  pickRef.current = (e, id) => {
+    e.stopPropagation();
+    if (calibrating) { setActionMenuId(id); setSelectedId(id); }
+    else selectFromMap(id);
+  };
+  const onPick = useCallback((e, id) => pickRef.current(e, id), []);
+  const selectedHouse = selectedId ? houses.find((h) => h.id === selectedId && h.id !== editingShapeId) : null;
   useEffect(() => {
     const el = imgRef.current;
     if (!el || typeof ResizeObserver === "undefined") return undefined;
@@ -173,40 +206,28 @@ export default function MapPanel() {
             <div ref={imgWrapRef} style={{ position: "relative", display: "grid", width: `${zoom}%`, cursor: calibrating ? "crosshair" : "default" }} onClick={handleImageClick}>
               <img ref={imgRef} src={siteImage} alt="Site plan" style={{ gridArea: "1 / 1", width: "100%", display: "block", userSelect: "none" }} draggable={false} />
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ gridArea: "1 / 1", width: "100%", height: "100%" }}>
-                {houses.filter((h) => h.id !== editingShapeId).map((h, hi) => (
-                  <React.Fragment key={h.id}>
-                    {selectedId === h.id && (() => {
-                      // Tebal bingkai mengikuti ukuran poligon di layar (zoom dan perangkat): tipis saat peta kecil atau di HP,
-                      // lebih tebal saat di-zoom besar.
-                      const wrapW = (planBoxRef.current ? planBoxRef.current.clientWidth : 0) * (zoom / 100);
-                      const xs = h.points.map((p) => p.x), ys = h.points.map((p) => p.y);
-                      const d = Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 100 * wrapW;
-                      const inner = Math.max(1, Math.min(3, d * 0.1));
-                      const outer = inner + 2 * Math.max(0.7, Math.min(1.4, inner * 0.5));
-                      const pts = h.points.map((p) => `${p.x},${p.y}`).join(" ");
-                      return (
-                        <>
-                          {/* Penanda kavling terpilih: garis dalam merah terang di atas garis luar gelap, dengan isi merah terang yang berkedip pelan; garis gelapnya yang memisahkannya dari poligon merah di sekitarnya */}
-                          <polygon className="sel-pulse" points={pts} stroke="none" style={{ pointerEvents: "none" }} />
-                          <polygon points={pts} fill="none" stroke="#0B1220" strokeWidth={outer} strokeLinejoin="round" vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }} />
-                          <polygon points={pts} fill="none" stroke="#FF1744" strokeWidth={inner} strokeLinejoin="round" vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }} />
-                        </>
-                      );
-                    })()}
-                    <polygon className="poly-in" points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
-                      fill={polyColor(h)} fillOpacity={opacity / 100}
-                      stroke="#00000066" strokeWidth="0.2"
-                      vectorEffect="non-scaling-stroke"
-                      style={{ pointerEvents: polygonsClickable ? "auto" : "none", cursor: "pointer", display: isHidden(h) ? "none" : undefined, animationDelay: `${Math.max(0, blocks.findIndex((b) => b.name === h.blok)) * 110 + (hi % 9) * 30}ms` }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (calibrating) { setActionMenuId(h.id); setSelectedId(h.id); }
-                        else selectFromMap(h.id);
-                      }}>
-                      <title>{`${h.blok}-${h.noKavling}`}</title>
-                    </polygon>
-                  </React.Fragment>
+                {polyItems.map((it) => (
+                  <PolyShape key={it.id} id={it.id} pts={it.pts} fill={it.fill} opacity={opacity} clickable={polygonsClickable} hidden={it.hidden} delay={it.delay} title={it.title} onPick={onPick} />
                 ))}
+                {selectedHouse && (() => {
+                  // Tebal bingkai mengikuti ukuran poligon di layar (zoom dan perangkat): tipis saat peta kecil atau di HP,
+                  // lebih tebal saat di-zoom besar.
+                  const h = selectedHouse;
+                  const wrapW = (planBoxRef.current ? planBoxRef.current.clientWidth : 0) * (zoom / 100);
+                  const xs = h.points.map((p) => p.x), ys = h.points.map((p) => p.y);
+                  const d = Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 100 * wrapW;
+                  const inner = Math.max(1, Math.min(3, d * 0.1));
+                  const outer = inner + 2 * Math.max(0.7, Math.min(1.4, inner * 0.5));
+                  const pts = h.points.map((p) => `${p.x},${p.y}`).join(" ");
+                  return (
+                    <>
+                      {/* Penanda kavling terpilih: garis dalam merah terang di atas garis luar gelap, dengan isi merah terang yang berkedip pelan; garis gelapnya yang memisahkannya dari poligon merah di sekitarnya */}
+                      <polygon className="sel-pulse" points={pts} stroke="none" style={{ pointerEvents: "none" }} />
+                      <polygon points={pts} fill="none" stroke="#0B1220" strokeWidth={outer} strokeLinejoin="round" vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }} />
+                      <polygon points={pts} fill="none" stroke="#FF1744" strokeWidth={inner} strokeLinejoin="round" vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }} />
+                    </>
+                  );
+                })()}
                 {editingShapeId && editPoints && (
                   <polygon points={editPoints.map((p) => `${p.x},${p.y}`).join(" ")} fill={C.accent} fillOpacity="0.3" stroke={C.accent} strokeWidth="0.4" vectorEffect="non-scaling-stroke" />
                 )}
@@ -222,21 +243,13 @@ export default function MapPanel() {
                   <polygon points={draft.points.map((p) => `${p.x},${p.y}`).join(" ")} fill={C.red} fillOpacity="0.35" stroke={C.red} strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
                 )}
               </svg>
-              {showNumbers && !calibrating && zoom >= 150 && (() => {
-                // Semua kode memakai SATU ukuran huruf, diatur supaya tidak saling menimpa; arah tulisan (mendatar atau tegak)
-                // mengikuti bentuk poligon. Kode yang tetap tidak muat disembunyikan sampai peta di-zoom lebih besar.
-                const wrapW = (planBoxRef.current ? planBoxRef.current.clientWidth : 0) * (zoom / 100);
-                if (!wrapW) return null;
-                const { font, labels } = layoutHouseLabels(houses, { labelOf: shortKavlingLabel, isHidden: (h) => isHidden(h) || h.id === editingShapeId, size: wrapW, min: 6.5, max: 12 });
-                if (!font || !labels.length) return null;
-                return (
-                  <div aria-hidden="true" style={{ gridArea: "1 / 1", position: "relative", pointerEvents: "none" }}>
-                    {labels.map(({ house: h, text, vertical, cx, cy }) => (
-                      <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: font, fontWeight: 700, letterSpacing: "-0.2px", color: "#141A24", background: "rgba(255,255,255,0.88)", borderRadius: 3, padding: "1px 1.5px", lineHeight: 1, whiteSpace: "nowrap", writingMode: vertical ? "vertical-rl" : undefined }}>{text}</span>
-                    ))}
-                  </div>
-                );
-              })()}
+              {labelData && (
+                <div aria-hidden="true" style={{ gridArea: "1 / 1", position: "relative", pointerEvents: "none" }}>
+                  {labelData.labels.map(({ house: h, text, vertical, cx, cy }) => (
+                    <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: labelData.font, fontWeight: 700, letterSpacing: "-0.2px", color: "#141A24", background: "rgba(255,255,255,0.88)", borderRadius: 3, padding: "1px 1.5px", lineHeight: 1, whiteSpace: "nowrap", writingMode: vertical ? "vertical-rl" : undefined }}>{text}</span>
+                  ))}
+                </div>
+              )}
               {actionMenuId && calibrating && (() => {
                 const target = houses.find((h) => h.id === actionMenuId);
                 if (!target) return null;
