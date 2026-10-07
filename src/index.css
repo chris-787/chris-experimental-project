@@ -264,11 +264,13 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 }
 
 /* Detail Kavling: isi berganti dengan animasi saat pindah kavling (Prev/Next menggeser, klik peta memudar naik) */
-@keyframes insp-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@keyframes insp-from-right { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
-@keyframes insp-from-left { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+@keyframes insp-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes insp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes insp-from-right { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@keyframes insp-from-left { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: no-preference) {
-  .insp-in { animation: insp-rise .3s cubic-bezier(.2, .8, .2, 1) both; }
+  .insp-in { animation: insp-rise .24s cubic-bezier(.2, .8, .2, 1) both; }
+  .insp-fade { animation: insp-fade .22s ease-out both; }
   .insp-in.insp-next { animation-name: insp-from-right; }
   .insp-in.insp-prev { animation-name: insp-from-left; }
 }

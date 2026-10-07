@@ -22,23 +22,23 @@ export default function InspectorPanel() {
     const prevRow = tableRows[idx - 1];
     const nextRow = tableRows[idx + 1];
     return (
-      <div data-inspector key={h.id} className={`insp-in${navDir.id === h.id && navDir.dir ? ` insp-${navDir.dir}` : ""}`}>
+      <div data-inspector>
         <div className="flex items-center gap-2.5 flex-wrap mb-3.5">
-          <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
-          <span style={{ background: tint(tipeColor(h.tipe), 18), color: C.ink, fontWeight: 600, fontSize: 11, padding: "3px 10px 3px 8px", borderRadius: 999, display: "inline-flex", alignItems: "center", gap: 6 }}><i style={{ width: 8, height: 8, borderRadius: 3, background: tipeColor(h.tipe), display: "inline-block" }} />{h.tipe}</span>
-          <span style={{ background: h.status.terjual ? tint(C.green, 18) : C.pillFill, color: h.status.terjual ? C.green : C.steel, fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 999 }}>{h.status.terjual ? "Sudah terjual" : "Belum terjual"}</span>
+          <div key={`n-${h.id}`} className="insp-fade" style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
+          <span key={`t-${h.id}`} className="insp-fade" style={{ background: tint(tipeColor(h.tipe), 18), color: C.ink, fontWeight: 600, fontSize: 11, padding: "3px 10px 3px 8px", borderRadius: 999, display: "inline-flex", alignItems: "center", gap: 6 }}><i style={{ width: 8, height: 8, borderRadius: 3, background: tipeColor(h.tipe), display: "inline-block" }} />{h.tipe}</span>
+          <span key={`s-${h.id}`} className="insp-fade" style={{ background: h.status.terjual ? tint(C.green, 18) : C.pillFill, color: h.status.terjual ? C.green : C.steel, fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 999 }}>{h.status.terjual ? "Sudah terjual" : "Belum terjual"}</span>
           {/* Status lain yang sedang aktif (Marketing, Pancang, SPK, AC, dan status baru yang ditambahkan di Settings) ikut tampil di header */}
           {statusFields.map((s, i) => {
             if (s.key === "terjual" || !h.status[s.key]) return null;
             const col = statusColor(i);
             const detail = s.hasDetail ? getDetail(h, s.key) : "";
             return (
-              <span key={s.key} title={s.label} style={{ background: tint(col, 16), color: `color-mix(in srgb, ${col} var(--pill-mix), ${C.ink})`, fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 999, whiteSpace: "nowrap" }}>
+              <span key={`${h.id}-${s.key}`} className="insp-fade" title={s.label} style={{ background: tint(col, 16), color: `color-mix(in srgb, ${col} var(--pill-mix), ${C.ink})`, fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 999, whiteSpace: "nowrap" }}>
                 {s.label}{detail ? `: ${detail}` : ""}
               </span>
             );
           })}
-          {h.lastEditedAt && <span className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}{h.lastEditedBy ? ` oleh ${h.lastEditedBy}` : ""}</span>}
+          {h.lastEditedAt && <span key={`e-${h.id}`} className="text-xs insp-fade" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}{h.lastEditedBy ? ` oleh ${h.lastEditedBy}` : ""}</span>}
           <span style={{ flex: 1 }} />
           <button disabled={!prevRow} onClick={() => { if (prevRow) { navDir = { id: prevRow.id, dir: "prev" }; selectFromMap(prevRow.id); } }} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: prevRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: prevRow ? "pointer" : "default" }} title="Kavling sebelumnya (←)">&lsaquo; Prev</button>
           <button disabled={!nextRow} onClick={() => { if (nextRow) { navDir = { id: nextRow.id, dir: "next" }; selectFromMap(nextRow.id); } }} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: nextRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: nextRow ? "pointer" : "default" }} title="Kavling berikutnya (→)">Next &rsaquo;</button>
@@ -46,6 +46,7 @@ export default function InspectorPanel() {
           <button onClick={() => setSelectedId(null)} aria-label="Tutup detail" title="Tutup / hapus highlight (Esc)" style={{ width: 36, height: 32, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.steel, cursor: "pointer" }}>✕</button>
         </div>
 
+        <div key={h.id} className={`insp-in${navDir.id === h.id && navDir.dir ? ` insp-${navDir.dir}` : ""}`}>
         <div className="inspector-cols">
         <div>
         <div className="col-head"><i className="col-dot" style={{ background: C.data }} />Data dan status</div>
@@ -236,6 +237,7 @@ export default function InspectorPanel() {
             <button onClick={() => setConfirmDeleteId(h.id)} className="text-xs" style={{ color: C.red }}>Hapus Kavling Ini</button>
           )}
         </div>}
+        </div>
       </div>
     );
 }
