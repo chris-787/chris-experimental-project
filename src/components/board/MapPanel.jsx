@@ -177,7 +177,7 @@ export default function MapPanel() {
                   <React.Fragment key={h.id}>
                     {selectedId === h.id && (
                       <>
-                        {/* Penanda kavling terpilih: garis dalam cyan terang di atas garis luar gelap, jelas di atas warna merah, hijau, biru, maupun gambar putih */}
+                        {/* Penanda kavling terpilih: garis dalam merah terang di atas garis luar gelap, tanpa isi; garis gelapnya yang membuatnya terpisah dari poligon merah di sekitarnya */}
                         <polygon
                           points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
                           fill="none" stroke="#0B1220" strokeWidth="6" strokeLinejoin="round"
@@ -185,7 +185,7 @@ export default function MapPanel() {
                         />
                         <polygon
                           points={h.points.map((p) => `${p.x},${p.y}`).join(" ")}
-                          fill="rgba(34,211,238,0.18)" stroke="#22D3EE" strokeWidth="2.6" strokeLinejoin="round"
+                          fill="none" stroke="#FF1744" strokeWidth="3" strokeLinejoin="round"
                           vectorEffect="non-scaling-stroke" style={{ pointerEvents: "none" }}
                         />
                       </>
