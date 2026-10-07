@@ -11,6 +11,7 @@ export const WHATS_NEW_GROUPS = [
     versionNote: "Tampilan baru: sidebar, Dashboard, mode gelap",
     date: "7 Oktober 2026",
     items: [
+      { icon: "🎯", title: "Baris terpilih di tabel lebih jelas", desc: "Baris yang dipilih sekarang berlatar biru yang tegas dengan penanda tebal di sisi kiri, berbeda dari warna saat kursor melewati baris (lebih lembut) dan dari baris selang-seling. Berlaku di mode terang dan gelap, di Main Mode maupun Data Mode." },
       { icon: "🏷️", title: "Status lengkap di header Detail Kavling", desc: "Header Detail Kavling kini menampilkan semua status yang sedang aktif sebagai label berwarna (mis. Marketing, AC: 2 PK 1 unit), termasuk status baru yang ditambahkan di Settings, dan menunjukkan siapa yang terakhir mengubah." },
       { icon: "🖨️", title: "Show Blok ikut tercetak dan ter-ekspor", desc: "Bila tombol Show Blok aktif, kode kavling (mis. B-01) kini tampil juga di hasil Cetak dan PNG, dengan tata letak yang sama seperti di layar; bila nonaktif, tidak ada kode. Posisi poligon di PNG yang sebelumnya bergeser ke atas sudah diperbaiki." },
       { icon: "👀", title: "Pratinjau sebelum Import Excel", desc: "Import Excel/CSV tidak lagi langsung menimpa data. Muncul pratinjau berisi jumlah kavling dan sel yang akan berubah, lengkap dengan nilai lama dan barunya per kavling, serta daftar yang dilewati. Data baru berubah setelah menekan Terapkan; tombol Batalkan membuangnya tanpa mengubah apa pun." },

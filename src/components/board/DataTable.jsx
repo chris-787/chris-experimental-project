@@ -332,7 +332,7 @@ export default function DataTable() {
                   <tr aria-hidden="true"><td colSpan={17 + statusFields.length} style={{ height: vStart * rowH, padding: 0, border: 0 }} /></tr>
                 )}
                 {pageRows.slice(vStart, vEnd).map((h, k) => { const i = vStart + k; return (
-                  <tr key={h.id} data-row="1" className={!virtual && i < 24 ? (rowsIn ? "row-in" : "row-pre") : undefined} ref={(el) => (rowRefs.current[h.id] = el)} style={{ "--i": i, background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => selectRow(h.id)}>
+                  <tr key={h.id} data-row="1" className={[!virtual && i < 24 ? (rowsIn ? "row-in" : "row-pre") : "", selectedId === h.id && !selectedRows.includes(h.id) ? "row-sel" : ""].join(" ").trim() || undefined} ref={(el) => (rowRefs.current[h.id] = el)} style={{ "--i": i, background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? "var(--row-selected)" : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => selectRow(h.id)}>
                     <td className="text-center frz" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", left: frozenLeft.no, background: rowBg(h, i) }} onClick={(e) => e.stopPropagation()}>
                       {(pageSize === "all" ? 0 : (currentPage - 1) * pageSize) + i + 1}
                     </td>

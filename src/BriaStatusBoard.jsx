@@ -1398,7 +1398,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   // kolom beku sebelumnya yang sedang tampil.
   const FROZEN_KEYS = ["no", "select", "kavling"];
   const zebraBg = "var(--zebra)";
-  const rowBg = (h, i = 0) => (selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : C.panel);
+  const rowBg = (h, i = 0) => (selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? "var(--row-selected)" : i % 2 === 1 ? zebraBg : C.panel);
   const frozenLeft = {};
   let frozenAcc = 0;
   FROZEN_KEYS.forEach((k) => { frozenLeft[k] = frozenAcc; if (!hiddenCols.includes(k)) frozenAcc += colWidth(k); });
@@ -1467,7 +1467,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
           .inspector-cols { grid-template-columns: minmax(0, 1fr); gap: 0; }
           .inspector-cols > div + div { border-left: none; padding-left: 0; }
         }
-        table.dataTbl tr:hover td { background: ${C.rowSelectedBg} !important; }
+        table.dataTbl tr:hover td { background: var(--row-hover) !important; }
+        table.dataTbl tr.row-sel td, table.dataTbl tr.row-sel:hover td { background: var(--row-selected) !important; }
+        table.dataTbl tr.row-sel td:first-child { box-shadow: inset 4px 0 0 ${C.accent}; }
         table.dataTbl input[type=checkbox] { accent-color: ${C.green}; width: 14px; height: 14px; }
         table.dataTbl input.status-dot { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid ${C.faint}; background: transparent; cursor: pointer; display: inline-block; vertical-align: middle; position: relative; margin: 0; }
         table.dataTbl input.status-dot:checked { background: ${C.green}; border-color: ${C.green}; }

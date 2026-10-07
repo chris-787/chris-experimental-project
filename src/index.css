@@ -34,6 +34,8 @@
   --chip-red-bg: #FBEDEA;
   --chip-blue-bg: #E3EAF6;
   --zebra: #F5F7FB;
+  --row-hover: #E9EFF9;
+  --row-selected: #CFDDF5;
   --thead: #2A4A8A;
   --thead-ink: #FFFFFF;
   --pill-mix: 72%;
@@ -69,6 +71,8 @@
   --chip-red-bg: #3B2A28;
   --chip-blue-bg: #28384A;
   --zebra: #292D30;
+  --row-hover: #323C43;
+  --row-selected: #35507A;
   --thead: #2F3A41;
   --thead-ink: #C9D0D5;
   --pill-mix: 40%;
