@@ -324,7 +324,7 @@ export default function HomeScreen() {
           </div>
           <aside className="flex flex-col gap-3" style={{ minWidth: 0 }}>
             <div className="flex items-baseline justify-between gap-2" style={{ marginBottom: -4 }}>
-              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink }}>Ringkasan</h2>
+              <h2 aria-hidden="true" style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "transparent", userSelect: "none" }}>&nbsp;</h2>
             </div>
           {(
             <div className="p-2.5 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
@@ -477,12 +477,12 @@ export default function HomeScreen() {
               {clusters.some((c) => c.archived) ? (
                 <div className="flex flex-col gap-1.5">
                   {clusters.filter((c) => c.archived).map((c) => (
-                    <div key={c.id} className="rounded-xl p-2 flex items-center justify-between gap-2" style={{ background: C.paper, border: `1px dashed ${C.line}` }}>
+                    <div key={c.id} className="rounded-xl p-2.5 flex items-center justify-between gap-2" style={{ background: C.paper, border: `1px solid ${C.line}`, borderLeft: `3px solid ${C.amber}` }}>
                       <div style={{ minWidth: 0 }}>
-                        <div className="text-sm" style={{ color: C.steel, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
-                        <div className="text-xs" style={{ color: C.faint, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.subtitle}</div>
+                        <div className="text-sm" style={{ color: C.ink, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
+                        <div className="text-xs" style={{ color: C.steel, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.subtitle}</div>
                       </div>
-                      {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>Restore</button>}
+                      {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: "1px solid transparent", background: C.accent, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>Restore</button>}
                     </div>
                   ))}
                 </div>
@@ -504,11 +504,11 @@ export default function HomeScreen() {
                   {trashClusters.map((c) => {
                     const daysLeft = Math.max(0, TRASH_DAYS - Math.floor((Date.now() - new Date(c.deletedAt || Date.now()).getTime()) / 86400000));
                     return (
-                      <div key={c.id} className="rounded-xl p-2" style={{ background: C.paper, border: `1px dashed ${tint(C.red, 40)}` }}>
+                      <div key={c.id} className="rounded-xl p-2.5" style={{ background: C.paper, border: `1px solid ${C.line}`, borderLeft: `3px solid ${C.red}` }}>
                         <div className="flex items-center justify-between gap-2">
                           <div style={{ minWidth: 0 }}>
-                            <div className="text-sm" style={{ color: C.steel, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
-                            <div className="text-xs" style={{ color: C.faint }}>Dibuang permanen dalam {daysLeft} hari</div>
+                            <div className="text-sm" style={{ color: C.ink, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
+                            <div className="text-xs" style={{ color: C.steel }}>Dibuang permanen dalam {daysLeft} hari</div>
                           </div>
                           {canEdit && confirmPurgeId !== c.id && (
                             <div className="flex items-center gap-1.5" style={{ flexShrink: 0 }}>
