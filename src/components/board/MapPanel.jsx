@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { BTN_PILL, Chip, Field, Ic, btnPrimary, btnSecondary, cellInput, formInput } from "../../components/ui";
+import { BTN_PILL, Chip, Field, Ic, btnPrimary, btnSecondary, cellInput, formInput, tint } from "../../components/ui";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { centroid, shortKavlingLabel } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
@@ -186,7 +186,7 @@ export default function MapPanel() {
                 <button onClick={() => setZoom(100)} title="Kembali ke 100%" aria-label="Setel ulang zoom" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600 }}>{Math.round(zoom)}%</button>
                 <button onClick={toggleNumbers} aria-pressed={showNumbers} title="Kode kavling (mis. B-01) muncul di peta saat di-zoom, hanya bila cukup muat" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600, background: showNumbers ? C.selectSoft : C.panel }}>Show Blok</button>
                 {selectedId && (
-                  <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Clear</button>
+                  <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap" style={{ border: `1px solid ${tint(C.accent, 40)}`, color: C.accent, background: tint(C.accent, 12) }}>Clear Select</button>
                 )}
               </div>
               </div>
