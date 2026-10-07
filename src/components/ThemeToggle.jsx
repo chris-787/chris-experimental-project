@@ -12,7 +12,8 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={() => setMode(toggleTheme())}
-      title={mode === "dark" ? "Pakai mode terang" : "Pakai mode gelap"}
+      data-tip={mode === "dark" ? "Mode terang|Ganti ke tampilan terang" : "Mode gelap|Ganti ke tampilan gelap"}
+      aria-label={mode === "dark" ? "Pakai mode terang" : "Pakai mode gelap"}
       className="flex items-center justify-center flex-shrink-0"
       style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${tint(mode === "dark" ? C.amber : C.accent, 40)}`, background: tint(mode === "dark" ? C.amber : C.accent, 16), color: mode === "dark" ? C.amber : C.accent, cursor: "pointer" }}
     >

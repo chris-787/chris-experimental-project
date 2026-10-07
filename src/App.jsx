@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase, isSupabaseConfigured } from "./lib/supabaseClient";
 import Login from "./components/Login.jsx";
+import ChartTooltip from "./components/ChartTooltip";
 import BriaStatusBoard from "./BriaStatusBoard.jsx";
 import { C } from "./theme";
 
@@ -55,9 +56,10 @@ export default function App() {
     );
   }
 
+  // ChartTooltip dipasang sekali di sini supaya keterangan di dekat kursor (atribut data-tip) bekerja di semua halaman, termasuk Login.
   if (!session) {
-    return <Login />;
+    return <><Login /><ChartTooltip /></>;
   }
 
-  return <BriaStatusBoard onLogout={() => supabase.auth.signOut()} session={session} />;
+  return <><BriaStatusBoard onLogout={() => supabase.auth.signOut()} session={session} /><ChartTooltip /></>;
 }

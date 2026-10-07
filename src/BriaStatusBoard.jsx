@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from "react";
-import ChartTooltip from "./components/ChartTooltip";
 import { storage } from "./lib/storage";
 import { supabase } from "./lib/supabaseClient";
 import { flushSync } from "react-dom";
@@ -1616,7 +1615,6 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
       {currentClusterId && showRekapKontraktor && <Suspense fallback={null}><RekapKontraktorModal /></Suspense>}
 
-      <ChartTooltip />
       {!currentClusterId ? <HomeScreen /> : (
       <div className="app-shell">
       <Sidebar />
