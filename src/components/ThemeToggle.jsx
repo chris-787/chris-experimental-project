@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { C } from "../theme";
+import { tint } from "./ui";
 import { getTheme, toggleTheme } from "../lib/themeMode";
 
 // Statenya cuma untuk ikon tombol ini sendiri -- perubahan warna di
@@ -13,7 +14,7 @@ export default function ThemeToggle() {
       onClick={() => setMode(toggleTheme())}
       title={mode === "dark" ? "Pakai mode terang" : "Pakai mode gelap"}
       className="flex items-center justify-center flex-shrink-0"
-      style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.ink, cursor: "pointer" }}
+      style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${tint(mode === "dark" ? C.amber : C.accent, 40)}`, background: tint(mode === "dark" ? C.amber : C.accent, 16), color: mode === "dark" ? C.amber : C.accent, cursor: "pointer" }}
     >
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         {mode === "dark" ? (

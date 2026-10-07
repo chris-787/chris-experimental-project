@@ -107,7 +107,7 @@ export default function ClusterHeader() {
             <div style={{ position: "relative" }}>
               <button
                 onClick={() => saveHouses()}
-                style={{ height: 36, padding: "0 16px", borderRadius: 999, fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", ...(dirty ? { background: C.amber, color: "#fff", border: `1px solid ${C.amber}` } : { background: C.panel, color: C.steel, border: `1px solid ${C.line}` }) }}
+                style={{ height: 36, padding: "0 16px", borderRadius: 999, fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", ...(dirty ? { background: C.amber, color: "#fff", border: `1px solid ${C.amber}` } : { background: C.accent, color: "#fff", border: "1px solid transparent" }) }}
                 title={dirty ? "Ada perubahan yang belum tersimpan" : "Tidak ada perubahan"}
               >
                 Simpan Perubahan
