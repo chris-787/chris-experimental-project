@@ -1509,7 +1509,17 @@ export default function BriaStatusBoard({ onLogout, session }) {
         table.dataTbl tr:hover td { background: var(--row-hover) !important; }
         table.dataTbl tr.row-sel td, table.dataTbl tr.row-sel:hover td { background: var(--row-selected) !important; }
         table.dataTbl tr.row-sel td:first-child { box-shadow: inset 4px 0 0 ${C.accent}; }
-        table.dataTbl input[type=checkbox] { accent-color: ${C.green}; width: 14px; height: 14px; }
+        table.dataTbl td select, table.dataTbl td input:not([type=checkbox]):not(.status-dot), table.dataTbl td textarea { border: 1.5px solid color-mix(in srgb, var(--steel) 42%, transparent) !important; }
+        table.dataTbl td select:hover, table.dataTbl td input:not([type=checkbox]):not(.status-dot):hover { border-color: color-mix(in srgb, var(--steel) 65%, transparent) !important; }
+        table.dataTbl td select:focus, table.dataTbl td input:not([type=checkbox]):not(.status-dot):focus { border-color: ${C.accent} !important; outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, ${C.accent} 18%, transparent); }
+        table.dataTbl input[type=checkbox] { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; margin: 0; border-radius: 4px; border: 1.5px solid color-mix(in srgb, var(--steel) 42%, transparent); background: color-mix(in srgb, var(--panel) 55%, transparent); cursor: pointer; position: relative; vertical-align: middle; transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease; }
+        table.dataTbl input[type=checkbox]:hover { border-color: ${C.accent}; box-shadow: 0 0 0 2px color-mix(in srgb, ${C.accent} 14%, transparent); }
+        table.dataTbl input[type=checkbox]:checked { background: ${C.green}; border-color: ${C.green}; }
+        table.dataTbl input[type=checkbox]:checked::after { content: ""; position: absolute; left: 4px; top: 1px; width: 3.8px; height: 7px; border: solid #fff; border-width: 0 1.8px 1.8px 0; transform: rotate(45deg); }
+        table.dataTbl input[type=checkbox]:indeterminate { background: ${C.green}; border-color: ${C.green}; }
+        table.dataTbl input[type=checkbox]:indeterminate::after { content: ""; position: absolute; left: 3px; top: 5.5px; width: 7px; height: 1.8px; background: #fff; }
+        table.dataTbl th input[type=checkbox] { background: #fff; border-color: rgba(255,255,255,.85); }
+        table.dataTbl input[type=checkbox]:focus-visible { outline: 2px solid ${C.accent}; outline-offset: 2px; }
         table.dataTbl input.status-dot { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--steel) 42%, transparent); background: color-mix(in srgb, var(--panel) 55%, transparent); cursor: pointer; display: inline-block; vertical-align: middle; position: relative; margin: 0; transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease; }
         table.dataTbl input.status-dot:hover { border-color: ${C.accent}; box-shadow: 0 0 0 2px color-mix(in srgb, ${C.accent} 14%, transparent); }
         table.dataTbl input.status-dot:checked { background: ${C.green}; border-color: ${C.green}; }
