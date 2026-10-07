@@ -128,7 +128,7 @@ export default function MapPanel() {
                 </button>
               )}
               {siteImage && !calibrating && <button onClick={exportPng} disabled={exporting} className={BTN_PILL} style={btnSecondary} title="Simpan peta berwarna sebagai gambar PNG"><Ic name="download" size={14} /> {exporting ? "Menyiapkan…" : "PNG"}</button>}
-              {siteImage && <button onClick={printSitePlan} className={BTN_PILL} style={btnPrimary}><Ic name="printer" size={14} /> Cetak</button>}
+              {siteImage && <button onClick={printSitePlan} className={BTN_PILL} style={btnPrimary}><Ic name="printer" size={14} /> Print</button>}
             </div>
           </div>
 
