@@ -1453,6 +1453,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       <style>{`
         * { box-sizing: border-box; }
         table.dataTbl th, table.dataTbl td { padding: 1px 8px; border-bottom: 1px solid ${C.line}; font-size: 12px; white-space: nowrap; }
+        table.dataTbl td:not(:last-child) { border-right: 1px solid color-mix(in srgb, var(--steel) 30%, var(--line)); }
         table.dataTbl th { text-align: center; color: var(--thead-ink); font-weight: 600; padding: 4px 8px; background: var(--thead); border-bottom-color: transparent; position: sticky; top: 0; will-change: transform; }
         table.dataTbl th { white-space: normal; line-height: 1.2; }
         table.dataTbl th:not(:last-child) { border-right-color: rgba(255,255,255,.2) !important; }
