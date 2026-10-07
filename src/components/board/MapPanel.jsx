@@ -155,9 +155,11 @@ export default function MapPanel() {
                 <button
                   onClick={() => { setEditMap((v) => !v); setDraft(null); setDrawingPoints([]); setEditingShapeId(null); setEditPoints(null); setActionMenuId(null); setConfirmDeleteId(null); }}
                   className={BTN_PILL}
+                  aria-pressed={!!editMap}
+                  title={editMap ? "Mode edit aktif. Klik untuk selesai" : "Aktifkan mode edit Site Plan"}
                   style={editMap ? { border: `1px solid ${C.amber}`, background: C.alertAmberBg, color: C.amber } : btnSecondary}
                 >
-                  <Ic name="pencil" size={14} /> {editMap ? "Edit Site Plan aktif — klik untuk selesai" : "Edit Site Plan"}
+                  <Ic name="pencil" size={14} /> Edit Site Plan
                 </button>
               )}
               {siteImage && !calibrating && <button onClick={exportPng} disabled={exporting} className={BTN_PILL} style={btnSecondary} title="Simpan peta berwarna sebagai gambar PNG"><Ic name="download" size={14} /> {exporting ? "Menyiapkan…" : "PNG"}</button>}
