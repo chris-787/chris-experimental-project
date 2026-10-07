@@ -5,6 +5,8 @@ import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid, rupiah } from "../../l
 import { statusColor } from "../../lib/palette";
 import KpiStrip, { KPI_COLORS, KpiBox } from "./KpiStrip";
 import { SlideInd, useSlideIndicator } from "../slide";
+import { checkHealth, healthCount } from "../../lib/healthCheck";
+import HealthCheckTab from "./HealthCheckTab";
 import { useBoard } from "./BoardContext";
 
 const TABS = [
@@ -12,6 +14,7 @@ const TABS = [
   { key: "kontraktor", label: "Kontraktor" },
   { key: "margin", label: "Margin dan Harga" },
   { key: "tindak", label: "Tindak lanjut" },
+  { key: "cekdata", label: "Cek Data" },
 ];
 
 const pillBtn = { height: 36, padding: "0 18px", borderRadius: 999, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
@@ -351,7 +354,8 @@ function TindakLanjut() {
 }
 
 export default function DashboardPage() {
-  const { dashTab, setDashTab, printReportPDF, setShowSimulasi } = useBoard();
+  const { dashTab, setDashTab, printReportPDF, setShowSimulasi, houses, tipeOptions, blocks } = useBoard();
+  const issueCount = useMemo(() => healthCount(checkHealth(houses, tipeOptions, blocks)), [houses, tipeOptions, blocks]);
   const tab = TABS.some((t) => t.key === dashTab) ? dashTab : "ringkasan";
   const [slideRef, slideBox] = useSlideIndicator([tab]);
   return (
@@ -373,11 +377,12 @@ export default function DashboardPage() {
             aria-selected={tab === t.key}
             onClick={() => setDashTab(t.key)}
             style={{ height: 32, padding: "0 16px", flexShrink: 0, whiteSpace: "nowrap", borderRadius: 999, border: "none", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", background: "transparent", color: tab === t.key ? C.selectInk : C.steel }}
-          >{t.label}</button>
+          >{t.label}{t.key === "cekdata" && issueCount > 0 && <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 999, background: C.red, color: "#fff" }}>{issueCount}</span>}</button>
         ))}
       </div>
       {tab === "ringkasan" && <Ringkasan />}
       {tab === "kontraktor" && <Kontraktor />}
+      {tab === "cekdata" && <HealthCheckTab />}
       {tab === "margin" && <MarginHarga />}
       {tab === "tindak" && <TindakLanjut />}
     </div>

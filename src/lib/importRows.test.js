@@ -88,3 +88,37 @@ describe("applyImportRows", () => {
     expect(updatedList).toEqual(["RB-A-01"]);
   });
 });
+
+import { diffHouses } from "./importRows";
+
+describe("diffHouses (pratinjau impor)", () => {
+  const sf = [{ key: "terjual", label: "Terjual" }, { key: "acOrder", label: "Order AC", hasDetail: true }];
+  const base = () => [
+    { id: "1", blok: "RB/A", noKavling: "01", kontraktor: "Lama", hppPerM2: 7000000, status: { terjual: false }, details: {} },
+    { id: "2", blok: "RB/A", noKavling: "02", kontraktor: "", status: {}, details: {} },
+  ];
+
+  it("menghitung hanya sel yang benar-benar berubah", () => {
+    const { next } = applyImportRows([{ Kavling: "RB/A-01", Kontraktor: "PT. Baru", "HPP/m2 (Rp)": 7000000, Terjual: "Sudah" }], base(), sf);
+    const { changes, cellCount } = diffHouses(base(), next, sf);
+    expect(changes).toHaveLength(1);
+    expect(changes[0].kode).toBe("RB/A-01");
+    expect(cellCount).toBe(2);
+    const labels = changes[0].fields.map((f) => f.label).sort();
+    expect(labels).toEqual(["Kontraktor", "Terjual"]);
+  });
+
+  it("baris yang cocok tapi isinya sama tidak dianggap perubahan", () => {
+    const { next } = applyImportRows([{ Kavling: "RB/A-01", Kontraktor: "Lama", Terjual: "Belum" }], base(), sf);
+    expect(diffHouses(base(), next, sf).cellCount).toBe(0);
+  });
+
+  it("menunjukkan nilai lama dan baru, termasuk detail status", () => {
+    const { next } = applyImportRows([{ Kavling: "RB/A-02", "Order AC": "Sudah", "Order AC - Detail": "2 PK", "HPP/m2 (Rp)": 8000000 }], base(), sf);
+    const { changes } = diffHouses(base(), next, sf);
+    const f = Object.fromEntries(changes[0].fields.map((x) => [x.label, x]));
+    expect(f["Order AC"]).toMatchObject({ from: "Belum", to: "Sudah" });
+    expect(f["Order AC (detail)"]).toMatchObject({ from: "-", to: "2 PK" });
+    expect(f["HPP/m²"].to).toContain("8.000.000");
+  });
+});

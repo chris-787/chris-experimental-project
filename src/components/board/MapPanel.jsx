@@ -3,11 +3,12 @@ import { BTN_PILL, Chip, Field, Ic, btnPrimary, btnSecondary, cellInput, formInp
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { centroid } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
+import { downloadSitePlanPng } from "../../lib/mapExport";
 import ColorPills from "./ColorPills";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
-  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setSelectedId, setZoom, siteImage, startEditShape, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
+  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, activeCluster, statusFields, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setSelectedId, setZoom, siteImage, startEditShape, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
   // Tinggi gambar yang sedang tampil. Di HP kotak Site Plan dipendekkan
   // sampai setinggi gambar (lihat .plan-box di index.css). Koordinat poligon
   // TIDAK disentuh: lapisan SVG tetap berbentuk persegi seperti semula,
@@ -23,6 +24,40 @@ export default function MapPanel() {
     () => buildColorGroups({ colorMode, houses, blocks, tipeOptions, kontraktorLegend, blockColor }),
     [colorMode, houses, blocks, tipeOptions, kontraktorLegend]
   );
+  // Legenda interaktif: klik satu kelompok untuk menyembunyikannya di peta. Dikosongkan saat Warna peta diganti.
+  const [hiddenKeys, setHiddenKeys] = useState([]);
+  useEffect(() => { setHiddenKeys([]); }, [colorMode]);
+  const [showNumbers, setShowNumbers] = useState(() => { try { return localStorage.getItem("bria-map-numbers") !== "0"; } catch (e) { return true; } });
+  const toggleNumbers = () => setShowNumbers((v) => { const n = !v; try { localStorage.setItem("bria-map-numbers", n ? "1" : "0"); } catch (e) {} return n; });
+  const groupKeyOf = (h) => (
+    colorMode === "blok" ? h.blok
+      : colorMode === "tipe" ? h.tipe
+        : colorMode === "kontraktor" ? ((h.kontraktor || "").trim() || "(belum diisi)")
+          : (h.status[colorMode] ? "Sudah" : "Belum")
+  );
+  const isHidden = (h) => !calibrating && hiddenKeys.includes(groupKeyOf(h));
+  const legendItems = colorMode === "blok" ? blocks.map((b) => ({ key: b.name, label: b.name, color: blockColor(b.name) }))
+    : colorMode === "tipe" ? tipeOptions.map((t) => ({ key: t.name, label: t.name, color: t.color }))
+      : colorMode === "kontraktor" ? kontraktorLegend.map((k) => ({ key: k.label, label: `${k.label} (${k.count})`, color: k.color }))
+        : [{ key: "Sudah", label: "Sudah", color: C.green }, { key: "Belum", label: "Belum", color: C.red }];
+  const toggleKey = (key) => setHiddenKeys((p) => (p.includes(key) ? p.filter((x) => x !== key) : [...p, key]));
+  const modeLabel = colorMode === "blok" ? "Per Blok" : colorMode === "tipe" ? "Per Tipe" : colorMode === "kontraktor" ? "Per Kontraktor" : ((statusFields.find((s) => s.key === colorMode) || {}).label || colorMode);
+  const [exporting, setExporting] = useState(false);
+  async function exportPng() {
+    setExporting(true);
+    try {
+      const name = ((activeCluster && activeCluster.name) || "cluster").trim() || "cluster";
+      await downloadSitePlanPng({
+        siteImage, houses, polyColor, opacity, isHidden, showNumbers,
+        legend: legendItems.filter((l) => !hiddenKeys.includes(l.key)),
+        title: `Site Plan ${name}`,
+        subtitle: `Warna: ${modeLabel} · ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`,
+      }, `siteplan-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${modeLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`);
+    } catch (e) {
+      alert("Gambar peta tidak bisa diekspor. " + (e && e.message ? e.message : ""));
+    }
+    setExporting(false);
+  }
   useEffect(() => {
     const el = imgRef.current;
     if (!el || typeof ResizeObserver === "undefined") return undefined;
@@ -58,6 +93,7 @@ export default function MapPanel() {
                   <Ic name="pencil" size={14} /> {editMap ? "Edit Site Plan aktif — klik untuk selesai" : "Edit Site Plan"}
                 </button>
               )}
+              {siteImage && !calibrating && <button onClick={exportPng} disabled={exporting} className={BTN_PILL} style={btnSecondary} title="Simpan peta berwarna sebagai gambar PNG"><Ic name="download" size={14} /> {exporting ? "Menyiapkan…" : "PNG"}</button>}
               {siteImage && <button onClick={printSitePlan} className={BTN_PILL} style={btnPrimary}><Ic name="printer" size={14} /> Cetak</button>}
             </div>
           </div>
@@ -77,6 +113,7 @@ export default function MapPanel() {
                 <button onClick={() => setZoom((z) => Math.max(50, z - 20))} aria-label="Perkecil peta" style={zoomBtn}>−</button>
                 <button onClick={() => setZoom((z) => Math.min(400, z + 20))} aria-label="Perbesar peta" style={zoomBtn}>+</button>
                 <button onClick={() => setZoom(100)} title="Kembali ke 100%" aria-label="Setel ulang zoom" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600 }}>{Math.round(zoom)}%</button>
+                <button onClick={toggleNumbers} aria-pressed={showNumbers} title="Nomor kavling muncul di peta saat di-zoom 200% ke atas" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600, background: showNumbers ? C.selectSoft : C.panel }}>No.</button>
                 {selectedId && (
                   <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Clear</button>
                 )}
@@ -148,7 +185,7 @@ export default function MapPanel() {
                       fill={polyColor(h)} fillOpacity={opacity / 100}
                       stroke="#00000066" strokeWidth="0.2"
                       vectorEffect="non-scaling-stroke"
-                      style={{ pointerEvents: polygonsClickable ? "auto" : "none", cursor: "pointer", animationDelay: `${Math.max(0, blocks.findIndex((b) => b.name === h.blok)) * 110 + (hi % 9) * 30}ms` }}
+                      style={{ pointerEvents: polygonsClickable ? "auto" : "none", cursor: "pointer", display: isHidden(h) ? "none" : undefined, animationDelay: `${Math.max(0, blocks.findIndex((b) => b.name === h.blok)) * 110 + (hi % 9) * 30}ms` }}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (calibrating) { setActionMenuId(h.id); setSelectedId(h.id); }
@@ -173,6 +210,14 @@ export default function MapPanel() {
                   <polygon points={draft.points.map((p) => `${p.x},${p.y}`).join(" ")} fill={C.red} fillOpacity="0.35" stroke={C.red} strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
                 )}
               </svg>
+              {showNumbers && !calibrating && zoom >= 200 && (
+                <div aria-hidden="true" style={{ gridArea: "1 / 1", position: "relative", pointerEvents: "none" }}>
+                  {houses.filter((h) => !isHidden(h) && h.id !== editingShapeId && h.points && h.points.length >= 3).map((h) => {
+                    const { cx, cy } = centroid(h.points);
+                    return <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: zoom >= 300 ? 11 : 10, fontWeight: 700, color: "#141A24", textShadow: "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff", lineHeight: 1, whiteSpace: "nowrap" }}>{h.noKavling}</span>;
+                  })}
+                </div>
+              )}
               {actionMenuId && calibrating && (() => {
                 const target = houses.find((h) => h.id === actionMenuId);
                 if (!target) return null;
@@ -237,37 +282,36 @@ export default function MapPanel() {
           </div>
           )}
 
-          <div className="flex flex-wrap gap-2.5 mt-2.5 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
+          <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2.5 items-center" style={{ borderTop: `1px solid ${C.line}` }}>
             {calibrating ? (
               tipeOptions.map((t) => (
                 <div key={t.name} className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
                   <span className="w-3 h-3 rounded-sm inline-block" style={{ background: t.color }} /> {t.name}
                 </div>
               ))
-            ) : colorMode === "blok" ? (
-              blocks.map((b) => (
-                <div key={b.id} className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
-                  <span className="w-3 h-3 rounded-sm inline-block" style={{ background: blockColor(b.name) }} /> {b.name}
-                </div>
-              ))
-            ) : colorMode === "tipe" ? (
-              tipeOptions.map((t) => (
-                <div key={t.id} className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
-                  <span className="w-3 h-3 rounded-sm inline-block" style={{ background: t.color }} /> {t.name}
-                </div>
-              ))
-            ) : colorMode === "kontraktor" ? (
-              kontraktorLegend.length === 0 ? (
-                <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling.</div>
-              ) : kontraktorLegend.map((k) => (
-                <div key={k.label} className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}>
-                  <span className="w-3 h-3 rounded-sm inline-block" style={{ background: k.color }} /> {k.label} ({k.count})
-                </div>
-              ))
+            ) : legendItems.length === 0 ? (
+              <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling.</div>
             ) : (
               <>
-                <div className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}><span className="w-3 h-3 rounded-sm inline-block" style={{ background: C.green }} /> Sudah</div>
-                <div className="flex items-center gap-1.5 text-xs" style={{ color: C.steel }}><span className="w-3 h-3 rounded-sm inline-block" style={{ background: C.red }} /> Belum</div>
+                {legendItems.map((it) => {
+                  const off = hiddenKeys.includes(it.key);
+                  return (
+                    <button
+                      key={it.key}
+                      type="button"
+                      onClick={() => toggleKey(it.key)}
+                      aria-pressed={!off}
+                      title={off ? "Klik untuk menampilkan lagi di peta" : "Klik untuk menyembunyikan di peta"}
+                      className="flex items-center gap-1.5 text-xs"
+                      style={{ color: off ? C.faint : C.steel, background: "transparent", border: `1px solid ${off ? "transparent" : C.line}`, borderRadius: 999, padding: "2px 9px 2px 7px", cursor: "pointer", textDecoration: off ? "line-through" : "none", fontFamily: "inherit" }}
+                    >
+                      <span className="w-3 h-3 rounded-sm inline-block" style={{ background: off ? "transparent" : it.color, border: off ? `1.5px solid ${C.faint}` : "none" }} /> {it.label}
+                    </button>
+                  );
+                })}
+                {hiddenKeys.length > 0 && (
+                  <button type="button" onClick={() => setHiddenKeys([])} className="text-xs" style={{ color: C.accent, background: "transparent", border: "none", textDecoration: "underline", cursor: "pointer", fontFamily: "inherit" }}>Tampilkan semua</button>
+                )}
               </>
             )}
           </div>

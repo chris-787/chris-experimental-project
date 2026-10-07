@@ -54,3 +54,50 @@ export function applyImportRows(rows, houses, statusFields) {
   });
   return { next, updatedList, skippedList };
 }
+
+const rp = (n) => (n ? `Rp ${Number(n).toLocaleString("id-ID")}` : "-");
+const txt = (v) => (v === undefined || v === null || v === "" ? "-" : String(v));
+const FIELDS = [
+  ["kategori", "Kategori", txt],
+  ["kontraktor", "Kontraktor", txt],
+  ["spkNo", "No. SPK", txt],
+  ["spkTahun", "Th. SPK", txt],
+  ["spkBulan", "Bln. SPK", (n) => (n ? MONTHS[n - 1] : "-")],
+  ["hppPerM2", "HPP/m²", rp],
+  ["hargaJualPerM2", "Harga Jual/m²", rp],
+  ["adendumAmount", "Adendum", rp],
+];
+
+// Membandingkan daftar kavling sebelum dan sesudah impor. Hasilnya dipakai untuk pratinjau:
+// kavling mana yang berubah, sel mana saja, dari apa menjadi apa. Hanya sel yang nilainya benar-benar
+// berbeda yang dihitung (baris yang cocok tapi isinya sama tidak dianggap perubahan).
+export function diffHouses(before, after, statusFields) {
+  const byId = new Map(before.map((h) => [h.id, h]));
+  const changes = [];
+  let cellCount = 0;
+  after.forEach((h) => {
+    const old = byId.get(h.id);
+    if (!old || old === h) return;
+    const fields = [];
+    FIELDS.forEach(([key, label, fmt]) => {
+      const a = old[key] ?? (typeof h[key] === "number" ? 0 : "");
+      const b = h[key] ?? (typeof old[key] === "number" ? 0 : "");
+      if (String(a ?? "") !== String(b ?? "")) fields.push({ label, from: fmt(old[key]), to: fmt(h[key]) });
+    });
+    (statusFields || []).forEach((s) => {
+      const a = !!(old.status && old.status[s.key]);
+      const b = !!(h.status && h.status[s.key]);
+      if (a !== b) fields.push({ label: s.label, from: a ? "Sudah" : "Belum", to: b ? "Sudah" : "Belum" });
+      if (s.hasDetail) {
+        const da = (old.details && old.details[s.key]) || "";
+        const db = (h.details && h.details[s.key]) || "";
+        if (da !== db) fields.push({ label: `${s.label} (detail)`, from: txt(da), to: txt(db) });
+      }
+    });
+    if (fields.length) {
+      changes.push({ id: h.id, kode: `${h.blok}-${h.noKavling}`, fields });
+      cellCount += fields.length;
+    }
+  });
+  return { changes, cellCount };
+}

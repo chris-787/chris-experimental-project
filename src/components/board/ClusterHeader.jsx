@@ -10,7 +10,7 @@ import { useBoard } from "./BoardContext";
 const TITLES = { kerja: "Main Mode", data: "Data Mode", dashboard: "Dashboard", pengaturan: "Settings" };
 
 export default function ClusterHeader() {
-  const { SmallSpinner, activeCluster, calibrating, canEdit, currentClusterId, dirty, goMode, houses, mode, setSelectedId, reloadAfterRemoteUpdate, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setClusters, setTableSearchQuery, tableSearchQuery, updateClusterMeta } = useBoard();
+  const { SmallSpinner, activeCluster, calibrating, canEdit, currentClusterId, dirty, goMode, houses, mode, setSelectedId, reloadAfterRemoteUpdate, openConflict, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setClusters, setTableSearchQuery, tableSearchQuery, updateClusterMeta } = useBoard();
   const textW = (t, ph) => Math.ceil(measureTextWidth(t || ph || "", "12px 'Plus Jakarta Sans', sans-serif")) + 8;
   const q = tableSearchQuery.trim().toLowerCase();
   const results = useMemo(
@@ -108,13 +108,19 @@ export default function ClusterHeader() {
       {saveConflict && (
         <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
           <span className="text-xs" style={{ color: C.red }}>Gagal menyimpan — data ini sudah diubah oleh pengguna lain. Perubahan Anda masih ada di layar, tapi belum tersimpan.</span>
-          <button onClick={reloadAfterRemoteUpdate} className="text-xs px-2 py-1 rounded-lg" style={{ background: C.red, color: "#fff" }}>Muat Ulang</button>
+          <span className="flex items-center gap-1.5">
+            <button onClick={openConflict} className="text-xs px-2 py-1 rounded-lg font-semibold" style={{ background: C.red, color: "#fff" }}>Lihat dan gabungkan</button>
+            <button onClick={reloadAfterRemoteUpdate} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.red}`, color: C.red, background: C.panel }}>Muat Ulang</button>
+          </span>
         </div>
       )}
       {!saveConflict && remoteUpdateAvailable && (
         <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
-          <span className="text-xs" style={{ color: C.amber }}>Ada pembaruan baru dari pengguna lain. Muat ulang untuk melihatnya (perubahan Anda yang belum disimpan akan hilang).</span>
-          <button onClick={reloadAfterRemoteUpdate} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.amber}`, color: C.amber, background: C.panel }}>Muat Ulang</button>
+          <span className="text-xs" style={{ color: C.amber }}>Ada pembaruan baru dari pengguna lain. Anda bisa menggabungkannya dengan perubahan Anda, atau memuat ulang (perubahan Anda yang belum disimpan akan hilang).</span>
+          <span className="flex items-center gap-1.5">
+            <button onClick={openConflict} className="text-xs px-2 py-1 rounded-lg font-semibold" style={{ background: C.amber, color: "#fff" }}>Lihat dan gabungkan</button>
+            <button onClick={reloadAfterRemoteUpdate} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.amber}`, color: C.amber, background: C.panel }}>Muat Ulang</button>
+          </span>
         </div>
       )}
     </>

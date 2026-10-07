@@ -15,6 +15,7 @@ import HomeScreen from "./components/board/HomeScreen";
 import { C, PALETTE } from "./theme";
 import { SITE_IMAGE_DEFAULT, MAX_IMG_DIM, DEFAULT_BLOCKS, DEFAULT_TIPE, DEFAULT_STATUS, DEFAULT_KATEGORI, CONFIG_KEY_BASE, TABLE_LAYOUT_KEY, tableFilterKeyFor, CLUSTERS_INDEX_KEY, APP_TITLE_KEY, LAST_CLUSTER_KEY, LAST_BACKUP_KEY, LEGACY_CLUSTER_ID, housesKeyFor, configKeyFor, imageKeyFor } from "./lib/constants";
 import { makeCalc } from "./lib/calc";
+import { mergeHouses, resolveConflicts } from "./lib/mergeHouses";
 import { makeReports } from "./lib/reports";
 import { measureTextWidth, centroid, resizeImageFile } from "./lib/helpers";
 
@@ -23,6 +24,8 @@ const WhatsNewModal = lazy(() => import("./components/board/WhatsNewModal"));
 const SimulasiModal = lazy(() => import("./components/board/SimulasiModal"));
 const RekapKontraktorModal = lazy(() => import("./components/board/RekapKontraktorModal"));
 const DashboardPage = lazy(() => import("./components/board/DashboardPage"));
+const ConflictModal = lazy(() => import("./components/board/ConflictModal"));
+const ImportPreviewModal = lazy(() => import("./components/board/ImportPreviewModal"));
 const SettingsPanel = lazy(() => import("./components/board/SettingsPanel"));
 const LazyFallback = () => <div className="sk" style={{ height: 160, borderRadius: 16, margin: "8px 0" }} role="status" aria-label="Memuat" />;
 
@@ -74,6 +77,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const [saveConflict, setSaveConflict] = useState(false);
   const [remoteUpdateAvailable, setRemoteUpdateAvailable] = useState(false);
   const dirtyRef = useRef(dirty);
+  // Data kavling saat terakhir dimuat/disimpan: titik awal untuk menggabungkan bila ada yang mengedit bersamaan.
+  const baseHousesRef = useRef(null);
+  const [conflictView, setConflictView] = useState(null);
   useEffect(() => { dirtyRef.current = dirty; }, [dirty]);
   const [storageError, setStorageError] = useState(null);
   const storageErrorTimerRef = useRef(null);
@@ -417,7 +423,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       storage.get(configKeyFor(id), false).catch(() => null),
     ]);
     try {
-      if (h && h.value) setHouses(JSON.parse(h.value));
+      if (h && h.value) { const parsed = JSON.parse(h.value); setHouses(parsed); baseHousesRef.current = parsed; }
       setHousesUpdatedAt(h ? h.updatedAt : null);
     } catch (e) {}
     try {
@@ -495,7 +501,9 @@ export default function BriaStatusBoard({ onLogout, session }) {
             setRemoteUpdateAvailable(true);
           } else {
             try {
-              setHouses(JSON.parse(row.value));
+              const parsedRemote = JSON.parse(row.value);
+              setHouses(parsedRemote);
+              baseHousesRef.current = parsedRemote;
               setHousesUpdatedAt(row.updated_at);
               setSaveConflict(false);
               setRemoteUpdateAvailable(false);
@@ -728,11 +736,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
     finally { setHomeSaving(false); }
   }
 
-  async function saveHouses(next) {
+  async function saveHouses(next, expectedAt) {
     if (!canEdit) return;
     setSaving(true);
     try {
-      const result = await storage.set(housesKeyFor(currentClusterId), JSON.stringify(next ?? houses), housesUpdatedAt);
+      const result = await storage.set(housesKeyFor(currentClusterId), JSON.stringify(next ?? houses), expectedAt ?? housesUpdatedAt);
+      baseHousesRef.current = next ?? houses;
       setHousesUpdatedAt(result.updatedAt);
       setSaveConflict(false);
       setDirty(false);
@@ -819,12 +828,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
   function updateHouse(id, patch) {
     if (!canEdit) return;
-    setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, ...patch, lastEditedAt: Date.now() } : h)));
+    setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, ...patch, lastEditedAt: Date.now(), lastEditedBy: displayName } : h)));
     setDirty(true);
   }
   function updateStatus(id, key, value) {
     if (!canEdit) return;
-    setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, status: { ...h.status, [key]: value }, lastEditedAt: Date.now() } : h)));
+    setHouses((prev) => prev.map((h) => (h.id === id ? { ...h, status: { ...h.status, [key]: value }, lastEditedAt: Date.now(), lastEditedBy: displayName } : h)));
     setDirty(true);
   }
 
@@ -1007,7 +1016,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   function getDetail(h, key) { return (h.details && h.details[key]) || ""; }
   function setDetail(houseId, key, value) {
     if (!canEdit) return;
-    setHouses((prev) => prev.map((h) => (h.id === houseId ? { ...h, details: { ...(h.details || {}), [key]: value } } : h)));
+    setHouses((prev) => prev.map((h) => (h.id === houseId ? { ...h, details: { ...(h.details || {}), [key]: value }, lastEditedAt: Date.now(), lastEditedBy: displayName } : h)));
     setDirty(true);
   }
   function addKategori() {
@@ -1098,6 +1107,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
 
   const [importMsg, setImportMsg] = useState("");
+  const [importPreview, setImportPreview] = useState(null);
   const [exportingExcelAll, setExportingExcelAll] = useState(false);
   const [exportingBackupAll, setExportingBackupAll] = useState(false);
   const [lastBackupAt, setLastBackupAt] = useState(null);
@@ -1203,6 +1213,14 @@ export default function BriaStatusBoard({ onLogout, session }) {
         setActionMenuId(null);
         return;
       }
+      if (e.key === "Escape" && conflictView) {
+        setConflictView(null);
+        return;
+      }
+      if (e.key === "Escape" && importPreview) {
+        setImportPreview(null);
+        return;
+      }
       if (e.key === "Escape" && showWhatsNew) {
         setShowWhatsNew(false);
         return;
@@ -1236,7 +1254,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [mode, calibrating, selectedId, tableRows, actionMenuId, showWhatsNew, showSimulasi, showRekapKontraktor]);
+  }, [mode, calibrating, selectedId, tableRows, actionMenuId, showWhatsNew, showSimulasi, showRekapKontraktor, importPreview, conflictView]);
   const totalRows = tableRows.length;
   const effectivePageSize = pageSize === "all" ? Math.max(totalRows, 1) : pageSize;
   const totalPages = Math.max(1, Math.ceil(totalRows / effectivePageSize));
@@ -1385,10 +1403,46 @@ export default function BriaStatusBoard({ onLogout, session }) {
   let frozenAcc = 0;
   FROZEN_KEYS.forEach((k) => { frozenLeft[k] = frozenAcc; if (!hiddenCols.includes(k)) frozenAcc += colWidth(k); });
 
-  const { importExcel, printReportPDF, printSitePlan, printKavlingSummary, exportExcel, handleRestoreAllFile, applyRestoreAll, exportAllBackup, exportAllExcel, exportBackup, importBackup } = makeReports({ kontraktorLegend, activeCluster, avgMarginPct, blockColor, blockProgress, blocks, canEdit, clusters, colorMode, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, loadHomeStats, luasBangunanOf, marginOf, marginPct, marginPerTipe, newBlockId, opacity, pendingRestoreAll, polyColor, saveClustersIndex, saveConfig, saveHouses, setBlocks, setClusters, setExportingBackupAll, setExportingExcelAll, setHouses, setImportMsg, setKategoriOptions, setLastBackupAt, setPendingRestoreAll, setRestoreAllError, setRestoreAllResult, setRestoringAll, setSettingsMsg, setStatusFields, setTableBlocks, setTipeOptions, siteImage, soldUnits, statusFields, tableRows, tipeOptions, tipePie, totalMargin, totalTarget });
+  // Bentrok edit: ambil data terbaru dari server, gabungkan tiga arah (awal, milik saya, milik orang lain).
+  async function openConflict() {
+    try {
+      const row = await storage.get(housesKeyFor(currentClusterId), false);
+      if (!row || !row.value) return;
+      const theirs = JSON.parse(row.value);
+      const result = mergeHouses(baseHousesRef.current, houses, theirs, statusFields);
+      setConflictView({ theirs, theirsAt: row.updatedAt, result, choices: {} });
+    } catch (e) { console.error(e); }
+  }
+  function setConflictChoice(id, slot, pick) {
+    setConflictView((v) => (v ? { ...v, choices: { ...v.choices, [`${id}|${slot}`]: pick } } : v));
+  }
+  function applyConflict() {
+    if (!conflictView || !canEdit) return;
+    const { theirs, theirsAt, result, choices } = conflictView;
+    const finalHouses = resolveConflicts(result, houses, theirs, statusFields, choices);
+    setHouses(finalHouses);
+    setConflictView(null);
+    setSaveConflict(false);
+    setRemoteUpdateAvailable(false);
+    saveHouses(finalHouses, theirsAt);
+  }
+  function closeConflict() { setConflictView(null); }
+  // Pratinjau impor: Terapkan = ganti data dan simpan; Batalkan = buang tanpa mengubah apa pun.
+  function applyImportPreview() {
+    if (!importPreview || !canEdit) return;
+    const { next, changes, skipped } = importPreview;
+    setHouses(next);
+    saveHouses(next);
+    setImportMsg({ updated: changes.map((c) => c.kode), skipped });
+    setImportPreview(null);
+  }
+  function cancelImportPreview() { setImportPreview(null); }
+  const { importExcel, printReportPDF, printSitePlan, printKavlingSummary, exportExcel, handleRestoreAllFile, applyRestoreAll, exportAllBackup, exportAllExcel, exportBackup, importBackup } = makeReports({ setImportPreview, kontraktorLegend, activeCluster, avgMarginPct, blockColor, blockProgress, blocks, canEdit, clusters, colorMode, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, loadHomeStats, luasBangunanOf, marginOf, marginPct, marginPerTipe, newBlockId, opacity, pendingRestoreAll, polyColor, saveClustersIndex, saveConfig, saveHouses, setBlocks, setClusters, setExportingBackupAll, setExportingExcelAll, setHouses, setImportMsg, setKategoriOptions, setLastBackupAt, setPendingRestoreAll, setRestoreAllError, setRestoreAllResult, setRestoringAll, setSettingsMsg, setStatusFields, setTableBlocks, setTipeOptions, siteImage, soldUnits, statusFields, tableRows, tipeOptions, tipePie, totalMargin, totalTarget });
 
   const board = {
     kontraktorColorOf: (name) => kontraktorColorMap.get((name || "").trim()) || null,
+    importPreview, applyImportPreview, cancelImportPreview,
+    conflictView, openConflict, setConflictChoice, applyConflict, closeConflict,
     dashTab, setDashTab, sidebarCollapsed, toggleSidebar, kontraktorLegend, tableView, setTableView, FROZEN_KEYS, KAVLING_SEARCH_LIMIT, SmallSpinner, actionMenuId, activeBlock, activeCluster, activeTipe, addBlock, addCluster, addKategori, addStatus, addTipe, appTitle, applyRestoreAll, avgMarginPct, blockColor, blockProgress, blocks, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calendarMonth, calendarSelectedDate, calibrating, canEdit, cancelDrawing, cancelEditShape, clusterDuplicateCount, clusterSearch, clusterStats, clusters, colWidth, colorMode, columns, confirmDeleteBlokId, confirmDeleteClusterId, confirmDeleteId, confirmDeleteKategoriName, confirmDeleteStatusKey, confirmDeleteTipeName, currentClusterId, currentPage, deleteCluster, detailEditingKey, dirty, displayName, draft, draftCentroid, drawingPoints, duplicateFilterActive, duplicateHouse, editMap, editPoints, editingShapeId, exportAllBackup, exportAllExcel, exportBackup, exportExcel, exportingBackupAll, exportingExcelAll, finalHppPerM2, finishPolygon, followUpFilterActive, followUpList, followUpView, followUpsByDate, frozenLeft, getDetail, globalHousesIndex, goHome, goMode, handleImageClick, handleImageUpload, handleLogoutClick, handleRestoreAllFile, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, hargaJualTotal, hiddenCols, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, houses, hppTotal, imgUploading, imgWrapRef, importBackup, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, lastDeleted, lastDeletedBulk, luasBangunanOf, mapHeight, mapPct, marginOf, marginPct, marginPerTipe, mode, monthEditingKey, moveStatusField, newBlock, newClusterName, newClusterSubtitle, newKategori, newStatus, newStatusHasDetail, newTipe, newTipeLuas, opacity, openCluster, openKavlingFromSearch, pageRows, pageSize, pendingRestoreAll, planBoxRef, polyColor, polygonsClickable, priceEditingKey, printKavlingSummary, printReportPDF, printSitePlan, progressPerBlok, rangeEnd, rangeStart, recoverLegacyCluster, refreshTipeColors, rekapKontraktor, reloadAfterRemoteUpdate, remoteUpdateAvailable, removeBlock, removeHouse, removeKategori, removeStatusField, removeTipe, renameBlock, renameKategori, renameStatusLabel, renameTipe, resetColWidths, resetImage, restoreAllError, restoreAllResult, restoringAll, rowBg, zebraBg, rowRef, rowRefs, saveAppTitle, saveConflict, saveEditShape, saveHomeChanges, saveHouses, savedToast, saving, selectFromMap, selectedId, selectedRows, setActionMenuId, setActiveBlock, setActiveTipe, setAppTitle, setBulkDeleteArmed, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setColorMode, setConfirmDeleteBlokId, setConfirmDeleteClusterId, setConfirmDeleteId, setConfirmDeleteKategoriName, setConfirmDeleteStatusKey, setConfirmDeleteTipeName, setCurrentPage, setDetail, setDetailEditingKey, setDraft, setDrawingPoints, setDuplicateFilterActive, setEditMap, setEditPoints, setEditingShapeId, setFollowUpFilterActive, setFollowUpView, setHomeDirty, setImportMsg, setKavlingSearch, setMapHeight, setMonthEditingKey, setNewBlock, setNewClusterName, setNewClusterSubtitle, setNewKategori, setNewStatus, setNewStatusHasDetail, setNewTipe, setNewTipeLuas, setOpacity, setPageSize, setPendingRestoreAll, setPriceEditingKey, setRestoreAllResult, setSelectedId, setSelectedRows, setShowArchivedClusters, setShowColMenu, setShowRekapKontraktor, setShowSimulasi, setShowWhatsNew, setSimHargaMode, setSimHargaValue, setSimHppMode, setSimHppValue, setSimScope, setTableBlocks, setTableSearchQuery, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, setZoom, settingsMsg, showArchivedClusters, showColMenu, simHargaMode, simHargaValue, simHppMode, simHppValue, simScope, siteImage, soldUnits, sortDir, sortKey, startColResize, startDrag, startEditShape, startHeightDrag, startVertexDrag, statusBreakdown, statusFields, submitDraft, subtitleWidth, tableBlocks, tableRows, tableSearchQuery, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeColor, tipeOptions, tipePie, toggleArchiveCluster, toggleColHidden, togglePinCluster, toggleRowSelect, toggleSort, toggleStatusDetail, toggleTableBlock, toggleTableTipe, totalMargin, totalPages, totalRows, totalTarget, undoBulkDelete, undoDelete, undoPoint, updateBlockTarget, updateClusterMeta, updateHouse, updateStatus, updateTipeLuas, zoom,
   };
 
@@ -1467,6 +1521,8 @@ export default function BriaStatusBoard({ onLogout, session }) {
       {!currentClusterId && homeLoaded && showWhatsNew && <Suspense fallback={null}><WhatsNewModal /></Suspense>}
 
       {currentClusterId && showSimulasi && <Suspense fallback={null}><SimulasiModal /></Suspense>}
+      {currentClusterId && importPreview && <Suspense fallback={null}><ImportPreviewModal /></Suspense>}
+      {currentClusterId && conflictView && <Suspense fallback={null}><ConflictModal /></Suspense>}
 
       {currentClusterId && showRekapKontraktor && <Suspense fallback={null}><RekapKontraktorModal /></Suspense>}
 

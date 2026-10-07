@@ -1,13 +1,13 @@
 // Laporan cetak (PDF), ekspor/impor Excel, dan backup/restore JSON.
 // Dipisah dari BriaStatusBoard; data yang dibutuhkan dikirim lewat parameter ctx.
-import { applyImportRows } from "./importRows";
+import { applyImportRows, diffHouses } from "./importRows";
 import { buildColorGroups } from "./colorGroups";
 import { DEFAULT_BLOCKS, DEFAULT_KATEGORI, DEFAULT_STATUS, DEFAULT_TIPE, LAST_BACKUP_KEY, LEGACY_CLUSTER_ID, MONTHS, SITE_IMAGE_DEFAULT, configKeyFor, housesKeyFor, imageKeyFor } from "../lib/constants";
 import { rupiah } from "../lib/helpers";
 import { storage } from "../lib/storage";
 
 export function makeReports(ctx) {
-  const { kontraktorLegend, activeCluster, avgMarginPct, blockColor, blockProgress, blocks, canEdit, clusters, colorMode, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, loadHomeStats, luasBangunanOf, marginOf, marginPct, marginPerTipe, newBlockId, opacity, pendingRestoreAll, polyColor, saveClustersIndex, saveConfig, saveHouses, setBlocks, setClusters, setExportingBackupAll, setExportingExcelAll, setHouses, setImportMsg, setKategoriOptions, setLastBackupAt, setPendingRestoreAll, setRestoreAllError, setRestoreAllResult, setRestoringAll, setSettingsMsg, setStatusFields, setTableBlocks, setTipeOptions, siteImage, soldUnits, statusFields, tableRows, tipeOptions, tipePie, totalMargin, totalTarget } = ctx;
+  const { setImportPreview, kontraktorLegend, activeCluster, avgMarginPct, blockColor, blockProgress, blocks, canEdit, clusters, colorMode, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, loadHomeStats, luasBangunanOf, marginOf, marginPct, marginPerTipe, newBlockId, opacity, pendingRestoreAll, polyColor, saveClustersIndex, saveConfig, saveHouses, setBlocks, setClusters, setExportingBackupAll, setExportingExcelAll, setHouses, setImportMsg, setKategoriOptions, setLastBackupAt, setPendingRestoreAll, setRestoreAllError, setRestoreAllResult, setRestoringAll, setSettingsMsg, setStatusFields, setTableBlocks, setTipeOptions, siteImage, soldUnits, statusFields, tableRows, tipeOptions, tipePie, totalMargin, totalTarget } = ctx;
   function importExcel(e) {
     if (!canEdit) return;
     const file = e.target.files && e.target.files[0];
@@ -21,8 +21,9 @@ export function makeReports(ctx) {
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(sheet);
         const { next, updatedList, skippedList } = applyImportRows(rows, houses, statusFields);
-        setHouses(next); saveHouses(next);
-        setImportMsg({ updated: updatedList, skipped: skippedList });
+        const { changes, cellCount } = diffHouses(houses, next, statusFields);
+        // Belum diterapkan: tampilkan pratinjau dulu, data baru berubah setelah pengguna menekan Terapkan.
+        setImportPreview({ next, changes, cellCount, skipped: skippedList, matched: updatedList.length, fileName: file.name });
       } catch (err) {
         setImportMsg("Gagal membaca file. Pastikan formatnya .xlsx atau .csv, kolom \"Kavling\" berisi kode seperti \"RB/A-01\".");
       }
