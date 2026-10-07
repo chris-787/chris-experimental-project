@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const reduceMotion = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -53,4 +53,21 @@ export function Collapse({ open, children, duration = 300 }) {
 // Panah kecil yang berputar halus saat panel dibuka (arah bawah = tertutup, atas = terbuka).
 export function Chevron({ open, turn = 180, glyph = "▾" }) {
   return <span aria-hidden="true" style={{ display: "inline-block", transition: reduceMotion() ? "none" : "transform .3s cubic-bezier(.3,.8,.2,1)", transform: `rotate(${open ? turn : 0}deg)` }}>{glyph}</span>;
+}
+
+// Pop up kecil di dalam peta: muncul dengan animasi dan, saat ditutup, keluar dengan animasi sebelum dilepas.
+// Isi terakhir disimpan supaya tetap tampil selama animasi keluar.
+export function PopPresence({ show, children }) {
+  const last = useRef(null);
+  if (show && children) last.current = children;
+  const [mounted, setMounted] = useState(!!show);
+  useEffect(() => {
+    if (show) { setMounted(true); return undefined; }
+    if (reduceMotion()) { setMounted(false); return undefined; }
+    const t = setTimeout(() => setMounted(false), 170);
+    return () => clearTimeout(t);
+  }, [show]);
+  if (!last.current || (!show && !mounted)) return null;
+  const el = last.current;
+  return React.cloneElement(el, { className: `${el.props.className || ""} ${show ? "pop-in" : "pop-out"}`.trim() });
 }

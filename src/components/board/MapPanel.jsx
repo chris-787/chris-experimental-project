@@ -6,6 +6,7 @@ import { buildColorGroups } from "../../lib/colorGroups";
 import { downloadSitePlanPng } from "../../lib/mapExport";
 import { layoutHouseLabels } from "../../lib/labelLayout";
 import ColorPills from "./ColorPills";
+import { PopPresence } from "../anim";
 import { Chevron, Collapse } from "../anim";
 import PolyShape from "./PolyShape";
 import { useBoard } from "./BoardContext";
@@ -288,12 +289,12 @@ export default function MapPanel() {
                   ))}
                 </div>
               )}
-              {actionMenuId && calibrating && (() => {
+              <PopPresence show={!!(actionMenuId && calibrating && houses.some((h) => h.id === actionMenuId))}>{!(actionMenuId && calibrating) ? null : (() => {
                 const target = houses.find((h) => h.id === actionMenuId);
                 if (!target) return null;
                 const { cx, cy } = centroid(target.points);
                 return (
-                  <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(10px, 10px)", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 11, width: 210 }}>
+                  <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, translate: "10px 10px", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 11, width: 210 }}>
                     <button onClick={() => setActionMenuId(null)} aria-label="Tutup" style={{ position: "absolute", top: 6, right: 6, width: 20, height: 20, lineHeight: "20px", textAlign: "center", border: "none", background: "transparent", color: C.steel, cursor: "pointer", fontSize: 14 }}>×</button>
                     <div className="text-xs font-semibold mb-2" style={{ color: C.ink, paddingRight: 18 }}>{target.blok}-{target.noKavling}</div>
                     <div className="flex flex-col gap-1.5 mb-2">
@@ -319,13 +320,13 @@ export default function MapPanel() {
                     </div>
                   </div>
                 );
-              })()}
-              {confirmDeleteId && calibrating && (() => {
+              })()}</PopPresence>
+              <PopPresence show={!!(confirmDeleteId && calibrating && houses.some((h) => h.id === confirmDeleteId))}>{!(confirmDeleteId && calibrating) ? null : (() => {
                 const target = houses.find((h) => h.id === confirmDeleteId);
                 if (!target) return null;
                 const { cx, cy } = centroid(target.points);
                 return (
-                  <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(10px, 10px)", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 11, width: 200 }}>
+                  <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, translate: "10px 10px", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 11, width: 200 }}>
                     <div className="text-xs mb-2" style={{ color: C.ink }}>Hapus kavling <b>{target.blok}-{target.noKavling}</b>?</div>
                     <div className="flex gap-2">
                       <button onClick={() => { removeHouse(confirmDeleteId); setConfirmDeleteId(null); }} className="text-xs px-2 py-1 rounded-lg flex-1" style={{ background: C.red, color: "#fff" }}>Ya, Hapus</button>
@@ -333,11 +334,11 @@ export default function MapPanel() {
                     </div>
                   </div>
                 );
-              })()}
-              {confirmCancelDraw && drawingPoints.length > 0 && (() => {
+              })()}</PopPresence>
+              <PopPresence show={!!(confirmCancelDraw && drawingPoints.length > 0)}>{!(confirmCancelDraw && drawingPoints.length > 0) ? null : (() => {
                 const cc = centroid(drawingPoints);
                 return (
-                  <div onClick={(e) => e.stopPropagation()} className="modal-card" role="alertdialog" aria-label="Hapus poligon" style={{ position: "absolute", left: `${cc.cx}%`, top: `${cc.cy}%`, transform: "translate(12px, 12px)", width: 232, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 12, padding: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.25)", zIndex: 20 }}>
+                  <div onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label="Hapus poligon" style={{ position: "absolute", left: `${cc.cx}%`, top: `${cc.cy}%`, translate: "12px 12px", width: 232, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 12, padding: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.25)", zIndex: 20 }}>
                     <div className="text-xs font-semibold" style={{ color: C.ink }}>Hapus poligon?</div>
                     <div className="text-xs mt-0.5" style={{ color: C.steel }}>{drawingPoints.length} titik yang sudah digambar akan dibuang.</div>
                     <div className="flex gap-1.5 mt-2">
@@ -347,9 +348,9 @@ export default function MapPanel() {
                     <div className="mt-1.5" style={{ color: C.faint, fontSize: 10 }}>Enter = hapus · Esc = lanjut</div>
                   </div>
                 );
-              })()}
-              {draft && draftCentroid && (
-                <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === "Enter" && e.target.tagName !== "BUTTON") { e.preventDefault(); submitDraft(); } }} style={{ position: "absolute", left: `${draftCentroid.cx}%`, top: `${draftCentroid.cy}%`, transform: "translate(12px, 12px)", width: 220, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}>
+              })()}</PopPresence>
+              <PopPresence show={!!(draft && draftCentroid)}>{!(draft && draftCentroid) ? null : (
+                <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === "Enter" && e.target.tagName !== "BUTTON") { e.preventDefault(); submitDraft(); } }} style={{ position: "absolute", left: `${draftCentroid.cx}%`, top: `${draftCentroid.cy}%`, translate: "12px 12px", width: 220, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}>
                   <div className="text-xs font-semibold mb-2" style={{ color: C.ink }}>Kavling baru — {activeBlock} · {draft.tipe}</div>
                   <Field label="Nomor Kavling"><input autoFocus style={formInput} value={draft.noKavling} onChange={(e) => setDraft({ ...draft, noKavling: e.target.value })} placeholder="mis. 01" /></Field>
                   <div className="text-xs mt-1" style={{ color: C.steel }}>
@@ -360,7 +361,7 @@ export default function MapPanel() {
                     <button onClick={() => setDraft(null)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
                   </div>
                 </div>
-              )}
+              )}</PopPresence>
             </div>
           </div>
           </div>
