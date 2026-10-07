@@ -11,6 +11,7 @@ export const WHATS_NEW_GROUPS = [
     versionNote: "Tampilan baru: sidebar, Dashboard, mode gelap",
     date: "7 Oktober 2026",
     items: [
+      { icon: "📊", title: "Grafik dashboard menyala saat disorot", desc: "Arahkan kursor ke diagram donat, batang Margin per Tipe, atau batang Kavling per blok: bagian yang disorot menyala, sisanya memudar, dan muncul keterangan kecil yang mengikuti kursor (nama, jumlah unit, persen). Di diagram donat, legenda dan potongannya saling menyala bersamaan, dan angka di tengah berganti ke jumlah potongan itu." },
       { icon: "🎞️", title: "Animasi buka-tutup, pop up, dan pindah halaman", desc: "Panel yang bisa dibuka-tutup (Rincian kavling, Cek Data, Cluster diarsipkan) kini terbuka dan menutup dengan halus, lengkap dengan panah yang berputar. Pop up muncul dengan memudar dan naik sedikit, isi Detail Kavling bergeser masuk saat Prev/Next, penanda menu di sidebar berpindah halus, dan isi halaman memudar naik saat pindah menu. Semua mati otomatis bila perangkat memakai pengaturan kurangi gerakan." },
       { icon: "🔎", title: "Hasil pencarian kavling menyala saat disorot", desc: "Baris hasil pencarian kini berubah warna saat kursor melewatinya, supaya jelas baris mana yang akan dibuka." },
       { icon: "✋", title: "Geser Site Plan dengan ditarik", desc: "Saat peta di-zoom, tarik di area kosong untuk menggeser peta (kursor jadi tangan terbuka, lalu menggenggam saat ditarik). Di atas kavling kursor tetap tangan menunjuk dan klik tetap memilih kavling." },

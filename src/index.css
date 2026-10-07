@@ -282,3 +282,14 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 /* Hasil pencarian kavling: baris menyala saat disorot kursor atau fokus keyboard */
 .search-row { transition: background-color .12s ease; }
 .search-row:not(:disabled):hover, .search-row:not(:disabled):focus-visible { background: var(--row-hover) !important; outline: none; }
+
+/* Grafik dan baris dashboard: sorotan saat kursor di atasnya, sisanya memudar */
+.hl-row, .hl-col, .hl-tr { transition: background-color .15s ease, opacity .2s ease; }
+.hl-row { border-radius: 8px; padding-left: 6px; padding-right: 6px; margin-left: -6px; margin-right: -6px; }
+.hl-col { border-radius: 8px 8px 0 0; }
+.hl-row:hover, .hl-col:hover, .hl-row.hl-on, .hl-tr:hover { background: var(--row-hover); }
+.hl-row:hover .anim-x, .hl-col:hover .anim-y { filter: brightness(1.12) saturate(1.15); }
+@media (hover: hover) {
+  .hl-group:has(.hl-row:hover, .hl-col:hover, .hl-on) > .hl-row:not(:hover):not(.hl-on),
+  .hl-group:has(.hl-row:hover, .hl-col:hover, .hl-on) > .hl-col:not(:hover) { opacity: .5; }
+}

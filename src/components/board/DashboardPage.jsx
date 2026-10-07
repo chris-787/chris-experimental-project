@@ -7,6 +7,7 @@ import KpiStrip, { KPI_COLORS, KpiBox } from "./KpiStrip";
 import { SlideInd, useSlideIndicator } from "../slide";
 import { checkHealth, healthCount } from "../../lib/healthCheck";
 import HealthCheckTab from "./HealthCheckTab";
+import Donut from "./Donut";
 import { useBoard } from "./BoardContext";
 
 const TABS = [
@@ -36,9 +37,7 @@ function Ringkasan() {
   const mTop = Math.max(30, ...margins.map((t) => t.margin));
   const CH = 150; // tinggi area batang (px)
   const maxBlok = Math.max(1, ...progressPerBlok.map((b) => b.Terpetakan + b.Target));
-  const totalPie = tipePie.reduce((sum, d) => sum + d.value, 0) || 1;
-  let acc = 0;
-  const conic = tipePie.map((d) => { const from = (acc / totalPie) * 100; acc += d.value; return `${tipeColor(d.name)} ${from}% ${(acc / totalPie) * 100}%`; }).join(", ");
+  const [hotTipe, setHotTipe] = useState(null);
   const colTop = (barH) => ({ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", gap: 5, height: "100%", flex: 1, minWidth: 0 });
   return (
     <>
@@ -75,10 +74,10 @@ function Ringkasan() {
             <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling dengan Luas Bangunan tipe yang terisi.</div>
           ) : (
             <>
-              <div style={{ position: "relative", height: CH + 28, display: "flex", alignItems: "flex-end", gap: 14, padding: "0 6px", borderBottom: `1px solid ${C.line}` }}>
+              <div style={{ position: "relative", height: CH + 28, display: "flex", alignItems: "flex-end", gap: 14, padding: "0 6px", borderBottom: `1px solid ${C.line}` }} className="hl-group">
                 <div style={{ position: "absolute", left: 0, right: 0, bottom: (20 / mTop) * CH, borderTop: `1.5px dashed ${C.steel}` }} />
                 {margins.map((t, mi) => (
-                  <div key={t.tipe} style={colTop()}>
+                  <div key={t.tipe} className="hl-col" data-tip={`${t.tipe}|margin ${t.margin}% · ${t.n} unit`} style={colTop()}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: t.margin >= 20 ? C.ink : C.red }}>{t.margin}%</span>
                     <div className="anim-y" style={{ "--i": mi, width: "100%", maxWidth: 44, height: Math.max(3, (Math.max(0, t.margin) / mTop) * CH), borderRadius: "8px 8px 0 0", background: tipeColor(t.tipe), opacity: t.margin > 0 ? 1 : 0.5 }} />
                   </div>
@@ -101,11 +100,11 @@ function Ringkasan() {
               <span className="flex items-center gap-1.5"><i style={{ width: 10, height: 10, borderRadius: 3, background: tint(C.steel, 22), display: "inline-block" }} />Target (sisa)</span>
             </div>
           </div>
-          <div style={{ height: CH + 34, display: "flex", alignItems: "flex-end", gap: 8, borderBottom: `1px solid ${C.line}` }}>
+          <div className="hl-group" style={{ height: CH + 34, display: "flex", alignItems: "flex-end", gap: 8, borderBottom: `1px solid ${C.line}` }}>
             {progressPerBlok.map((b, bi) => {
               const tgt = b.Terpetakan + b.Target;
               return (
-                <div key={b.blok} style={colTop()} title={`${b.blok}: ${b.Terpetakan} terpetakan dari target ${tgt}`}>
+                <div key={b.blok} className="hl-col" style={colTop()} data-tip={`${b.blok}|${b.Terpetakan} terpetakan dari target ${tgt} (${tgt ? Math.round((b.Terpetakan / tgt) * 100) : 0}%)`}>
                   <span style={{ fontSize: 11, color: C.steel, whiteSpace: "nowrap" }}><b style={{ color: b.Terpetakan ? C.ink : C.steel, fontWeight: 600 }}>{b.Terpetakan}</b>/{tgt}</span>
                   <div className="anim-y" style={{ "--i": bi, width: "100%", maxWidth: 40, height: Math.max(4, (tgt / maxBlok) * CH), borderRadius: "6px 6px 0 0", background: tint(blockColor(b.blok), 18), position: "relative", overflow: "hidden" }}>
                     <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: `${tgt ? (b.Terpetakan / tgt) * 100 : 0}%`, background: blockColor(b.blok) }} />
@@ -123,15 +122,10 @@ function Ringkasan() {
           <div style={{ fontSize: 14, fontWeight: 700, color: C.ink, marginBottom: 14 }}>Distribusi tipe kavling</div>
           {tipePie.length === 0 ? <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling.</div> : (
             <div className="flex items-center gap-5 flex-wrap">
-              <div role="img" className="anim-sweep" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 150, height: 150, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
-                <div style={{ position: "absolute", inset: 34, borderRadius: "50%", background: C.panel, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontFamily: MONO, fontSize: 19, fontWeight: 500, color: C.ink }}>{houses.length}</span>
-                  <span style={{ fontSize: 11, color: C.steel }}>kavling</span>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2" style={{ fontSize: 12 }}>
-                {tipePie.map((d) => (
-                  <span key={d.name} className="flex items-center gap-2" style={{ color: C.ink }}>
+              <Donut data={tipePie.map((d) => ({ name: d.name, value: d.value, color: tipeColor(d.name) }))} total={houses.length} size={150} thickness={22} hot={hotTipe} setHot={setHotTipe} valueSize={19} labelSize={11} />
+              <div className="flex flex-col gap-2 hl-group" style={{ fontSize: 12 }}>
+                {tipePie.map((d, di) => (
+                  <span key={d.name} data-tip={`${d.name}|${d.value} unit`} className={`flex items-center gap-2 hl-row${hotTipe === di ? " hl-on" : ""}`} onMouseEnter={() => setHotTipe(di)} onMouseLeave={() => setHotTipe(null)} style={{ color: C.ink }}>
                     <i style={{ width: 12, height: 12, borderRadius: 3, background: tipeColor(d.name), display: "inline-block" }} />{d.name} <span style={{ color: C.steel }}>· {d.value}</span>
                   </span>
                 ))}
@@ -185,7 +179,7 @@ function Kontraktor() {
               </thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r.nama} style={{ borderTop: `1px solid ${C.line}` }}>
+                  <tr key={r.nama} className="hl-tr" style={{ borderTop: `1px solid ${C.line}` }}>
                     <td style={{ padding: "9px 10px", fontWeight: 600, whiteSpace: "nowrap" }}>
                       <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 3, background: colorOf.get(r.nama) || C.faint, marginRight: 8 }} />{r.nama}
                     </td>

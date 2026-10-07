@@ -1,6 +1,8 @@
 import { MONO, Pill, SectionHead, tint } from "../ui";
 import { C } from "../../theme";
 import { statusColor } from "../../lib/palette";
+import { useState } from "react";
+import Donut from "./Donut";
 import { useBoard } from "./BoardContext";
 
 // Panel samping peta (Main Mode): ringkasan cepat yang berwarna. Grafik besar
@@ -18,9 +20,7 @@ function Bar({ pct, color, i = 0 }) {
 
 export default function SidePanel() {
   const { followUpList, houses, kontraktorLegend, marginPerTipe, setFollowUpFilterActive, setSelectedId, statusFields, tipeColor, tipePie } = useBoard();
-  const total = tipePie.reduce((sum, d) => sum + d.value, 0) || 1;
-  let acc = 0;
-  const conic = tipePie.map((d) => { const from = (acc / total) * 100; acc += d.value; return `${tipeColor(d.name)} ${from}% ${(acc / total) * 100}%`; }).join(", ");
+  const [hotTipe, setHotTipe] = useState(null);
   const maxK = Math.max(1, ...kontraktorLegend.map((k) => k.count));
   return (
     <div className="flex flex-col gap-3 viz">
@@ -48,15 +48,10 @@ export default function SidePanel() {
       <div style={card}>
           <div style={title}>Distribusi tipe</div>
           <div className="flex flex-col items-center gap-3">
-            <div role="img" className="anim-sweep" aria-label="Diagram donat distribusi tipe kavling" style={{ width: 96, height: 96, borderRadius: "50%", background: `conic-gradient(${conic})`, position: "relative", flexShrink: 0 }}>
-              <div style={{ position: "absolute", inset: 24, borderRadius: "50%", background: C.panel, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontFamily: MONO, fontSize: 16, fontWeight: 500, color: C.ink, lineHeight: 1 }}>{houses.length}</span>
-                <span style={{ fontSize: 10, color: C.steel }}>kavling</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-1.5" style={{ fontSize: 12, minWidth: 0, alignSelf: "stretch" }}>
-              {tipePie.map((d) => (
-                <span key={d.name} className="flex items-center gap-1.5" style={{ color: C.ink }}>
+            <Donut data={tipePie.map((d) => ({ name: d.name, value: d.value, color: tipeColor(d.name) }))} total={houses.length} size={96} thickness={25} hot={hotTipe} setHot={setHotTipe} />
+            <div className="flex flex-col gap-1.5 hl-group" style={{ fontSize: 12, minWidth: 0, alignSelf: "stretch" }}>
+              {tipePie.map((d, di) => (
+                <span key={d.name} data-tip={`${d.name}|${d.value} unit`} className={`flex items-center gap-1.5 hl-row${hotTipe === di ? " hl-on" : ""}`} onMouseEnter={() => setHotTipe(di)} onMouseLeave={() => setHotTipe(null)} style={{ color: C.ink }}>
                   <i style={{ width: 9, height: 9, borderRadius: 3, background: tipeColor(d.name), display: "inline-block", flexShrink: 0 }} />{d.name} <span style={{ color: C.steel }}>· {d.value}</span>
                 </span>
               ))}
