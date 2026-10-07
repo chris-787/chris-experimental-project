@@ -1,6 +1,5 @@
 import { C } from "../../theme";
 import { BTN_PILL, Chip, Field, Ic, btnPrimary, btnSecondary, cellInput, formInput } from "../../components/ui";
-import { createPortal } from "react-dom";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { centroid, shortKavlingLabel } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
@@ -333,20 +332,20 @@ export default function MapPanel() {
                   </div>
                 );
               })()}
-              {confirmCancelDraw && drawingPoints.length > 0 && createPortal(
-                <div style={{ position: "fixed", inset: 0, zIndex: 230, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", background: "rgba(27,42,60,0.18)" }}>
-                <div className="modal-card" role="alertdialog" aria-label="Hapus poligon" style={{ pointerEvents: "auto", width: 320, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 14, padding: 14, boxShadow: "0 12px 32px rgba(0,0,0,0.28)" }}>
-                  <div className="text-sm font-semibold" style={{ color: C.ink }}>Hapus poligon?</div>
-                  <div className="text-xs mt-1" style={{ color: C.steel }}>{drawingPoints.length} titik yang sudah digambar akan dibuang.</div>
-                  <div className="flex gap-2 mt-3">
-                    <button autoFocus onClick={cancelDrawing} className="text-xs" style={{ height: 30, padding: "0 14px", borderRadius: 999, border: "1px solid transparent", background: C.red, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Hapus poligon</button>
-                    <button onClick={() => setConfirmCancelDraw(false)} className="text-xs" style={{ height: 30, padding: "0 14px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Lanjut menggambar</button>
+              {confirmCancelDraw && drawingPoints.length > 0 && (() => {
+                const cc = centroid(drawingPoints);
+                return (
+                  <div onClick={(e) => e.stopPropagation()} className="modal-card" role="alertdialog" aria-label="Hapus poligon" style={{ position: "absolute", left: `${cc.cx}%`, top: `${cc.cy}%`, transform: "translate(12px, 12px)", width: 232, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 12, padding: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.25)", zIndex: 20 }}>
+                    <div className="text-xs font-semibold" style={{ color: C.ink }}>Hapus poligon?</div>
+                    <div className="text-xs mt-0.5" style={{ color: C.steel }}>{drawingPoints.length} titik yang sudah digambar akan dibuang.</div>
+                    <div className="flex gap-1.5 mt-2">
+                      <button autoFocus onClick={cancelDrawing} className="text-xs" style={{ height: 26, padding: "0 10px", borderRadius: 999, border: "1px solid transparent", background: C.red, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Hapus</button>
+                      <button onClick={() => setConfirmCancelDraw(false)} className="text-xs" style={{ height: 26, padding: "0 10px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Lanjut menggambar</button>
+                    </div>
+                    <div className="mt-1.5" style={{ color: C.faint, fontSize: 10 }}>Enter = hapus · Esc = lanjut</div>
                   </div>
-                  <div className="text-xs mt-2" style={{ color: C.faint }}>Enter = hapus · Esc = lanjut menggambar</div>
-                </div>
-                </div>,
-                document.body
-              )}
+                );
+              })()}
               {draft && draftCentroid && (
                 <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === "Enter" && e.target.tagName !== "BUTTON") { e.preventDefault(); submitDraft(); } }} style={{ position: "absolute", left: `${draftCentroid.cx}%`, top: `${draftCentroid.cy}%`, transform: "translate(12px, 12px)", width: 220, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}>
                   <div className="text-xs font-semibold mb-2" style={{ color: C.ink }}>Kavling baru — {activeBlock} · {draft.tipe}</div>
