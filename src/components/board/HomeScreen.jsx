@@ -208,7 +208,7 @@ export default function HomeScreen() {
                       {c.color && <div aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, top: 0, height: 5, background: c.color }} />}
                       {confirmDeleteClusterId === c.id ? (
                         <div>
-                          <div className="text-xs mb-2" style={{ color: C.red }}>Hapus "{c.name}"? Cluster dipindah ke "Baru dihapus" dan masih bisa dipulihkan selama {TRASH_DAYS} hari.</div>
+                          <div className="text-xs mb-2" style={{ color: C.red }}>Hapus "{c.name}"? Cluster dipindah ke "Recently Deleted" dan masih bisa dipulihkan selama {TRASH_DAYS} hari.</div>
                           <div className="flex gap-2">
                             <button onClick={() => { deleteCluster(c.id); setConfirmDeleteClusterId(null); }} className="text-xs px-2 py-1.5 rounded-full flex-1" style={{ background: C.red, color: "#fff", border: "none" }}>Ya, Hapus</button>
                             <button onClick={() => setConfirmDeleteClusterId(null)} className="text-xs px-3 py-1.5 rounded-full" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Batal</button>
@@ -321,68 +321,11 @@ export default function HomeScreen() {
               )}
             </div>
 
-          {clusters.some((c) => c.archived) && (
-            <div className="mt-2">
-              <button onClick={() => setShowArchivedClusters((v) => !v)} className="text-xs" style={{ color: C.steel }}>
-                <Chevron open={showArchivedClusters} turn={90} glyph="▸" /> Cluster diarsipkan ({clusters.filter((c) => c.archived).length})
-              </button>
-              <Collapse open={showArchivedClusters}>
-                <div className="mt-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 8 }}>
-                  {clusters.filter((c) => c.archived).map((c) => (
-                    <div key={c.id} className="rounded-xl p-2.5 flex items-center justify-between gap-2" style={{ background: C.paper, border: `1px dashed ${C.line}` }}>
-                      <div>
-                        <div className="text-sm" style={{ color: C.steel }}>{c.name}</div>
-                        <div className="text-xs" style={{ color: C.faint }}>{c.subtitle}</div>
-                      </div>
-                      <button onClick={() => toggleArchiveCluster(c.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel, flexShrink: 0 }}>Buka Kembali</button>
-                    </div>
-                  ))}
-                </div>
-              </Collapse>
-            </div>
-          )}
-
-          {trashClusters.length > 0 && (
-            <div className="mt-2">
-              <button onClick={() => setShowTrash((v) => !v)} className="text-xs" style={{ color: C.steel }} aria-expanded={showTrash}>
-                <Chevron open={showTrash} turn={90} glyph="▸" /> Baru dihapus ({trashClusters.length})
-              </button>
-              <Collapse open={showTrash}>
-                <div className="mt-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 8 }}>
-                  {trashClusters.map((c) => {
-                    const daysLeft = Math.max(0, TRASH_DAYS - Math.floor((Date.now() - new Date(c.deletedAt || Date.now()).getTime()) / 86400000));
-                    return (
-                      <div key={c.id} className="rounded-xl p-2.5" style={{ background: C.paper, border: `1px dashed ${tint(C.red, 40)}` }}>
-                        <div className="flex items-center justify-between gap-2">
-                          <div style={{ minWidth: 0 }}>
-                            <div className="text-sm" style={{ color: C.steel, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
-                            <div className="text-xs" style={{ color: C.faint }}>Hilang permanen dalam {daysLeft} hari</div>
-                          </div>
-                          {canEdit && confirmPurgeId !== c.id && (
-                            <div className="flex items-center gap-1.5" style={{ flexShrink: 0 }}>
-                              <button onClick={() => restoreCluster(c.id)} className="text-xs" style={{ height: 30, padding: "0 12px", borderRadius: 999, border: "1px solid transparent", background: C.accent, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Pulihkan</button>
-                              <button onClick={() => setConfirmPurgeId(c.id)} aria-label="Hapus permanen" data-tip="Hapus permanen|Tidak bisa dipulihkan lagi" style={{ width: 30, height: 30, borderRadius: "50%", border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 0 }}><Ic name="trash" size={14} /></button>
-                            </div>
-                          )}
-                        </div>
-                        {canEdit && confirmPurgeId === c.id && (
-                          <div className="mt-2">
-                            <div className="text-xs" style={{ color: C.red }}>Hapus permanen? Semua datanya tidak bisa dipulihkan lagi.</div>
-                            <div className="flex gap-2 mt-1.5">
-                              <button onClick={() => { purgeCluster(c.id); setConfirmPurgeId(null); }} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: "1px solid transparent", background: C.red, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ya, hapus permanen</button>
-                              <button onClick={() => setConfirmPurgeId(null)} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Batal</button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </Collapse>
-            </div>
-          )}
           </div>
           <aside className="flex flex-col gap-3" style={{ minWidth: 0 }}>
+            <div className="flex items-baseline justify-between gap-2" style={{ marginBottom: -4 }}>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink }}>Ringkasan</h2>
+            </div>
           {(
             <div className="p-2.5 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
               <div className="flex items-center justify-center mb-2.5 flex-wrap gap-2">
@@ -517,6 +460,75 @@ export default function HomeScreen() {
                 <button onClick={exportAllBackup} disabled={exportingBackupAll} className="text-xs px-3 py-2 rounded-full font-semibold mt-2.5 w-full flex items-center justify-center gap-1.5" style={backupDue ? { background: C.accent, color: "#fff", border: "none" } : { background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}>
                   {exportingBackupAll ? <SmallSpinner /> : <Ic name="download" size={14} />} Backup sekarang
                 </button>
+              )}
+            </div>
+
+            <div className="p-3 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: C.ink }}>
+                  <span style={{ width: 24, height: 24, borderRadius: 8, background: tint(C.amber, 16), color: C.amber, display: "inline-flex", alignItems: "center", justifyContent: "center" }}><Ic name="archive" size={14} /></span>
+                  Archive
+                </span>
+                <Pill color={C.amber}>{clusters.filter((c) => c.archived).length}</Pill>
+              </div>
+              {clusters.some((c) => c.archived) ? (
+                <div className="flex flex-col gap-1.5">
+                  {clusters.filter((c) => c.archived).map((c) => (
+                    <div key={c.id} className="rounded-xl p-2 flex items-center justify-between gap-2" style={{ background: C.paper, border: `1px dashed ${C.line}` }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div className="text-sm" style={{ color: C.steel, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
+                        <div className="text-xs" style={{ color: C.faint, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.subtitle}</div>
+                      </div>
+                      {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>Restore</button>}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-xs" style={{ color: C.steel, lineHeight: 1.5 }}>Kosong. Cluster yang diarsipkan (disembunyikan tanpa dihapus) muncul di sini.</div>
+              )}
+            </div>
+
+            <div className="p-3 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: C.ink }}>
+                  <span style={{ width: 24, height: 24, borderRadius: 8, background: tint(C.red, 14), color: C.red, display: "inline-flex", alignItems: "center", justifyContent: "center" }}><Ic name="trash" size={14} /></span>
+                  Recently Deleted
+                </span>
+                <Pill color={C.red}>{trashClusters.length}</Pill>
+              </div>
+              {trashClusters.length > 0 ? (
+                <div className="flex flex-col gap-1.5">
+                  {trashClusters.map((c) => {
+                    const daysLeft = Math.max(0, TRASH_DAYS - Math.floor((Date.now() - new Date(c.deletedAt || Date.now()).getTime()) / 86400000));
+                    return (
+                      <div key={c.id} className="rounded-xl p-2" style={{ background: C.paper, border: `1px dashed ${tint(C.red, 40)}` }}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div style={{ minWidth: 0 }}>
+                            <div className="text-sm" style={{ color: C.steel, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
+                            <div className="text-xs" style={{ color: C.faint }}>Dibuang permanen dalam {daysLeft} hari</div>
+                          </div>
+                          {canEdit && confirmPurgeId !== c.id && (
+                            <div className="flex items-center gap-1.5" style={{ flexShrink: 0 }}>
+                              <button onClick={() => restoreCluster(c.id)} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: "1px solid transparent", background: C.accent, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Restore</button>
+                              <button onClick={() => setConfirmPurgeId(c.id)} aria-label="Hapus permanen" data-tip="Hapus permanen|Tidak bisa dipulihkan lagi" style={{ width: 28, height: 28, borderRadius: "50%", border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 0 }}><Ic name="trash" size={13} /></button>
+                            </div>
+                          )}
+                        </div>
+                        {canEdit && confirmPurgeId === c.id && (
+                          <div className="mt-2">
+                            <div className="text-xs" style={{ color: C.red }}>Hapus permanen? Semua datanya tidak bisa dipulihkan lagi.</div>
+                            <div className="flex gap-2 mt-1.5">
+                              <button onClick={() => { purgeCluster(c.id); setConfirmPurgeId(null); }} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: "1px solid transparent", background: C.red, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ya, hapus permanen</button>
+                              <button onClick={() => setConfirmPurgeId(null)} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Batal</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-xs" style={{ color: C.steel, lineHeight: 1.5 }}>Kosong. Cluster yang dihapus muncul di sini selama {TRASH_DAYS} hari sebelum dibuang permanen.</div>
               )}
             </div>
           </aside>

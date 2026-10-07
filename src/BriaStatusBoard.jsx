@@ -363,7 +363,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         storage.get(LAST_BACKUP_KEY, false).catch(() => null),
         storage.get(CLUSTERS_TRASH_KEY, false).catch(() => null),
       ]);
-      // Cluster yang sudah lebih dari TRASH_DAYS hari di "Baru dihapus" dibuang permanen di sini.
+      // Cluster yang sudah lebih dari TRASH_DAYS hari di "Recently Deleted" dibuang permanen di sini.
       try {
         if (trashRes && trashRes.value) {
           const all = JSON.parse(trashRes.value);
@@ -766,7 +766,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     const c = clusters.find((x) => x.id === id);
     updateClusterMeta(id, { archived: !(c && c.archived) });
   }
-  // Hapus cluster = dipindah ke "Baru dihapus" (data tetap utuh, bisa dipulihkan sampai TRASH_DAYS hari).
+  // Hapus cluster = dipindah ke "Recently Deleted" (data tetap utuh, bisa dipulihkan sampai TRASH_DAYS hari).
   function saveTrash(next) {
     storage.set(CLUSTERS_TRASH_KEY, JSON.stringify(next), false).catch((e) => console.error(e));
   }
