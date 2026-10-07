@@ -48,7 +48,7 @@ export default function SidePanel() {
       <div style={card}>
           <div style={title}>Distribusi tipe</div>
           <div className="flex flex-col items-center gap-3">
-            <Donut data={tipePie.map((d) => ({ name: d.name, value: d.value, color: tipeColor(d.name) }))} total={houses.length} size={96} thickness={25} hot={hotTipe} setHot={setHotTipe} />
+            <Donut data={tipePie.map((d) => ({ name: d.name, value: d.value, color: tipeColor(d.name) }))} total={houses.length} size={132} thickness={19} hot={hotTipe} setHot={setHotTipe} valueSize={20} labelSize={10} />
             <div className="flex flex-col gap-1.5 hl-group" style={{ fontSize: 12, minWidth: 0, alignSelf: "stretch" }}>
               {tipePie.map((d, di) => (
                 <span key={d.name} data-tip={`${d.name}|${d.value} unit`} className={`flex items-center gap-1.5 hl-row${hotTipe === di ? " hl-on" : ""}`} onMouseEnter={() => setHotTipe(di)} onMouseLeave={() => setHotTipe(null)} style={{ color: C.ink }}>

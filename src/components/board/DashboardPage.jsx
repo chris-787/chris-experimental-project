@@ -122,7 +122,7 @@ function Ringkasan() {
           <div style={{ fontSize: 14, fontWeight: 700, color: C.ink, marginBottom: 14 }}>Distribusi tipe kavling</div>
           {tipePie.length === 0 ? <div className="text-xs" style={{ color: C.steel }}>Belum ada kavling.</div> : (
             <div className="flex items-center gap-5 flex-wrap">
-              <Donut data={tipePie.map((d) => ({ name: d.name, value: d.value, color: tipeColor(d.name) }))} total={houses.length} size={150} thickness={22} hot={hotTipe} setHot={setHotTipe} valueSize={19} labelSize={11} />
+              <Donut data={tipePie.map((d) => ({ name: d.name, value: d.value, color: tipeColor(d.name) }))} total={houses.length} size={184} thickness={19} hot={hotTipe} setHot={setHotTipe} valueSize={24} labelSize={12} />
               <div className="flex flex-col gap-2 hl-group" style={{ fontSize: 12 }}>
                 {tipePie.map((d, di) => (
                   <span key={d.name} data-tip={`${d.name}|${d.value} unit`} className={`flex items-center gap-2 hl-row${hotTipe === di ? " hl-on" : ""}`} onMouseEnter={() => setHotTipe(di)} onMouseLeave={() => setHotTipe(null)} style={{ color: C.ink }}>
