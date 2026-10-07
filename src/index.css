@@ -242,9 +242,9 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
   tr.row-in { animation: anim-row .55s cubic-bezier(.2, .7, .2, 1) backwards; animation-delay: calc(var(--i, 0) * 45ms); }
 }
 
-/* Isi putih yang berkedip pelan pada kavling terpilih di peta. Bila "kurangi gerakan" aktif: isi tipis yang diam. */
-.sel-pulse { fill: #FFFFFF; fill-opacity: 0.3; }
-@keyframes sel-pulse { 0%, 100% { fill-opacity: 0; } 50% { fill-opacity: 0.75; } }
+/* Isi merah terang yang berkedip pelan pada kavling terpilih di peta. Bila "kurangi gerakan" aktif: isi tipis yang diam. */
+.sel-pulse { fill: #FF1744; fill-opacity: 0.25; }
+@keyframes sel-pulse { 0%, 100% { fill-opacity: 0; } 50% { fill-opacity: 0.55; } }
 @media (prefers-reduced-motion: no-preference) {
   .sel-pulse { animation: sel-pulse 1.4s ease-in-out infinite; }
 }
