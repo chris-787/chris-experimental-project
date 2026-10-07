@@ -446,7 +446,10 @@ export default function HomeScreen() {
           )}
 
             <div className="p-3 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-              <div className="text-sm font-semibold mb-1.5" style={{ color: C.ink }}>Keamanan data</div>
+              <div className="flex items-center gap-2 mb-2 text-sm font-semibold" style={{ color: C.ink }}>
+                <span style={{ width: 24, height: 24, borderRadius: 8, background: tint(C.green, 16), color: C.green, display: "inline-flex", alignItems: "center", justifyContent: "center" }}><Ic name="download" size={14} /></span>
+                Backup Data
+              </div>
               {(() => {
                 const daysSince = lastBackupAt ? Math.floor((Date.now() - lastBackupAt) / 86400000) : null;
                 const shouldRemind = daysSince === null || daysSince >= 3;

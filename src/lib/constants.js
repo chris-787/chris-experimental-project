@@ -61,7 +61,7 @@ export const WHATS_NEW_GROUPS = [
       { icon: "🎨", title: "Warna lebih tenang", desc: "Palet baru: putih sejuk dengan aksen biru navy untuk mode terang, dan biru malam untuk mode gelap. Aksen hanya dipakai untuk aksi utama dan logo, pilihan yang sedang aktif (tombol warna peta, tab, chip filter) memakai warna gelap, dan grafik memakai warna teal. Ganti sidebar dan ganti tema kini beranimasi." },
       { icon: "📈", title: "Halaman Dashboard", desc: "Menu baru Dashboard berisi empat bagian: Ringkasan (alur status, margin per tipe, kavling per blok, dan distribusi tipe), Kontraktor (rekap lengkap dengan total HPP dan status per kontraktor), Margin dan Harga, serta Tindak lanjut. Tombol Simulasi Harga dan Print Laporan pindah ke sini." },
       { icon: "🗺️", title: "Main Mode lebih ringkas", desc: "Empat angka utama kini di atas peta, tombol Edit Site Plan dan Cetak ada di kartu Site Plan, dan pilihan Warna peta berupa tombol bulat. Panel di samping hanya berisi progres status dan margin per tipe; grafik dan rekap ada di menu Dashboard. Bar atas tidak lagi menempel saat di-scroll." },
-      { icon: "🏠", title: "Home baru", desc: "Bar atas dengan kotak cari lintas cluster, sapaan, dan tombol Export, Backup, Restore. Kartu cluster menampilkan progres, margin, terjual, dan Order Marketing. Kalender follow-up dan kartu Keamanan data (Backup sekarang) ada di kanan." },
+      { icon: "🏠", title: "Home baru", desc: "Bar atas dengan kotak cari lintas cluster, sapaan, dan tombol Export, Backup, Restore. Kartu cluster menampilkan progres, margin, terjual, dan Order Marketing. Kalender follow-up dan kartu Backup Data (Backup sekarang) ada di kanan." },
     ],
   },
   {
