@@ -4,6 +4,7 @@ import { C } from "../theme";
 import { dayFormatter, dateFormatter, timeFormatter, useJakartaClock, greetingFor } from "../lib/jakartaClock";
 import ThemeToggle from "./ThemeToggle";
 import InstallPrompt from "./InstallPrompt";
+import { Ic } from "./ui";
 
 // Supabase Auth aslinya butuh "email", tapi supaya Anda cukup ingat satu
 // username sederhana, kita tempelkan domain palsu ini di belakang layar.
@@ -132,7 +133,7 @@ export default function Login() {
             placeholder="••••••••"
             style={{
               width: "100%",
-              padding: "10px 64px 10px 12px",
+              padding: "10px 44px 10px 12px",
               fontSize: 14,
               border: "none",
               borderRadius: 10,
@@ -145,8 +146,9 @@ export default function Login() {
             onClick={() => setShowPw((v) => !v)}
             aria-label={showPw ? "Sembunyikan password" : "Tampilkan password"}
             aria-pressed={showPw}
-            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", border: "none", background: "transparent", color: C.steel, fontSize: 12, fontWeight: 600, cursor: "pointer", padding: "4px 6px", fontFamily: "inherit" }}
-          >{showPw ? "Sembunyi" : "Lihat"}</button>
+            title={showPw ? "Sembunyikan password" : "Tampilkan password"}
+            style={{ position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", border: "none", borderRadius: 8, background: "transparent", color: C.steel, cursor: "pointer" }}
+          ><Ic name={showPw ? "eyeOff" : "eye"} size={18} /></button>
         </div>
 
         {error && (
