@@ -219,9 +219,9 @@ export default function HomeScreen() {
                                 onDragEnd={() => { setDragId(null); setOverId(null); }}
                                 title="Tarik untuk mengubah urutan kartu"
                                 aria-label="Tarik untuk mengubah urutan kartu"
-                                style={{ cursor: "grab", color: C.faint, padding: "4px 2px", marginLeft: -6, lineHeight: 0, flexShrink: 0, userSelect: "none" }}
+                                style={{ cursor: "grab", color: C.steel, padding: "4px 3px", marginLeft: -8, lineHeight: 0, flexShrink: 0, userSelect: "none", borderRadius: 6 }}
                               >
-                                <svg width="12" height="18" viewBox="0 0 12 18" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1.5" /><circle cx="9" cy="3" r="1.5" /><circle cx="3" cy="9" r="1.5" /><circle cx="9" cy="9" r="1.5" /><circle cx="3" cy="15" r="1.5" /><circle cx="9" cy="15" r="1.5" /></svg>
+                                <svg width="14" height="22" viewBox="0 0 14 22" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="4" r="2.2" /><circle cx="10.5" cy="4" r="2.2" /><circle cx="3.5" cy="11" r="2.2" /><circle cx="10.5" cy="11" r="2.2" /><circle cx="3.5" cy="18" r="2.2" /><circle cx="10.5" cy="18" r="2.2" /></svg>
                               </span>
                             )}
                             <div style={{ minWidth: 0, flex: 1 }}>
@@ -279,9 +279,9 @@ export default function HomeScreen() {
                           )}
                           <div className="flex items-center gap-2" style={{ marginTop: 16 }}>
                             <button onClick={() => openCluster(c.id)} style={{ flex: 1, height: 36, borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Buka Cluster</button>
-                            {canEdit && <button disabled={duplicatingId === c.id} onClick={async () => { setDuplicatingId(c.id); await duplicateCluster(c.id); setDuplicatingId(null); }} title="Salin cluster ini lengkap dengan datanya" style={{ ...pillBtn, height: 36, color: C.steel }}>{duplicatingId === c.id ? "Menyalin..." : "Duplikat"}</button>}
-                            {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} title="Arsipkan (sembunyikan tanpa menghapus)" style={{ ...pillBtn, height: 36, color: C.steel }}>Arsip</button>}
-                            {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} style={{ ...pillBtn, height: 36, color: C.red }}>Hapus</button>}
+                            {canEdit && <button disabled={duplicatingId === c.id} aria-label="Duplikat cluster" onClick={async () => { setDuplicatingId(c.id); await duplicateCluster(c.id); setDuplicatingId(null); }} title={duplicatingId === c.id ? "Menyalin..." : "Duplikat: salin cluster ini lengkap dengan datanya"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.accent, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0, opacity: duplicatingId === c.id ? 0.5 : 1 }}><Ic name="copy" size={16} /></button>}
+                            {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} aria-label="Arsipkan cluster" title="Arsipkan (sembunyikan tanpa menghapus)" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.amber, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="archive" size={16} /></button>}
+                            {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} aria-label="Hapus cluster" title="Hapus cluster" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="trash" size={16} /></button>}
                           </div>
                         </>
                       )}
