@@ -11,7 +11,7 @@ import PolyShape from "./PolyShape";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
-  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, activeCluster, statusFields, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setSelectedId, setZoom, siteImage, startEditShape, startVertexDrag, submitDraft, tipeOptions, undoPoint, updateHouse, zoom } = useBoard();
+  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, activeCluster, statusFields, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setSelectedId, setZoom, siteImage, startEditShape, startVertexDrag, submitDraft, tipeOptions, undoPoint, redoPoint, updateHouse, zoom } = useBoard();
   // Tinggi gambar yang sedang tampil. Di HP kotak Site Plan dipendekkan
   // sampai setinggi gambar (lihat .plan-box di index.css). Koordinat poligon
   // TIDAK disentuh: lapisan SVG tetap berbentuk persegi seperti semula,
@@ -145,7 +145,8 @@ export default function MapPanel() {
               {calibrating && drawingPoints.length > 0 && (
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs" style={{ color: C.ink }}>{drawingPoints.length} titik</span>
-                  <button onClick={undoPoint} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Undo</button>
+                  <button onClick={undoPoint} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }} title="Ctrl/Cmd + Z">Undo</button>
+                  <button onClick={redoPoint} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }} title="Ctrl/Cmd + Shift + Z">Redo</button>
                   <button onClick={finishPolygon} disabled={drawingPoints.length < 3} className="text-xs px-2 py-1 rounded-lg" style={{ background: drawingPoints.length < 3 ? C.faint : C.green, color: "#fff" }}>Selesai Poligon</button>
                   <button onClick={cancelDrawing} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Batal</button>
                 </div>
@@ -332,7 +333,7 @@ export default function MapPanel() {
                 );
               })()}
               {draft && draftCentroid && (
-                <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", left: `${draftCentroid.cx}%`, top: `${draftCentroid.cy}%`, transform: "translate(12px, 12px)", width: 220, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}>
+                <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === "Enter" && e.target.tagName !== "BUTTON") { e.preventDefault(); submitDraft(); } }} style={{ position: "absolute", left: `${draftCentroid.cx}%`, top: `${draftCentroid.cy}%`, transform: "translate(12px, 12px)", width: 220, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}>
                   <div className="text-xs font-semibold mb-2" style={{ color: C.ink }}>Kavling baru — {activeBlock} · {draft.tipe}</div>
                   <Field label="Nomor Kavling"><input autoFocus style={formInput} value={draft.noKavling} onChange={(e) => setDraft({ ...draft, noKavling: e.target.value })} placeholder="mis. 01" /></Field>
                   <div className="text-xs mt-1" style={{ color: C.steel }}>
