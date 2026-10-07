@@ -217,7 +217,7 @@ export default function HomeScreen() {
                                 draggable
                                 onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", c.id); const card = e.currentTarget.closest("[data-cluster-card]"); if (card) e.dataTransfer.setDragImage(card, 24, 24); setDragId(c.id); }}
                                 onDragEnd={() => { setDragId(null); setOverId(null); }}
-                                title="Tarik untuk mengubah urutan kartu"
+                                data-tip="Geser kartu|Tarik untuk mengubah urutan"
                                 aria-label="Tarik untuk mengubah urutan kartu"
                                 style={{ cursor: "grab", color: C.steel, padding: "4px 3px", marginLeft: -8, lineHeight: 0, flexShrink: 0, userSelect: "none", borderRadius: 6 }}
                               >
@@ -248,7 +248,7 @@ export default function HomeScreen() {
                               />
                             </div>
                             {canEdit && (
-                              <button onClick={() => togglePinCluster(c.id)} title={c.pinned ? "Lepas pin" : "Pin cluster ini"} aria-label={c.pinned ? "Lepas pin" : "Pin cluster ini"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${c.pinned ? C.gold : C.line}`, background: c.pinned ? tint(C.gold, 18) : C.panel, color: c.pinned ? C.gold : C.steel, fontSize: 14, cursor: "pointer", flexShrink: 0 }}>★</button>
+                              <button onClick={() => togglePinCluster(c.id)} data-tip={c.pinned ? "Lepas pin|Kartu kembali ke urutan biasa" : "Pin cluster|Tampil paling depan, bertanda emas"} aria-label={c.pinned ? "Lepas pin" : "Pin cluster ini"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${c.pinned ? C.gold : C.line}`, background: c.pinned ? tint(C.gold, 18) : C.panel, color: c.pinned ? C.gold : C.steel, fontSize: 14, cursor: "pointer", flexShrink: 0 }}>★</button>
                             )}
                           </div>
                           {cs && (
@@ -279,9 +279,9 @@ export default function HomeScreen() {
                           )}
                           <div className="flex items-center gap-2" style={{ marginTop: 16 }}>
                             <button onClick={() => openCluster(c.id)} style={{ flex: 1, height: 36, borderRadius: 999, border: "none", background: C.accent, color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Buka Cluster</button>
-                            {canEdit && <button disabled={duplicatingId === c.id} aria-label="Duplikat cluster" onClick={async () => { setDuplicatingId(c.id); await duplicateCluster(c.id); setDuplicatingId(null); }} title={duplicatingId === c.id ? "Menyalin..." : "Duplikat: salin cluster ini lengkap dengan datanya"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.accent, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0, opacity: duplicatingId === c.id ? 0.5 : 1 }}><Ic name="copy" size={16} /></button>}
-                            {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} aria-label="Arsipkan cluster" title="Arsipkan (sembunyikan tanpa menghapus)" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.amber, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="archive" size={16} /></button>}
-                            {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} aria-label="Hapus cluster" title="Hapus cluster" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="trash" size={16} /></button>}
+                            {canEdit && <button disabled={duplicatingId === c.id} aria-label="Duplikat cluster" onClick={async () => { setDuplicatingId(c.id); await duplicateCluster(c.id); setDuplicatingId(null); }} data-tip={duplicatingId === c.id ? "Menyalin...|Mohon tunggu sebentar" : "Duplikat|Salin cluster ini lengkap dengan datanya"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.accent, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0, opacity: duplicatingId === c.id ? 0.5 : 1 }}><Ic name="copy" size={16} /></button>}
+                            {canEdit && <button onClick={() => toggleArchiveCluster(c.id)} aria-label="Arsipkan cluster" data-tip="Arsipkan|Sembunyikan tanpa menghapus" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.amber, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="archive" size={16} /></button>}
+                            {canEdit && <button onClick={() => setConfirmDeleteClusterId(c.id)} aria-label="Hapus cluster" data-tip="Hapus cluster|Perlu konfirmasi dulu" style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}><Ic name="trash" size={16} /></button>}
                           </div>
                         </>
                       )}
