@@ -1,5 +1,5 @@
 import { C } from "../../theme";
-import { IconChip } from "../ui";
+import { IconChip, tint } from "../ui";
 import { WHATS_NEW_GROUPS } from "../../lib/constants";
 import { MONTH_LABELS } from "../../lib/helpers";
 
@@ -12,6 +12,16 @@ function withDay(dateText) {
   return `${HARI[new Date(Number(y), m, Number(d)).getDay()]}, ${dateText}`;
 }
 import { useBoard } from "./BoardContext";
+
+// Jumlah pembaruan dalam satu versi: dari kelompok bertanda versi ini sampai sebelum kelompok bertanda versi berikutnya
+function countItems(startIndex) {
+  let n = 0;
+  for (let i = startIndex; i < WHATS_NEW_GROUPS.length; i++) {
+    if (i > startIndex && WHATS_NEW_GROUPS[i].version) break;
+    n += WHATS_NEW_GROUPS[i].items.length;
+  }
+  return n;
+}
 
 export default function WhatsNewModal() {
   const { setShowWhatsNew } = useBoard();
@@ -27,13 +37,14 @@ export default function WhatsNewModal() {
               {WHATS_NEW_GROUPS.map((group, gi) => (
                 <div key={gi} className="mb-3">
                   {group.version && (
-                    <div className="flex items-center gap-2.5" style={{ margin: gi === 0 ? "0 0 14px" : "22px 0 16px" }} role="separator" aria-label={group.version}>
-                      <span style={{ flex: 1, height: 1, background: C.line }} />
-                      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", padding: "4px 14px", borderRadius: 999, background: group.version === "Versi 2.0" ? C.accent : C.pillFill, color: group.version === "Versi 2.0" ? "#fff" : C.steel }}>{group.version}</span>
-                      <span style={{ flex: 1, height: 1, background: C.line }} />
+                    <div role="separator" aria-label={group.version} style={{ margin: gi === 0 ? "0 0 14px" : "26px 0 16px", padding: "12px 14px", borderRadius: 12, background: `color-mix(in srgb, ${C.accent} 16%, ${C.panel})`, border: `1px solid ${tint(C.accent, 38)}` }}>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: C.ink, lineHeight: 1.2 }}>{group.version}</div>
+                      <div className="text-xs" style={{ color: C.steel, marginTop: 3 }}>
+                        {group.versionNote ? `${group.versionNote} · ` : ""}{countItems(gi)} pembaruan
+                      </div>
                     </div>
                   )}
-                  <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.gold, textTransform: "uppercase" }}>{withDay(group.date)}</div>
+                  <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.accent2, textTransform: "uppercase" }}>{withDay(group.date)}</div>
                   <div className="flex flex-col gap-2.5">
                     {group.items.map((it, i) => (
                       <div key={i} className="flex gap-2.5">

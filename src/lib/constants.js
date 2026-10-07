@@ -8,6 +8,7 @@ export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "
 export const WHATS_NEW_GROUPS = [
   {
     version: "Versi 2.0",
+    versionNote: "Tampilan baru: sidebar, Dashboard, mode gelap",
     date: "7 Oktober 2026",
     items: [
       { icon: "🏷️", title: "Status lengkap di header Detail Kavling", desc: "Header Detail Kavling kini menampilkan semua status yang sedang aktif sebagai label berwarna (mis. Marketing, AC: 2 PK 1 unit), termasuk status baru yang ditambahkan di Settings, dan menunjukkan siapa yang terakhir mengubah." },
@@ -51,6 +52,7 @@ export const WHATS_NEW_GROUPS = [
   },
   {
     version: "Versi 1.0",
+    versionNote: "Versi awal aplikasi",
     date: "3 Oktober 2026",
     items: [
       { icon: "📋", title: "Rincian kavling di bawah legenda", desc: "Di bawah legenda Site Plan ada daftar kavling per kelompok warna yang sedang aktif (kontraktor, Sudah/Belum, blok, atau tipe), dikelompokkan per tipe, mis. \"Tipe 6x12 (4 unit) : RB/D-06, RB/D-08, ...\". Bisa disembunyikan, dan ikut tercetak di Cetak Site Plan." },
