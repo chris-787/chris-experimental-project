@@ -208,6 +208,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
   const rowRefs = useRef({});
 
   const [drawingPoints, setDrawingPoints] = useState([]);
+  const [confirmCancelDraw, setConfirmCancelDraw] = useState(false); // popup "Hapus poligon?" saat Esc/Batal ketika sedang menggambar
   const redoPointsRef = useRef([]); // titik yang baru di-undo, untuk Redo (Ctrl/Cmd+Shift+Z atau Ctrl+Y)
   const [draft, setDraft] = useState(null);
 
@@ -1080,11 +1081,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
     const p = redoPointsRef.current.pop();
     if (p) setDrawingPoints([...drawingPoints, p]);
   }
-  function cancelDrawing() { redoPointsRef.current = []; setDrawingPoints([]); }
+  function cancelDrawing() { redoPointsRef.current = []; setConfirmCancelDraw(false); setDrawingPoints([]); }
   function finishPolygon() {
     if (drawingPoints.length < 3) return;
     setDraft({ points: drawingPoints, noKavling: "", tipe: activeTipe || tipeOptions[0]?.name || "" });
     redoPointsRef.current = [];
+    setConfirmCancelDraw(false);
     setDrawingPoints([]);
   }
   function submitDraft() {
@@ -1221,6 +1223,12 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
   useEffect(() => {
     function onKeyDown(e) {
+      // Menggambar poligon: Enter = selesai poligon (min. 3 titik); bila popup "Hapus poligon?" terbuka, Enter = hapus.
+      if (e.key === "Enter" && calibrating && !draft) {
+        const tg = (e.target.tagName || "").toLowerCase();
+        if (confirmCancelDraw) { e.preventDefault(); cancelDrawing(); return; }
+        if (drawingPoints.length >= 3 && tg !== "button" && tg !== "input" && tg !== "textarea" && tg !== "select") { e.preventDefault(); finishPolygon(); return; }
+      }
       // Saat menggambar titik kavling: Ctrl/Cmd+Z = undo, Ctrl/Cmd+Shift+Z atau Ctrl+Y = redo.
       if ((e.metaKey || e.ctrlKey) && calibrating && !draft) {
         const k = String(e.key).toLowerCase();
@@ -1253,6 +1261,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       }
       if (e.key === "Escape") {
         // Pop up / menu / konfirmasi lain: Esc menutup yang paling atas dulu.
+        if (confirmCancelDraw) { setConfirmCancelDraw(false); return; }
         if (draft) { setDraft(null); return; }
         if (editingShapeId) { cancelEditShape(); return; }
         if (showColMenu) { setShowColMenu(false); return; }
@@ -1262,7 +1271,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
           setConfirmDeleteId(null); setConfirmDeleteBlokId(null); setConfirmDeleteTipeName(null); setConfirmDeleteStatusKey(null); setConfirmDeleteKategoriName(null); setConfirmDeleteClusterId(null); setBulkDeleteArmed(false);
           return;
         }
-        if (drawingPoints.length) { cancelDrawing(); return; }
+        if (drawingPoints.length) { setConfirmCancelDraw(true); return; }
       }
       if (mode !== "kerja" || calibrating || !selectedId) return;
       const tag = (e.target.tagName || "").toLowerCase();
@@ -1285,7 +1294,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [mode, calibrating, selectedId, tableRows, actionMenuId, showWhatsNew, showSimulasi, showRekapKontraktor, importPreview, conflictView, draft, editingShapeId, showColMenu, pendingRestoreAll, restoreAllResult, confirmDeleteId, confirmDeleteBlokId, confirmDeleteTipeName, confirmDeleteStatusKey, confirmDeleteKategoriName, confirmDeleteClusterId, bulkDeleteArmed, drawingPoints]);
+  }, [mode, calibrating, selectedId, tableRows, actionMenuId, showWhatsNew, showSimulasi, showRekapKontraktor, importPreview, conflictView, draft, editingShapeId, showColMenu, pendingRestoreAll, restoreAllResult, confirmDeleteId, confirmDeleteBlokId, confirmDeleteTipeName, confirmDeleteStatusKey, confirmDeleteKategoriName, confirmDeleteClusterId, bulkDeleteArmed, drawingPoints, confirmCancelDraw]);
   const totalRows = tableRows.length;
   const effectivePageSize = pageSize === "all" ? Math.max(totalRows, 1) : pageSize;
   const totalPages = Math.max(1, Math.ceil(totalRows / effectivePageSize));
@@ -1474,7 +1483,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     kontraktorColorOf: (name) => kontraktorColorMap.get((name || "").trim()) || null,
     importPreview, applyImportPreview, cancelImportPreview,
     conflictView, openConflict, setConflictChoice, applyConflict, closeConflict,
-    dashTab, setDashTab, sidebarCollapsed, toggleSidebar, kontraktorLegend, tableView, setTableView, FROZEN_KEYS, KAVLING_SEARCH_LIMIT, SmallSpinner, actionMenuId, activeBlock, activeCluster, activeTipe, addBlock, addCluster, addKategori, addStatus, addTipe, appTitle, applyRestoreAll, avgMarginPct, blockColor, blockProgress, blocks, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calendarMonth, calendarSelectedDate, calibrating, canEdit, cancelDrawing, cancelEditShape, clusterDuplicateCount, clusterSearch, clusterStats, clusters, colWidth, colorMode, columns, confirmDeleteBlokId, confirmDeleteClusterId, confirmDeleteId, confirmDeleteKategoriName, confirmDeleteStatusKey, confirmDeleteTipeName, currentClusterId, currentPage, deleteCluster, detailEditingKey, dirty, displayName, draft, draftCentroid, drawingPoints, duplicateFilterActive, duplicateHouse, editMap, editPoints, editingShapeId, exportAllBackup, exportAllExcel, exportBackup, exportExcel, exportingBackupAll, exportingExcelAll, finalHppPerM2, finishPolygon, followUpFilterActive, followUpList, followUpView, followUpsByDate, frozenLeft, getDetail, globalHousesIndex, goHome, goMode, handleImageClick, handleImageUpload, handleLogoutClick, handleRestoreAllFile, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, hargaJualTotal, hiddenCols, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, houses, hppTotal, imgUploading, imgWrapRef, importBackup, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, lastDeleted, lastDeletedBulk, luasBangunanOf, mapHeight, mapPct, marginOf, marginPct, marginPerTipe, mode, monthEditingKey, moveStatusField, newBlock, newClusterName, newClusterSubtitle, newKategori, newStatus, newStatusHasDetail, newTipe, newTipeLuas, opacity, openCluster, openKavlingFromSearch, pageRows, pageSize, pendingRestoreAll, planBoxRef, polyColor, polygonsClickable, priceEditingKey, printKavlingSummary, printReportPDF, printSitePlan, progressPerBlok, rangeEnd, rangeStart, recoverLegacyCluster, refreshTipeColors, rekapKontraktor, reloadAfterRemoteUpdate, remoteUpdateAvailable, removeBlock, removeHouse, removeKategori, removeStatusField, removeTipe, renameBlock, renameKategori, renameStatusLabel, renameTipe, resetColWidths, resetImage, restoreAllError, restoreAllResult, restoringAll, rowBg, zebraBg, rowRef, rowRefs, saveAppTitle, saveConflict, saveEditShape, saveHomeChanges, saveHouses, savedToast, saving, selectFromMap, selectedId, selectedRows, setActionMenuId, setActiveBlock, setActiveTipe, setAppTitle, setBulkDeleteArmed, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setColorMode, setConfirmDeleteBlokId, setConfirmDeleteClusterId, setConfirmDeleteId, setConfirmDeleteKategoriName, setConfirmDeleteStatusKey, setConfirmDeleteTipeName, setCurrentPage, setDetail, setDetailEditingKey, setDraft, setDrawingPoints, setDuplicateFilterActive, setEditMap, setEditPoints, setEditingShapeId, setFollowUpFilterActive, setFollowUpView, setHomeDirty, setImportMsg, setKavlingSearch, setMapHeight, setMonthEditingKey, setNewBlock, setNewClusterName, setNewClusterSubtitle, setNewKategori, setNewStatus, setNewStatusHasDetail, setNewTipe, setNewTipeLuas, setOpacity, setPageSize, setPendingRestoreAll, setPriceEditingKey, setRestoreAllResult, setSelectedId, setSelectedRows, setShowArchivedClusters, setShowColMenu, setShowRekapKontraktor, setShowSimulasi, setShowWhatsNew, setSimHargaMode, setSimHargaValue, setSimHppMode, setSimHppValue, setSimScope, setTableBlocks, setTableSearchQuery, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, setZoom, settingsMsg, showArchivedClusters, showColMenu, simHargaMode, simHargaValue, simHppMode, simHppValue, simScope, siteImage, soldUnits, sortDir, sortKey, startColResize, startDrag, startEditShape, startHeightDrag, startVertexDrag, statusBreakdown, statusFields, submitDraft, subtitleWidth, tableBlocks, tableRows, tableSearchQuery, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeColor, tipeOptions, tipePie, toggleArchiveCluster, toggleColHidden, togglePinCluster, toggleRowSelect, toggleSort, toggleStatusDetail, toggleTableBlock, toggleTableTipe, totalMargin, totalPages, totalRows, totalTarget, undoBulkDelete, undoDelete, undoPoint, redoPoint, updateBlockTarget, updateClusterMeta, updateHouse, updateStatus, updateTipeLuas, zoom,
+    dashTab, setDashTab, sidebarCollapsed, toggleSidebar, kontraktorLegend, tableView, setTableView, FROZEN_KEYS, KAVLING_SEARCH_LIMIT, SmallSpinner, actionMenuId, activeBlock, activeCluster, activeTipe, addBlock, addCluster, addKategori, addStatus, addTipe, appTitle, applyRestoreAll, avgMarginPct, blockColor, blockProgress, blocks, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calendarMonth, calendarSelectedDate, calibrating, canEdit, cancelDrawing, cancelEditShape, clusterDuplicateCount, clusterSearch, clusterStats, clusters, colWidth, colorMode, columns, confirmDeleteBlokId, confirmDeleteClusterId, confirmDeleteId, confirmDeleteKategoriName, confirmDeleteStatusKey, confirmDeleteTipeName, currentClusterId, currentPage, deleteCluster, detailEditingKey, dirty, displayName, draft, draftCentroid, drawingPoints, duplicateFilterActive, duplicateHouse, editMap, editPoints, editingShapeId, exportAllBackup, exportAllExcel, exportBackup, exportExcel, exportingBackupAll, exportingExcelAll, finalHppPerM2, finishPolygon, followUpFilterActive, followUpList, followUpView, followUpsByDate, frozenLeft, getDetail, globalHousesIndex, goHome, goMode, handleImageClick, handleImageUpload, handleLogoutClick, handleRestoreAllFile, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, hargaJualTotal, hiddenCols, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, houses, hppTotal, imgUploading, imgWrapRef, importBackup, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, lastDeleted, lastDeletedBulk, luasBangunanOf, mapHeight, mapPct, marginOf, marginPct, marginPerTipe, mode, monthEditingKey, moveStatusField, newBlock, newClusterName, newClusterSubtitle, newKategori, newStatus, newStatusHasDetail, newTipe, newTipeLuas, opacity, openCluster, openKavlingFromSearch, pageRows, pageSize, pendingRestoreAll, planBoxRef, polyColor, polygonsClickable, priceEditingKey, printKavlingSummary, printReportPDF, printSitePlan, progressPerBlok, rangeEnd, rangeStart, recoverLegacyCluster, refreshTipeColors, rekapKontraktor, reloadAfterRemoteUpdate, remoteUpdateAvailable, removeBlock, removeHouse, removeKategori, removeStatusField, removeTipe, renameBlock, renameKategori, renameStatusLabel, renameTipe, resetColWidths, resetImage, restoreAllError, restoreAllResult, restoringAll, rowBg, zebraBg, rowRef, rowRefs, saveAppTitle, saveConflict, saveEditShape, saveHomeChanges, saveHouses, savedToast, saving, selectFromMap, selectedId, selectedRows, setActionMenuId, setActiveBlock, setActiveTipe, setAppTitle, setBulkDeleteArmed, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setColorMode, setConfirmDeleteBlokId, setConfirmDeleteClusterId, setConfirmDeleteId, setConfirmDeleteKategoriName, setConfirmDeleteStatusKey, setConfirmDeleteTipeName, setCurrentPage, setDetail, setDetailEditingKey, setDraft, setDrawingPoints, setDuplicateFilterActive, setEditMap, setEditPoints, setEditingShapeId, setFollowUpFilterActive, setFollowUpView, setHomeDirty, setImportMsg, setKavlingSearch, setMapHeight, setMonthEditingKey, setNewBlock, setNewClusterName, setNewClusterSubtitle, setNewKategori, setNewStatus, setNewStatusHasDetail, setNewTipe, setNewTipeLuas, setOpacity, setPageSize, setPendingRestoreAll, setPriceEditingKey, setRestoreAllResult, setSelectedId, setSelectedRows, setShowArchivedClusters, setShowColMenu, setShowRekapKontraktor, setShowSimulasi, setShowWhatsNew, setSimHargaMode, setSimHargaValue, setSimHppMode, setSimHppValue, setSimScope, setTableBlocks, setTableSearchQuery, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, setZoom, settingsMsg, showArchivedClusters, showColMenu, simHargaMode, simHargaValue, simHppMode, simHppValue, simScope, siteImage, soldUnits, sortDir, sortKey, startColResize, startDrag, startEditShape, startHeightDrag, startVertexDrag, statusBreakdown, statusFields, submitDraft, subtitleWidth, tableBlocks, tableRows, tableSearchQuery, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeColor, tipeOptions, tipePie, toggleArchiveCluster, toggleColHidden, togglePinCluster, toggleRowSelect, toggleSort, toggleStatusDetail, toggleTableBlock, toggleTableTipe, totalMargin, totalPages, totalRows, totalTarget, undoBulkDelete, undoDelete, undoPoint, redoPoint, confirmCancelDraw, setConfirmCancelDraw, updateBlockTarget, updateClusterMeta, updateHouse, updateStatus, updateTipeLuas, zoom,
   };
 
   return (

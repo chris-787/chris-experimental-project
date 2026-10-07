@@ -1,5 +1,6 @@
 import { C } from "../../theme";
 import { BTN_PILL, Chip, Field, Ic, btnPrimary, btnSecondary, cellInput, formInput } from "../../components/ui";
+import { createPortal } from "react-dom";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { centroid, shortKavlingLabel } from "../../lib/helpers";
 import { buildColorGroups } from "../../lib/colorGroups";
@@ -11,7 +12,7 @@ import PolyShape from "./PolyShape";
 import { useBoard } from "./BoardContext";
 
 export default function MapPanel() {
-  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, activeCluster, statusFields, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setSelectedId, setZoom, siteImage, startEditShape, startVertexDrag, submitDraft, tipeOptions, undoPoint, redoPoint, updateHouse, zoom } = useBoard();
+  const { kontraktorLegend, actionMenuId, activeBlock, activeTipe, blockProgress, canEdit, editMap, printSitePlan, setActiveBlock, setActiveTipe, setDrawingPoints, setEditMap, setEditPoints, setEditingShapeId, setOpacity, blockColor, blocks, calibrating, cancelDrawing, cancelEditShape, colorMode, confirmDeleteId, draft, draftCentroid, drawingPoints, editPoints, editingShapeId, finishPolygon, handleImageClick, handleImageUpload, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheelZoom, houses, activeCluster, statusFields, imgUploading, imgWrapRef, mapHeight, opacity, planBoxRef, polyColor, polygonsClickable, removeHouse, saveEditShape, selectFromMap, selectedId, setActionMenuId, setConfirmDeleteId, setDraft, setSelectedId, setZoom, siteImage, startEditShape, startVertexDrag, submitDraft, tipeOptions, undoPoint, redoPoint, confirmCancelDraw, setConfirmCancelDraw, updateHouse, zoom } = useBoard();
   // Tinggi gambar yang sedang tampil. Di HP kotak Site Plan dipendekkan
   // sampai setinggi gambar (lihat .plan-box di index.css). Koordinat poligon
   // TIDAK disentuh: lapisan SVG tetap berbentuk persegi seperti semula,
@@ -147,8 +148,8 @@ export default function MapPanel() {
                   <span className="text-xs" style={{ color: C.ink }}>{drawingPoints.length} titik</span>
                   <button onClick={undoPoint} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }} title="Ctrl/Cmd + Z">Undo</button>
                   <button onClick={redoPoint} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }} title="Ctrl/Cmd + Shift + Z">Redo</button>
-                  <button onClick={finishPolygon} disabled={drawingPoints.length < 3} className="text-xs px-2 py-1 rounded-lg" style={{ background: drawingPoints.length < 3 ? C.faint : C.green, color: "#fff" }}>Selesai Poligon</button>
-                  <button onClick={cancelDrawing} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Batal</button>
+                  <button onClick={finishPolygon} disabled={drawingPoints.length < 3} className="text-xs px-2 py-1 rounded-lg" title="Enter" style={{ background: drawingPoints.length < 3 ? C.faint : C.green, color: "#fff" }}>Selesai Poligon</button>
+                  <button onClick={() => setConfirmCancelDraw(true)} className="text-xs px-2 py-1 rounded-lg" title="Esc" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Batal</button>
                 </div>
               )}
               {canEdit && (
@@ -332,6 +333,20 @@ export default function MapPanel() {
                   </div>
                 );
               })()}
+              {confirmCancelDraw && drawingPoints.length > 0 && createPortal(
+                <div style={{ position: "fixed", inset: 0, zIndex: 230, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", background: "rgba(27,42,60,0.18)" }}>
+                <div className="modal-card" role="alertdialog" aria-label="Hapus poligon" style={{ pointerEvents: "auto", width: 320, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 14, padding: 14, boxShadow: "0 12px 32px rgba(0,0,0,0.28)" }}>
+                  <div className="text-sm font-semibold" style={{ color: C.ink }}>Hapus poligon?</div>
+                  <div className="text-xs mt-1" style={{ color: C.steel }}>{drawingPoints.length} titik yang sudah digambar akan dibuang.</div>
+                  <div className="flex gap-2 mt-3">
+                    <button autoFocus onClick={cancelDrawing} className="text-xs" style={{ height: 30, padding: "0 14px", borderRadius: 999, border: "1px solid transparent", background: C.red, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Hapus poligon</button>
+                    <button onClick={() => setConfirmCancelDraw(false)} className="text-xs" style={{ height: 30, padding: "0 14px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Lanjut menggambar</button>
+                  </div>
+                  <div className="text-xs mt-2" style={{ color: C.faint }}>Enter = hapus · Esc = lanjut menggambar</div>
+                </div>
+                </div>,
+                document.body
+              )}
               {draft && draftCentroid && (
                 <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === "Enter" && e.target.tagName !== "BUTTON") { e.preventDefault(); submitDraft(); } }} style={{ position: "absolute", left: `${draftCentroid.cx}%`, top: `${draftCentroid.cy}%`, transform: "translate(12px, 12px)", width: 220, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 10, padding: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}>
                   <div className="text-xs font-semibold mb-2" style={{ color: C.ink }}>Kavling baru — {activeBlock} · {draft.tipe}</div>
