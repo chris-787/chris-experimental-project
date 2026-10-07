@@ -213,6 +213,26 @@ export function makeReports(ctx) {
       const detail = s.hasDetail ? getDetail(h, s.key) : "";
       return `<tr><td>${s.label}</td><td>${h.status[s.key] ? "Sudah" : "Belum"}${detail ? ` — ${detail}` : ""}</td></tr>`;
     }).join("");
+    // Posisi kavling di site plan: seluruh kavling digambar abu-abu pucat, kavling ini merah dengan bingkai tebal.
+    // Satu gambar utuh, satu lagi potongan diperbesar di sekitar kavling (koordinat poligon = ruang persegi 0-100).
+    let planHtml = "";
+    if (h.points && h.points.length >= 3 && siteImage) {
+      const imgSrc = new URL(siteImage, window.location.href).href;
+      const xs = h.points.map((p) => p.x), ys = h.points.map((p) => p.y);
+      const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+      const pad = Math.max(maxX - minX, maxY - minY, 2) * 1.2;
+      let cw = Math.min(100, Math.max(maxX - minX + pad * 2, 14)), ch = Math.min(100, Math.max(maxY - minY + pad * 2, 9));
+      const cx0 = Math.min(Math.max((minX + maxX) / 2 - cw / 2, 0), 100 - cw), cy0 = Math.min(Math.max((minY + maxY) / 2 - ch / 2, 0), 100 - ch);
+      const toPts = (pp) => pp.map((p) => `${p.x},${p.y}`).join(" ");
+      const others = houses.filter((x) => x.id !== h.id && x.points).map((x) => `<polygon points="${toPts(x.points)}" fill="#8793a1" fill-opacity="0.28" stroke="#00000055" stroke-width="0.6" vector-effect="non-scaling-stroke" />`).join("");
+      const mine = (outer, inner) => `<polygon points="${toPts(h.points)}" fill="#FF1744" fill-opacity="0.5" stroke="#1B2A3C" stroke-width="${outer}" stroke-linejoin="round" vector-effect="non-scaling-stroke" /><polygon points="${toPts(h.points)}" fill="none" stroke="#FF1744" stroke-width="${inner}" stroke-linejoin="round" vector-effect="non-scaling-stroke" />`;
+      const layer = (outer, inner) => `<img src="${imgSrc}" /><svg viewBox="0 0 100 100" preserveAspectRatio="none">${others}${mine(outer, inner)}</svg>`;
+      planHtml = `<div class="section-title" style="margin-top:20px">Posisi di Site Plan</div>
+  <div class="plans">
+    <div class="plan-crop" style="aspect-ratio:${cw.toFixed(3)} / ${ch.toFixed(3)}"><div class="plan-inner" style="width:${(10000 / cw).toFixed(3)}%; left:${(-cx0 / cw * 100).toFixed(3)}%; margin-top:${(-cy0 / cw * 100).toFixed(3)}%">${layer(7, 3.5)}</div></div>
+    <div class="plan-full"><div class="plan-inner" style="position:relative; width:100%">${layer(5, 2.5)}</div></div>
+  </div>`;
+    }
     const html = `<!DOCTYPE html>
 <html lang="id"><head><meta charset="UTF-8"><title>Ringkasan ${h.blok}-${h.noKavling}</title>
 <style>
@@ -228,6 +248,12 @@ export function makeReports(ctx) {
   .margin-box { border: 1px solid #C9C2B2; border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: baseline; }
   .margin-pct { font-size: 24px; font-weight: bold; }
   .footer { margin-top: 24px; font-size: 11px; color: #5B6673; }
+  .plans { display: flex; gap: 14px; align-items: flex-start; break-inside: avoid; }
+  .plan-crop { position: relative; flex: 1 1 62%; overflow: hidden; border: 1px solid #C9C2B2; border-radius: 6px; }
+  .plan-full { flex: 1 1 38%; overflow: hidden; border: 1px solid #C9C2B2; border-radius: 6px; }
+  .plan-inner { position: absolute; top: 0; }
+  .plan-inner img { width: 100%; display: block; }
+  .plan-inner svg { position: absolute; top: 0; left: 0; width: 100%; height: auto; aspect-ratio: 1 / 1; }
   @media print { body { padding: 0; } }
 </style></head>
 <body>
@@ -255,6 +281,8 @@ export function makeReports(ctx) {
     <tr><td>Harga Jual per m²</td><td>${rupiah(h.hargaJualPerM2)}${lb ? ` → Total ${rupiah(hargaJualTotal(h))}` : ""}</td></tr>
   </table>
   ${lb ? `<div class="margin-box"><span>Margin</span><span class="margin-pct" style="color:${marginPct(h) >= 20 ? "#3F7D58" : "#BD3B2E"}">${marginPct(h).toFixed(2)}% <span style="font-size:13px; font-weight:normal; color:#5B6673">(${rupiah(marginOf(h))})</span></span></div>` : ""}
+
+  ${planHtml}
 
   ${h.catatan ? `<div class="section-title" style="margin-top:18px">Catatan</div><div style="font-size:13px">${h.catatan}</div>` : ""}
   ${h.followUpDate ? `<div class="footer">Follow-up: ${new Date(h.followUpDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</div>` : ""}
