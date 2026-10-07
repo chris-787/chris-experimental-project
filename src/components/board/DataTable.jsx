@@ -56,6 +56,23 @@ export default function DataTable() {
     window.addEventListener("resize", updateRange);
     return () => window.removeEventListener("resize", updateRange);
   }, [virtual, updateRange]);
+  // Memilih baris mengubah kartu "Detail Kavling" di atas tabel (dari satu baris jadi panel penuh) dan
+  // mendorong tabel ke bawah. Posisi tabel di layar ditahan supaya halaman tidak "loncat" ke detail kavling.
+  const selectAnchor = React.useRef(null);
+  const selectRow = (id) => {
+    const el = scrollRef.current;
+    selectAnchor.current = el ? el.getBoundingClientRect().top : null;
+    setSelectedId(id);
+  };
+  React.useLayoutEffect(() => {
+    if (selectAnchor.current == null) return;
+    const el = scrollRef.current;
+    if (el) {
+      const delta = el.getBoundingClientRect().top - selectAnchor.current;
+      if (Math.abs(delta) > 1) window.scrollBy(0, delta);
+    }
+    selectAnchor.current = null;
+  }, [selectedId]);
   const scrollRaf = React.useRef(0);
   const onTableScroll = React.useCallback(() => {
     if (!virtual || scrollRaf.current) return;
@@ -315,7 +332,7 @@ export default function DataTable() {
                   <tr aria-hidden="true"><td colSpan={17 + statusFields.length} style={{ height: vStart * rowH, padding: 0, border: 0 }} /></tr>
                 )}
                 {pageRows.slice(vStart, vEnd).map((h, k) => { const i = vStart + k; return (
-                  <tr key={h.id} data-row="1" className={!virtual && i < 24 ? (rowsIn ? "row-in" : "row-pre") : undefined} ref={(el) => (rowRefs.current[h.id] = el)} style={{ "--i": i, background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => setSelectedId(h.id)}>
+                  <tr key={h.id} data-row="1" className={!virtual && i < 24 ? (rowsIn ? "row-in" : "row-pre") : undefined} ref={(el) => (rowRefs.current[h.id] = el)} style={{ "--i": i, background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? C.rowSelectedBg : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => selectRow(h.id)}>
                     <td className="text-center frz" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", left: frozenLeft.no, background: rowBg(h, i) }} onClick={(e) => e.stopPropagation()}>
                       {(pageSize === "all" ? 0 : (currentPage - 1) * pageSize) + i + 1}
                     </td>
