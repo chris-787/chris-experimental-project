@@ -113,7 +113,7 @@ export default function MapPanel() {
                 <button onClick={() => setZoom((z) => Math.max(50, z - 20))} aria-label="Perkecil peta" style={zoomBtn}>−</button>
                 <button onClick={() => setZoom((z) => Math.min(400, z + 20))} aria-label="Perbesar peta" style={zoomBtn}>+</button>
                 <button onClick={() => setZoom(100)} title="Kembali ke 100%" aria-label="Setel ulang zoom" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600 }}>{Math.round(zoom)}%</button>
-                <button onClick={toggleNumbers} aria-pressed={showNumbers} title="Nomor kavling muncul di peta saat di-zoom 200% ke atas" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600, background: showNumbers ? C.selectSoft : C.panel }}>No.</button>
+                <button onClick={toggleNumbers} aria-pressed={showNumbers} title="Nomor kavling muncul di peta saat di-zoom 250% ke atas" style={{ ...zoomBtn, width: "auto", padding: "0 10px", fontSize: 11, fontWeight: 600, background: showNumbers ? C.selectSoft : C.panel }}>No.</button>
                 {selectedId && (
                   <button onClick={() => setSelectedId(null)} title="Hapus highlight kavling terpilih" className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Clear</button>
                 )}
@@ -210,11 +210,11 @@ export default function MapPanel() {
                   <polygon points={draft.points.map((p) => `${p.x},${p.y}`).join(" ")} fill={C.red} fillOpacity="0.35" stroke={C.red} strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
                 )}
               </svg>
-              {showNumbers && !calibrating && zoom >= 200 && (
+              {showNumbers && !calibrating && zoom >= 250 && (
                 <div aria-hidden="true" style={{ gridArea: "1 / 1", position: "relative", pointerEvents: "none" }}>
                   {houses.filter((h) => !isHidden(h) && h.id !== editingShapeId && h.points && h.points.length >= 3).map((h) => {
                     const { cx, cy } = centroid(h.points);
-                    return <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: zoom >= 300 ? 11 : 10, fontWeight: 700, color: "#141A24", textShadow: "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff", lineHeight: 1, whiteSpace: "nowrap" }}>{h.noKavling}</span>;
+                    return <span key={h.id} style={{ position: "absolute", left: `${cx}%`, top: `${cy}%`, transform: "translate(-50%, -50%)", fontSize: zoom >= 360 ? 11 : zoom >= 300 ? 10 : 9, fontWeight: 700, color: "#141A24", background: "rgba(255,255,255,0.88)", borderRadius: 3, padding: "1px 2px", lineHeight: 1, whiteSpace: "nowrap" }}>{h.noKavling}</span>;
                   })}
                 </div>
               )}
