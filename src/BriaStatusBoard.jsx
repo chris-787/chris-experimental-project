@@ -1534,6 +1534,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       <div className="app-main">
       <ClusterHeader />
 
+      <div key={mode} className="page-in">
       {/* ===================== PENGATURAN ===================== */}
       {mode === "pengaturan" && !canEdit && (
         <div className="mb-3 p-2.5 rounded-xl text-xs" style={{ background: C.infoBlueBg, border: `1px solid ${C.line}`, color: C.steel }}>
@@ -1550,6 +1551,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
       {/* ===================== TABLE (Main Mode & Data Mode) — full width ===================== */}
       {(mode === "kerja" || mode === "data") && <DataTable />}
+      </div>
 
       </div>
       </div>

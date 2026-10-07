@@ -3,6 +3,7 @@ import { BrandMark, ClockText, GreetingText, Ic, IconChip, MONO, Pill, ProgressB
 import { MONTH_LABELS, WEEKDAY_LABELS, buildCalendarGrid } from "../../lib/helpers";
 import ThemeToggle from "../../components/ThemeToggle";
 import { SlideInd, useSlideIndicator } from "../slide";
+import { Chevron, Collapse } from "../anim";
 import { useBoard } from "./BoardContext";
 
 export default function HomeScreen() {
@@ -62,7 +63,7 @@ export default function HomeScreen() {
                     <div className="text-xs p-2.5" style={{ color: C.steel }}>Tidak ditemukan.</div>
                   ) : (
                     kavlingSearchResults.map((r) => (
-                      <div key={`${r.clusterId}-${r.house.id}`} className="flex items-center justify-between text-xs px-2.5 py-1.5" style={{ borderBottom: `1px solid ${C.line}` }}>
+                      <div key={`${r.clusterId}-${r.house.id}`} className="search-row flex items-center justify-between text-xs px-2.5 py-1.5" style={{ borderBottom: `1px solid ${C.line}` }}>
                         <div>
                           <div style={{ color: C.ink, fontWeight: 600, fontFamily: "IBM Plex Mono, monospace" }}>{r.kavlingLabel}</div>
                           <div style={{ color: C.steel }}>{r.clusterName}</div>
@@ -285,9 +286,9 @@ export default function HomeScreen() {
           {clusters.some((c) => c.archived) && (
             <div className="mt-2">
               <button onClick={() => setShowArchivedClusters((v) => !v)} className="text-xs" style={{ color: C.steel }}>
-                {showArchivedClusters ? "▾" : "▸"} Cluster diarsipkan ({clusters.filter((c) => c.archived).length})
+                <Chevron open={showArchivedClusters} turn={90} glyph="▸" /> Cluster diarsipkan ({clusters.filter((c) => c.archived).length})
               </button>
-              {showArchivedClusters && (
+              <Collapse open={showArchivedClusters}>
                 <div className="mt-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 8 }}>
                   {clusters.filter((c) => c.archived).map((c) => (
                     <div key={c.id} className="rounded-xl p-2.5 flex items-center justify-between gap-2" style={{ background: C.paper, border: `1px dashed ${C.line}` }}>
@@ -299,7 +300,7 @@ export default function HomeScreen() {
                     </div>
                   ))}
                 </div>
-              )}
+              </Collapse>
             </div>
           )}
           </div>

@@ -2,6 +2,7 @@ import { C } from "../../theme";
 import { BrandMark, Ic } from "../ui";
 import { timeAgo } from "../../lib/calc";
 import { JAKARTA_TZ, timeFormatter, useJakartaClock } from "../../lib/jakartaClock";
+import { SlideInd, useSlideIndicator } from "../slide";
 import { useBoard } from "./BoardContext";
 
 // Menu kiri (desktop) / bar menu bawah (HP). Bisa dilipat jadi ikon saja.
@@ -36,6 +37,8 @@ function SideClock({ collapsed }) {
 export default function Sidebar() {
   const { activeCluster, blocks, canEdit, displayName, goHome, goMode, handleLogoutClick, lastBackupAt, mode, sidebarCollapsed, toggleSidebar, totalTarget } = useBoard();
   const initials = (displayName || "?").slice(0, 2).toUpperCase();
+  // Latar menu aktif bergeser halus antar menu (lihat slide.jsx).
+  const [menuRef, menuBox] = useSlideIndicator([mode, sidebarCollapsed]);
   return (
     <nav className={`app-side ${sidebarCollapsed ? "collapsed" : ""}`} aria-label="Menu utama">
       <div className="side-extra flex items-center gap-2.5" style={{ width: "100%", justifyContent: sidebarCollapsed ? "center" : "flex-start", flexDirection: sidebarCollapsed ? "column" : "row" }}>
@@ -54,7 +57,8 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <div className="side-menu" role="list">
+      <div className="side-menu slide-host" role="list" ref={menuRef}>
+        <SlideInd box={menuBox} radius={10} cls="side-ind" />
         <div className="side-extra side-hide-collapsed" style={{ fontSize: 11, letterSpacing: 0.6, textTransform: "uppercase", color: C.steel, padding: "0 .75rem .35rem" }}>Menu</div>
         {ITEMS.map((it) => {
           const active = it.key === mode;
@@ -63,6 +67,7 @@ export default function Sidebar() {
               key={it.key}
               role="listitem"
               className="side-item"
+              data-slide-active={active ? "true" : undefined}
               aria-current={active ? "page" : undefined}
               aria-label={it.label}
               title={it.label}

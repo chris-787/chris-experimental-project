@@ -7,6 +7,9 @@ import { timeAgo } from "../../lib/calc";
 import { statusColor } from "../../lib/palette";
 import { useBoard } from "./BoardContext";
 
+// Arah geser terakhir dari tombol Prev/Next: isi Detail Kavling masuk dari sisi yang sesuai; dari klik peta, memudar naik saja.
+let navDir = { id: null, dir: "" };
+
 export default function InspectorPanel() {
   const { kontraktorColorOf, tipeColor, canEdit, confirmDeleteId, detailEditingKey, finalHppPerM2, getDetail, hargaJualTotal, houses, hppTotal, kategoriOptions, luasBangunanOf, marginOf, marginPct, monthEditingKey, priceEditingKey, printKavlingSummary, removeHouse, selectFromMap, selectedId, setConfirmDeleteId, setDetail, setDetailEditingKey, setMonthEditingKey, setPriceEditingKey, setSelectedId, setTextEditingKey, statusFields, tableRows, textEditingKey, tipeOptions, updateHouse, updateStatus } = useBoard();
     if (!selectedId) {
@@ -19,7 +22,7 @@ export default function InspectorPanel() {
     const prevRow = tableRows[idx - 1];
     const nextRow = tableRows[idx + 1];
     return (
-      <div data-inspector>
+      <div data-inspector key={h.id} className={`insp-in${navDir.id === h.id && navDir.dir ? ` insp-${navDir.dir}` : ""}`}>
         <div className="flex items-center gap-2.5 flex-wrap mb-3.5">
           <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: "IBM Plex Mono, monospace" }}>{h.blok}-{h.noKavling}</div>
           <span style={{ background: tint(tipeColor(h.tipe), 18), color: C.ink, fontWeight: 600, fontSize: 11, padding: "3px 10px 3px 8px", borderRadius: 999, display: "inline-flex", alignItems: "center", gap: 6 }}><i style={{ width: 8, height: 8, borderRadius: 3, background: tipeColor(h.tipe), display: "inline-block" }} />{h.tipe}</span>
@@ -37,8 +40,8 @@ export default function InspectorPanel() {
           })}
           {h.lastEditedAt && <span className="text-xs" style={{ color: C.steel }}>Terakhir diubah: {timeAgo(h.lastEditedAt)}{h.lastEditedBy ? ` oleh ${h.lastEditedBy}` : ""}</span>}
           <span style={{ flex: 1 }} />
-          <button disabled={!prevRow} onClick={() => prevRow && selectFromMap(prevRow.id)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: prevRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: prevRow ? "pointer" : "default" }} title="Kavling sebelumnya (←)">&lsaquo; Prev</button>
-          <button disabled={!nextRow} onClick={() => nextRow && selectFromMap(nextRow.id)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: nextRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: nextRow ? "pointer" : "default" }} title="Kavling berikutnya (→)">Next &rsaquo;</button>
+          <button disabled={!prevRow} onClick={() => { if (prevRow) { navDir = { id: prevRow.id, dir: "prev" }; selectFromMap(prevRow.id); } }} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: prevRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: prevRow ? "pointer" : "default" }} title="Kavling sebelumnya (←)">&lsaquo; Prev</button>
+          <button disabled={!nextRow} onClick={() => { if (nextRow) { navDir = { id: nextRow.id, dir: "next" }; selectFromMap(nextRow.id); } }} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: nextRow ? C.ink : C.faint, fontWeight: 600, fontSize: 12, cursor: nextRow ? "pointer" : "default" }} title="Kavling berikutnya (→)">Next &rsaquo;</button>
           <button onClick={() => printKavlingSummary(h)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: "1px solid transparent", background: C.accent, color: "#fff", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}><Ic name="printer" size={14} /> Print</button>
           <button onClick={() => setSelectedId(null)} aria-label="Tutup detail" title="Tutup / hapus highlight (Esc)" style={{ width: 36, height: 32, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: C.steel, cursor: "pointer" }}>✕</button>
         </div>

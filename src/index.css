@@ -131,8 +131,9 @@ body {
 .app-main { flex: 1 1 0; min-width: 0; padding: 1rem; }
 .side-item { transition: gap .24s ease, background-color .15s ease; display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 38px; padding: 0 .65rem; border: none; border-radius: 10px; background: transparent; color: var(--steel); font-size: 12.5px; font-weight: 500; cursor: pointer; text-align: left; font-family: inherit; }
 .side-item:hover { background: var(--pill-fill); color: var(--ink); }
-.side-item[aria-current="page"] { background: var(--select-soft); color: var(--ink); font-weight: 600; box-shadow: inset 3px 0 0 var(--accent); }
-.app-side.collapsed .side-item[aria-current="page"] { box-shadow: none; }
+.side-item[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.slide-ind.side-ind { background: var(--select-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.app-side.collapsed .slide-ind.side-ind { box-shadow: none; }
 .app-side.collapsed .side-item { gap: 0; justify-content: center; padding: 0; width: 40px; min-height: 40px; }
 .side-label { display: inline-block; max-width: 160px; overflow: hidden; white-space: nowrap; opacity: 1; transition: opacity .18s ease, max-width .24s ease; }
 .side-hide-collapsed { max-width: 260px; max-height: 240px; opacity: 1; overflow: hidden; transition: opacity .18s ease, max-width .24s ease, max-height .24s ease, padding .24s ease, margin .24s ease, border-width .24s ease; }
@@ -253,3 +254,31 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 /* Geser peta dengan ditarik: tangan terbuka di area kosong, menggenggam saat ditarik (kavling tetap tangan menunjuk). */
 .plan-box.pannable, .plan-box.pannable > div { cursor: grab !important; }
 .plan-box.panning, .plan-box.panning * { cursor: grabbing !important; user-select: none; }
+
+/* Pop up: latar memudar masuk, kartu naik sedikit sambil membesar halus */
+@keyframes modal-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-pop { from { opacity: 0; transform: translateY(14px) scale(.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .modal-backdrop { animation: modal-fade .22s ease-out both; }
+  .modal-card { animation: modal-pop .3s cubic-bezier(.2, .8, .2, 1) both; }
+}
+
+/* Detail Kavling: isi berganti dengan animasi saat pindah kavling (Prev/Next menggeser, klik peta memudar naik) */
+@keyframes insp-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes insp-from-right { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes insp-from-left { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .insp-in { animation: insp-rise .3s cubic-bezier(.2, .8, .2, 1) both; }
+  .insp-in.insp-next { animation-name: insp-from-right; }
+  .insp-in.insp-prev { animation-name: insp-from-left; }
+}
+
+/* Pindah halaman: isi halaman memudar naik sedikit */
+@keyframes page-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .page-in { animation: page-rise .32s cubic-bezier(.2, .8, .2, 1) both; }
+}
+
+/* Hasil pencarian kavling: baris menyala saat disorot kursor atau fokus keyboard */
+.search-row { transition: background-color .12s ease; }
+.search-row:hover, .search-row:focus-visible { background: var(--row-hover) !important; outline: none; }

@@ -22,12 +22,17 @@ export function useSlideIndicator(deps) {
     };
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    // Ukuran/posisi tombol bisa berubah tanpa window berubah (mis. sidebar melipat): ukur ulang saat pembungkus berubah
+    // ukuran dan saat transisi anak-anaknya selesai.
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    if (ro) ro.observe(host);
+    host.addEventListener("transitionend", measure);
+    return () => { window.removeEventListener("resize", measure); host.removeEventListener("transitionend", measure); if (ro) ro.disconnect(); };
   }, deps);
   return [ref, box];
 }
 
-export function SlideInd({ box, radius = 999 }) {
+export function SlideInd({ box, radius = 999, cls = "" }) {
   if (!box) return null;
-  return <span aria-hidden="true" className="slide-ind" style={{ left: box.left, top: box.top, width: box.width, height: box.height, borderRadius: radius }} />;
+  return <span aria-hidden="true" className={`slide-ind${cls ? ` ${cls}` : ""}`} style={{ left: box.left, top: box.top, width: box.width, height: box.height, borderRadius: radius }} />;
 }

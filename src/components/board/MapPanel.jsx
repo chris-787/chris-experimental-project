@@ -6,6 +6,7 @@ import { buildColorGroups } from "../../lib/colorGroups";
 import { downloadSitePlanPng } from "../../lib/mapExport";
 import { layoutHouseLabels } from "../../lib/labelLayout";
 import ColorPills from "./ColorPills";
+import { Chevron, Collapse } from "../anim";
 import PolyShape from "./PolyShape";
 import { useBoard } from "./BoardContext";
 
@@ -386,10 +387,10 @@ export default function MapPanel() {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold" style={{ color: C.ink }}>Rincian kavling · Total unit : {houses.length}</span>
                 <button onClick={() => setShowRincian(!showRincian)} className="text-xs px-2 py-0.5 rounded-full" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }} aria-expanded={showRincian}>
-                  {showRincian ? "Sembunyikan ▴" : "Tampilkan ▾"}
+                  {showRincian ? "Sembunyikan" : "Tampilkan"} <Chevron open={showRincian} />
                 </button>
               </div>
-              {showRincian && (
+              <Collapse open={showRincian}>
                 <div className="rincian-grid mt-2">
                   {colorGroups.map((g) => (
                     <div key={g.key} style={{ breakInside: "avoid" }}>
@@ -407,7 +408,7 @@ export default function MapPanel() {
                     </div>
                   ))}
                 </div>
-              )}
+              </Collapse>
             </div>
           )}
         </div>

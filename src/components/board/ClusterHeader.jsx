@@ -73,7 +73,7 @@ export default function ClusterHeader() {
               {results.length === 0 ? (
                 <div className="text-xs p-2.5" style={{ color: C.steel }}>Tidak ditemukan.</div>
               ) : results.map((h) => (
-                <button key={h.id} onClick={() => pick(h.id)} className="flex items-center justify-between w-full text-xs" style={{ padding: "8px 12px", border: "none", borderBottom: `1px solid ${C.line}`, background: "transparent", cursor: "pointer", textAlign: "left", color: C.ink }}>
+                <button key={h.id} onClick={() => pick(h.id)} className="search-row flex items-center justify-between w-full text-xs" style={{ padding: "8px 12px", border: "none", borderBottom: `1px solid ${C.line}`, background: "transparent", cursor: "pointer", textAlign: "left", color: C.ink }}>
                   <span style={{ fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace" }}>{h.blok}-{h.noKavling}</span>
                   <span style={{ color: C.steel }}>{h.tipe}</span>
                 </button>

@@ -25,3 +25,32 @@ export function CountUp({ value, format = (n) => String(Math.round(n)), duration
   }, [target, duration]);
   return <>{format(shown)}</>;
 }
+
+// Panel lipat dengan animasi buka/tutup halus (tinggi 0 -> penuh). Isi baru dipasang saat dibuka dan dilepas
+// setelah animasi tutup selesai, jadi daftar panjang yang tertutup tidak membebani halaman.
+export function Collapse({ open, children, duration = 300 }) {
+  const [mounted, setMounted] = useState(open);
+  const [shown, setShown] = useState(open);
+  useEffect(() => {
+    if (reduceMotion()) { setMounted(open); setShown(open); return undefined; }
+    if (open) {
+      setMounted(true);
+      const t = setTimeout(() => setShown(true), 30);
+      return () => clearTimeout(t);
+    }
+    setShown(false);
+    const t = setTimeout(() => setMounted(false), duration + 30);
+    return () => clearTimeout(t);
+  }, [open, duration]);
+  if (!mounted) return null;
+  return (
+    <div style={{ display: "grid", gridTemplateRows: shown ? "1fr" : "0fr", opacity: shown ? 1 : 0, transition: reduceMotion() ? "none" : `grid-template-rows ${duration}ms cubic-bezier(.3,.8,.2,1), opacity ${duration}ms ease` }}>
+      <div style={{ overflow: "hidden", minHeight: 0 }}>{children}</div>
+    </div>
+  );
+}
+
+// Panah kecil yang berputar halus saat panel dibuka (arah bawah = tertutup, atas = terbuka).
+export function Chevron({ open, turn = 180, glyph = "▾" }) {
+  return <span aria-hidden="true" style={{ display: "inline-block", transition: reduceMotion() ? "none" : "transform .3s cubic-bezier(.3,.8,.2,1)", transform: `rotate(${open ? turn : 0}deg)` }}>{glyph}</span>;
+}

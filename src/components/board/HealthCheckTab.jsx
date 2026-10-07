@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Chevron, Collapse } from "../anim";
 import { C } from "../../theme";
 import { Ic, Pill, SectionHead, cellInput } from "../ui";
 import { checkHealth, healthCount } from "../../lib/healthCheck";
@@ -86,10 +87,10 @@ export default function HealthCheckTab() {
             >
               <SectionHead
                 icon="warning" color={col} title={g.title} count={g.items.length}
-                right={<span style={{ color: C.steel, fontSize: 12 }}>{open ? "Tutup ▴" : "Buka ▾"}</span>}
+                right={<span style={{ color: C.steel, fontSize: 12 }}>{open ? "Tutup" : "Buka"} <Chevron open={open} /></span>}
               />
             </button>
-            {open && (
+            <Collapse open={open}>
               <>
                 <div className="text-xs mb-2" style={{ color: C.steel, marginTop: -4 }}>{g.hint}</div>
                 <div className="flex flex-col" style={{ border: `1px solid ${C.line}`, borderRadius: 12, overflow: "hidden" }}>
@@ -107,7 +108,7 @@ export default function HealthCheckTab() {
                   ))}
                 </div>
               </>
-            )}
+            </Collapse>
           </div>
         );
       })}

@@ -11,6 +11,8 @@ export const WHATS_NEW_GROUPS = [
     versionNote: "Tampilan baru: sidebar, Dashboard, mode gelap",
     date: "7 Oktober 2026",
     items: [
+      { icon: "🎞️", title: "Animasi buka-tutup, pop up, dan pindah halaman", desc: "Panel yang bisa dibuka-tutup (Rincian kavling, Cek Data, Cluster diarsipkan) kini terbuka dan menutup dengan halus, lengkap dengan panah yang berputar. Pop up muncul dengan memudar dan naik sedikit, isi Detail Kavling bergeser masuk saat Prev/Next, penanda menu di sidebar berpindah halus, dan isi halaman memudar naik saat pindah menu. Semua mati otomatis bila perangkat memakai pengaturan kurangi gerakan." },
+      { icon: "🔎", title: "Hasil pencarian kavling menyala saat disorot", desc: "Baris hasil pencarian kini berubah warna saat kursor melewatinya, supaya jelas baris mana yang akan dibuka." },
       { icon: "✋", title: "Geser Site Plan dengan ditarik", desc: "Saat peta di-zoom, tarik di area kosong untuk menggeser peta (kursor jadi tangan terbuka, lalu menggenggam saat ditarik). Di atas kavling kursor tetap tangan menunjuk dan klik tetap memilih kavling." },
       { icon: "🖨️", title: "Print ringkasan memuat posisi di Site Plan", desc: "Print ringkasan kavling kini menyertakan potongan peta diperbesar dan peta utuh dengan bingkai merah di kavling tersebut. Tombol Cetak diganti Print." },
       { icon: "⭐", title: "Pin cluster berwarna emas", desc: "Tombol bintang di kartu cluster (Home) kini berwarna emas, lengkap dengan garis tepi kartu emas, saat cluster di-pin, sehingga mudah dibedakan dari yang belum." },

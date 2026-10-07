@@ -9,8 +9,8 @@ export default function ImportPreviewModal() {
   const { changes, cellCount, skipped, matched, fileName } = importPreview;
   const unchanged = matched - changes.length;
   return (
-    <div onClick={cancelImportPreview} style={{ position: "fixed", inset: 0, background: "rgba(27,42,60,0.45)", zIndex: 210, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-      <div role="dialog" aria-modal="true" aria-label="Pratinjau impor" onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 640, maxHeight: "90vh", display: "flex", flexDirection: "column", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, boxShadow: "0 16px 48px rgba(0,0,0,0.3)" }}>
+    <div className="modal-backdrop" onClick={cancelImportPreview} style={{ position: "fixed", inset: 0, background: "rgba(27,42,60,0.45)", zIndex: 210, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+      <div className="modal-card" role="dialog" aria-modal="true" aria-label="Pratinjau impor" onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 640, maxHeight: "90vh", display: "flex", flexDirection: "column", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, boxShadow: "0 16px 48px rgba(0,0,0,0.3)" }}>
         <div className="flex items-center justify-between" style={{ padding: "18px 22px 14px", borderBottom: `1px solid ${C.line}`, flexShrink: 0 }}>
           <div className="text-base font-semibold flex items-center gap-2" style={{ color: C.ink }}>
             <IconChip name="upload" bg={C.chipBlueBg} color={C.accent} size={28} /> Pratinjau Import

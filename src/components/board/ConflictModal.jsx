@@ -16,8 +16,8 @@ export default function ConflictModal() {
   const optStyle = (active) => ({ flex: 1, minWidth: 140, textAlign: "left", padding: "8px 10px", borderRadius: 10, border: `1.5px solid ${active ? C.accent : C.line}`, background: active ? C.chipBlueBg : C.panel, color: C.ink, cursor: "pointer", fontFamily: "inherit" });
 
   return (
-    <div onClick={closeConflict} style={{ position: "fixed", inset: 0, background: "rgba(27,42,60,0.45)", zIndex: 220, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-      <div role="dialog" aria-modal="true" aria-label="Bentrok edit" onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 680, maxHeight: "90vh", display: "flex", flexDirection: "column", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, boxShadow: "0 16px 48px rgba(0,0,0,0.3)" }}>
+    <div className="modal-backdrop" onClick={closeConflict} style={{ position: "fixed", inset: 0, background: "rgba(27,42,60,0.45)", zIndex: 220, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+      <div className="modal-card" role="dialog" aria-modal="true" aria-label="Bentrok edit" onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 680, maxHeight: "90vh", display: "flex", flexDirection: "column", background: C.panel, border: `1px solid ${C.line}`, borderRadius: 16, boxShadow: "0 16px 48px rgba(0,0,0,0.3)" }}>
         <div className="flex items-center justify-between" style={{ padding: "18px 22px 14px", borderBottom: `1px solid ${C.line}`, flexShrink: 0 }}>
           <div className="text-base font-semibold flex items-center gap-2" style={{ color: C.ink }}>
             <IconChip name="warning" bg={C.alertAmberBg} color={C.amber} size={28} /> Data diubah bersamaan
