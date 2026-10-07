@@ -26,6 +26,13 @@ export default function WhatsNewModal() {
             <div style={{ overflowY: "auto", padding: "16px 24px 24px" }}>
               {WHATS_NEW_GROUPS.map((group, gi) => (
                 <div key={gi} className="mb-3">
+                  {group.version && (
+                    <div className="flex items-center gap-2.5" style={{ margin: gi === 0 ? "0 0 14px" : "22px 0 16px" }} role="separator" aria-label={group.version}>
+                      <span style={{ flex: 1, height: 1, background: C.line }} />
+                      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", padding: "4px 14px", borderRadius: 999, background: group.version === "Versi 2.0" ? C.accent : C.pillFill, color: group.version === "Versi 2.0" ? "#fff" : C.steel }}>{group.version}</span>
+                      <span style={{ flex: 1, height: 1, background: C.line }} />
+                    </div>
+                  )}
                   <div className="text-xs font-semibold mb-2" style={{ fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, color: C.gold, textTransform: "uppercase" }}>{withDay(group.date)}</div>
                   <div className="flex flex-col gap-2.5">
                     {group.items.map((it, i) => (

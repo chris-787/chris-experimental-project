@@ -7,18 +7,24 @@ export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "
 
 export const WHATS_NEW_GROUPS = [
   {
-    date: "6 Oktober 2026",
+    version: "Versi 2.0",
+    date: "7 Oktober 2026",
     items: [
-      { icon: "🧭", title: "Versi 2.0: tampilan baru", desc: "Menu pindah ke sidebar di kiri (bar menu di bawah layar di HP) dan bisa dilipat jadi ikon; pilihannya diingat, dan di Data Mode otomatis terlipat. Warna diganti jadi putih sejuk dan navy (mode terang) serta slate lembut (mode gelap)." },
-      { icon: "✨", title: "Perapian tampilan", desc: "Font diganti Plus Jakarta Sans, kotak cari kavling berfungsi di semua halaman, tombol zoom peta jadi kotak mengambang, urutan tombol warna peta diubah (Per Tipe, Per Blok, Per Kontraktor, Terjual, Status Lain), status simpan tampil di bawah tombol, dan grafik Dashboard dibuat ulang. Nama aplikasi sekarang Chris Project." },
       { icon: "🏷️", title: "Status lengkap di header Detail Kavling", desc: "Header Detail Kavling kini menampilkan semua status yang sedang aktif sebagai label berwarna (mis. Marketing, AC: 2 PK 1 unit), termasuk status baru yang ditambahkan di Settings, dan menunjukkan siapa yang terakhir mengubah." },
       { icon: "🖨️", title: "Show Blok ikut tercetak dan ter-ekspor", desc: "Bila tombol Show Blok aktif, kode kavling (mis. B-01) kini tampil juga di hasil Cetak dan PNG, dengan tata letak yang sama seperti di layar; bila nonaktif, tidak ada kode. Posisi poligon di PNG yang sebelumnya bergeser ke atas sudah diperbaiki." },
       { icon: "👀", title: "Pratinjau sebelum Import Excel", desc: "Import Excel/CSV tidak lagi langsung menimpa data. Muncul pratinjau berisi jumlah kavling dan sel yang akan berubah, lengkap dengan nilai lama dan barunya per kavling, serta daftar yang dilewati. Data baru berubah setelah menekan Terapkan; tombol Batalkan membuangnya tanpa mengubah apa pun." },
       { icon: "🩺", title: "Tab Cek Data di Dashboard", desc: "Daftar kavling bermasalah: tipe tidak dikenal, luas bangunan tipe belum diisi, HPP atau harga jual kosong, nomor kavling kembar, blok tidak dikenal, margin negatif, dan kontraktor kosong. Tiap baris punya isian dan tombol Perbaiki; kavlingnya hilang dari daftar setelah beres. Angka merah di tab menunjukkan jumlah masalah." },
       { icon: "🤝", title: "Bentrok edit lebih jelas", desc: "Bila dua orang mengubah data bersamaan, kini ada tombol Lihat dan gabungkan: perubahan di kavling atau kolom yang berbeda digabung otomatis, dan untuk kolom yang bentrok Anda memilih punya Anda atau punya orang lain, dengan nama dan waktu penyimpannya. Setiap perubahan kini mencatat siapa yang terakhir mengubah." },
-      { icon: "🗺️", title: "Peta lebih interaktif", desc: "Kode kavling (mis. B-01) muncul di peta saat di-zoom; ukurannya menyesuaikan poligon dan hanya tampil bila cukup muat (tombol Show Blok untuk menampilkan atau menyembunyikannya). Klik legenda untuk menyembunyikan satu kelompok warna di peta, dan Tampilkan semua untuk mengembalikan. Tombol PNG menyimpan peta berwarna lengkap dengan judul dan legenda sebagai gambar." },
+      { icon: "🗺️", title: "Peta lebih interaktif", desc: "Tombol Show Blok menampilkan kode kavling (mis. B-01) di peta saat di-zoom. Semua kode memakai satu ukuran huruf seragam, arah tulisannya mendatar atau tegak otomatis mengikuti bentuk poligon (juga untuk kavling yang baru Anda tambah), dan kode yang tidak muat disembunyikan sampai di-zoom lebih besar. Klik legenda untuk menyembunyikan satu kelompok warna, dan Tampilkan semua untuk mengembalikan. Tombol PNG menyimpan peta berwarna lengkap dengan judul dan legenda." },
       { icon: "🔑", title: "Login lebih jelas", desc: "Halaman login punya tombol Lihat untuk menampilkan password yang diketik, dan pesan gagal kini dibedakan: password salah, terlalu banyak percobaan, atau tidak bisa terhubung ke server. Kolom login juga tidak lagi mengubah huruf awal otomatis." },
       { icon: "📌", title: "Tabel tidak lagi loncat saat baris dipilih", desc: "Di Main Mode, mengklik baris tabel untuk pertama kali tidak lagi membuat halaman melompat ke Detail Kavling. Posisi tabel di layar ditahan walau kartu detail di atasnya membesar." },
+    ],
+  },
+  {
+    date: "6 Oktober 2026",
+    items: [
+      { icon: "🧭", title: "Versi 2.0: tampilan baru", desc: "Menu pindah ke sidebar di kiri (bar menu di bawah layar di HP) dan bisa dilipat jadi ikon; pilihannya diingat, dan di Data Mode otomatis terlipat. Warna diganti jadi putih sejuk dan navy (mode terang) serta slate lembut (mode gelap)." },
+      { icon: "✨", title: "Perapian tampilan", desc: "Font diganti Plus Jakarta Sans, kotak cari kavling berfungsi di semua halaman, tombol zoom peta jadi kotak mengambang, urutan tombol warna peta diubah (Per Tipe, Per Blok, Per Kontraktor, Terjual, Status Lain), status simpan tampil di bawah tombol, dan grafik Dashboard dibuat ulang. Nama aplikasi sekarang Chris Project." },
       { icon: "🎞️", title: "Pilihan yang bergeser, peta dan tabel beranimasi", desc: "Saat memilih Per Tipe, Per Blok, Per Kontraktor, status, tab Dashboard, Ringkas/Lengkap, dan Daftar/Kalender, latar tombol terpilih kini bergeser halus ke pilihan baru. Kavling di Site Plan muncul bergantian per blok, dan baris tabel masuk satu per satu dari kiri saat halaman dibuka." },
       { icon: "🎬", title: "Animasi pada grafik", desc: "Setiap kali membuka cluster atau pindah halaman dan tab (Dashboard: Ringkasan, Kontraktor, Margin dan Harga), bar tumbuh dari kosong, donat menyapu melingkar, kartu naik pelan satu per satu, dan angka kartu atas menghitung naik. Otomatis dimatikan di perangkat yang memakai pengaturan kurangi gerakan." },
       { icon: "🧪", title: "Tabel kuat untuk ratusan kavling, ditambah pengujian otomatis", desc: "Kalau satu tabel berisi lebih dari 60 kavling, hanya baris yang terlihat yang digambar sehingga gulir tetap ringan. Hitungan margin dan impor Excel kini diuji otomatis tiap kali ada perubahan; deploy dibatalkan bila ada yang gagal. Sekalian impor Excel dilengkapi: status boleh ditulis Ya/TRUE/1 (bukan hanya Sudah), dan bulan SPK boleh ditulis Agustus atau Agu." },
@@ -44,6 +50,7 @@ export const WHATS_NEW_GROUPS = [
     ],
   },
   {
+    version: "Versi 1.0",
     date: "3 Oktober 2026",
     items: [
       { icon: "📋", title: "Rincian kavling di bawah legenda", desc: "Di bawah legenda Site Plan ada daftar kavling per kelompok warna yang sedang aktif (kontraktor, Sudah/Belum, blok, atau tipe), dikelompokkan per tipe, mis. \"Tipe 6x12 (4 unit) : RB/D-06, RB/D-08, ...\". Bisa disembunyikan, dan ikut tercetak di Cetak Site Plan." },
