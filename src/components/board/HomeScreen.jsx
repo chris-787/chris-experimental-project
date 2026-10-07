@@ -21,14 +21,6 @@ export default function HomeScreen() {
     setNewClusterSubtitle("");
   }
   const backupDue = !lastBackupAt || (Date.now() - lastBackupAt) / 86400000 >= 3;
-  // Judul kartu di kolom kanan: ikon berwarna + judul di tengah + angka (hanya bila ada isinya).
-  const cardTitle = (icon, color, title, count) => (
-    <div className="flex items-center justify-center gap-2.5 mb-2.5">
-      <span style={{ width: 28, height: 28, borderRadius: 8, background: tint(color, 16), color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Ic name={icon} size={15} /></span>
-      <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, lineHeight: 1 }}>{title}</span>
-      {count > 0 && <Pill color={color}>{count}</Pill>}
-    </div>
-  );
   const [dragId, setDragId] = useState(null);
   const [overId, setOverId] = useState(null);
   const [duplicatingId, setDuplicatingId] = useState(null);
@@ -332,7 +324,7 @@ export default function HomeScreen() {
           </div>
           <aside className="flex flex-col gap-3" style={{ minWidth: 0 }}>
             <div className="flex items-baseline justify-between gap-2" style={{ marginBottom: -4 }}>
-              <h2 aria-hidden="true" style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "transparent", userSelect: "none" }}>&nbsp;</h2>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.ink }}>Ringkasan</h2>
             </div>
           {(
             <div className="p-2.5 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
@@ -340,7 +332,7 @@ export default function HomeScreen() {
                 <div className="flex items-center gap-2.5">
                   <span style={{ width: 28, height: 28, borderRadius: 8, background: tint(C.amber, 18), color: C.amber, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Ic name="calendar" size={15} /></span>
                   <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, lineHeight: 1 }}>Perlu Ditindaklanjuti</span>
-                  {homeFollowUpList.length > 0 && <Pill color={C.amber}>{homeFollowUpList.length}</Pill>}
+                  <Pill color={C.amber}>{homeFollowUpList.length}</Pill>
                 </div>
                 {homeAllFollowUpList.length > 0 && <div ref={fuRef} className="flex slide-host" style={{ background: C.pillFill, borderRadius: 10, padding: 3 }}>
                   <SlideInd box={fuBox} radius={8} />
@@ -454,7 +446,7 @@ export default function HomeScreen() {
           )}
 
             <div className="p-3 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-              {cardTitle("download", C.green, "Backup Data", 0)}
+              <div className="text-sm font-semibold mb-1.5" style={{ color: C.ink }}>Keamanan data</div>
               {(() => {
                 const daysSince = lastBackupAt ? Math.floor((Date.now() - lastBackupAt) / 86400000) : null;
                 const shouldRemind = daysSince === null || daysSince >= 3;
@@ -472,7 +464,13 @@ export default function HomeScreen() {
             </div>
 
             <div className="p-3 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-              {cardTitle("archive", C.amber, "Archive", clusters.filter((c) => c.archived).length)}
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: C.ink }}>
+                  <span style={{ width: 24, height: 24, borderRadius: 8, background: tint(C.amber, 16), color: C.amber, display: "inline-flex", alignItems: "center", justifyContent: "center" }}><Ic name="archive" size={14} /></span>
+                  Archive
+                </span>
+                <Pill color={C.amber}>{clusters.filter((c) => c.archived).length}</Pill>
+              </div>
               {clusters.some((c) => c.archived) ? (
                 <div className="flex flex-col gap-1.5">
                   {clusters.filter((c) => c.archived).map((c) => (
@@ -491,7 +489,13 @@ export default function HomeScreen() {
             </div>
 
             <div className="p-3 rounded-2xl" style={{ background: C.panel, boxShadow: C.cardShadow }}>
-              {cardTitle("trash", C.red, "Recently Deleted", trashClusters.length)}
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: C.ink }}>
+                  <span style={{ width: 24, height: 24, borderRadius: 8, background: tint(C.red, 14), color: C.red, display: "inline-flex", alignItems: "center", justifyContent: "center" }}><Ic name="trash" size={14} /></span>
+                  Recently Deleted
+                </span>
+                <Pill color={C.red}>{trashClusters.length}</Pill>
+              </div>
               {trashClusters.length > 0 ? (
                 <div className="flex flex-col gap-1.5">
                   {trashClusters.map((c) => {
