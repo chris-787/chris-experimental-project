@@ -281,4 +281,4 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 
 /* Hasil pencarian kavling: baris menyala saat disorot kursor atau fokus keyboard */
 .search-row { transition: background-color .12s ease; }
-.search-row:hover, .search-row:focus-visible { background: var(--row-hover) !important; outline: none; }
+.search-row:not(:disabled):hover, .search-row:not(:disabled):focus-visible { background: var(--row-hover) !important; outline: none; }

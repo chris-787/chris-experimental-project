@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { C } from "../../theme";
 import { Ic } from "../ui";
 import { measureTextWidth } from "../../lib/helpers";
@@ -17,7 +17,13 @@ export default function ClusterHeader() {
     () => (q ? houses.filter((h) => `${h.blok}-${h.noKavling}`.toLowerCase().includes(q)) : []),
     [houses, q]
   );
-  const results = useMemo(() => allMatches.slice(0, 8), [allMatches]);
+  // Hasil dibagi per halaman (8 kavling); kembali ke halaman 1 setiap kata kunci berubah.
+  const PER = 8;
+  const [searchPage, setSearchPage] = useState(0);
+  useEffect(() => { setSearchPage(0); }, [q]);
+  const pageCount = Math.max(1, Math.ceil(allMatches.length / PER));
+  const page = Math.min(searchPage, pageCount - 1);
+  const results = useMemo(() => allMatches.slice(page * PER, page * PER + PER), [allMatches, page]);
   const pick = (id) => { setSelectedId(id); setTableSearchQuery(""); if (mode !== "kerja") goMode("kerja"); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const ghost = { background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 12, color: C.steel };
   return (
@@ -76,7 +82,7 @@ export default function ClusterHeader() {
               ) : (
                 <div className="text-xs" style={{ padding: "7px 12px", color: C.steel, background: C.paper, borderBottom: `1px solid ${C.line}` }}>
                   <b style={{ color: C.ink, fontWeight: 600 }}>{allMatches.length} kavling</b> cocok dengan “{tableSearchQuery.trim()}”
-                  {allMatches.length > results.length ? ` · tampil ${results.length} teratas` : " · Enter untuk buka yang pertama"}
+                  {allMatches.length > results.length ? ` · tampil ${page * PER + 1}–${page * PER + results.length}` : " · Enter untuk buka yang pertama"}
                 </div>
               )}
               {results.map((h) => (
@@ -85,6 +91,13 @@ export default function ClusterHeader() {
                   <span style={{ color: C.steel }}>{h.tipe}</span>
                 </button>
               ))}
+              {pageCount > 1 && (
+                <div className="flex items-center justify-between gap-2" style={{ padding: "8px 10px", background: C.paper }}>
+                  <button type="button" disabled={page === 0} onClick={() => setSearchPage(page - 1)} className="search-row" style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page === 0 ? C.faint : C.ink, fontWeight: 600, fontSize: 12, cursor: page === 0 ? "default" : "pointer", fontFamily: "inherit" }}>&lsaquo; Prev</button>
+                  <span style={{ fontSize: 12, color: C.steel }}>Page <b style={{ color: C.ink, fontWeight: 600 }}>{page + 1}</b> / {pageCount}</span>
+                  <button type="button" disabled={page >= pageCount - 1} onClick={() => setSearchPage(page + 1)} className="search-row" style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: page >= pageCount - 1 ? C.faint : C.ink, fontWeight: 600, fontSize: 12, cursor: page >= pageCount - 1 ? "default" : "pointer", fontFamily: "inherit" }}>Next &rsaquo;</button>
+                </div>
+              )}
             </div>
           )}
         </div>
