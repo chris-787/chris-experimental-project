@@ -8,7 +8,7 @@ import { Chevron, Collapse } from "../anim";
 import { useBoard } from "./BoardContext";
 
 export default function HomeScreen() {
-  const { KAVLING_SEARCH_LIMIT, SmallSpinner, addCluster, appTitle, applyRestoreAll, calendarMonth, calendarSelectedDate, canEdit, clusterSearch, clusterStats, clusters, confirmDeleteClusterId, deleteCluster, duplicateCluster, moveCluster, displayName, exportAllBackup, exportAllExcel, exportingBackupAll, exportingExcelAll, followUpView, followUpsByDate, globalHousesIndex, handleLogoutClick, handleRestoreAllFile, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, newClusterName, newClusterSubtitle, openCluster, openKavlingFromSearch, pendingRestoreAll, recoverLegacyCluster, restoreAllError, restoreAllResult, restoringAll, saveAppTitle, saveHomeChanges, setAppTitle, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setConfirmDeleteClusterId, setFollowUpView, setHomeDirty, setKavlingSearch, setNewClusterName, setNewClusterSubtitle, setPendingRestoreAll, setRestoreAllResult, setShowArchivedClusters, setShowWhatsNew, showArchivedClusters, toggleArchiveCluster, togglePinCluster, updateClusterMeta } = useBoard();
+  const { KAVLING_SEARCH_LIMIT, SmallSpinner, addCluster, appTitle, applyRestoreAll, calendarMonth, calendarSelectedDate, canEdit, clusterSearch, clusterStats, clusters, confirmDeleteClusterId, deleteCluster, restoreCluster, purgeCluster, trashClusters, TRASH_DAYS, duplicateCluster, moveCluster, displayName, exportAllBackup, exportAllExcel, exportingBackupAll, exportingExcelAll, followUpView, followUpsByDate, globalHousesIndex, handleLogoutClick, handleRestoreAllFile, homeAllFollowUpList, homeDirty, homeDuplicateList, homeFollowUpList, homeSavedToast, homeSaving, kavlingSearch, kavlingSearchAllMatches, kavlingSearchResults, lastBackupAt, newClusterName, newClusterSubtitle, openCluster, openKavlingFromSearch, pendingRestoreAll, recoverLegacyCluster, restoreAllError, restoreAllResult, restoringAll, saveAppTitle, saveHomeChanges, setAppTitle, setCalendarMonth, setCalendarSelectedDate, setClusterSearch, setClusters, setConfirmDeleteClusterId, setFollowUpView, setHomeDirty, setKavlingSearch, setNewClusterName, setNewClusterSubtitle, setPendingRestoreAll, setRestoreAllResult, setShowArchivedClusters, setShowWhatsNew, showArchivedClusters, toggleArchiveCluster, togglePinCluster, updateClusterMeta } = useBoard();
   const [fuRef, fuBox] = useSlideIndicator([followUpView, homeAllFollowUpList.length > 0]);
   const totalSumHarga = Object.values(clusterStats).reduce((s, x) => s + (x.sumHarga || 0), 0);
   const totalSumHpp = Object.values(clusterStats).reduce((s, x) => s + (x.sumHpp || 0), 0);
@@ -25,6 +25,8 @@ export default function HomeScreen() {
   const [overId, setOverId] = useState(null);
   const [duplicatingId, setDuplicatingId] = useState(null);
   const [colorPickId, setColorPickId] = useState(null);
+  const [showTrash, setShowTrash] = useState(false);
+  const [confirmPurgeId, setConfirmPurgeId] = useState(null);
   const CLUSTER_COLORS = ["#7F77DD", "#378ADD", "#1D9E75", "#639922", "#EF9F27", "#D85A30", "#D4537E", "#888780"];
   const pillBtn = { height: 34, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "inherit" };
   return (
@@ -206,7 +208,7 @@ export default function HomeScreen() {
                       {c.color && <div aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, top: 0, height: 5, background: c.color }} />}
                       {confirmDeleteClusterId === c.id ? (
                         <div>
-                          <div className="text-xs mb-2" style={{ color: C.red }}>Hapus "{c.name}"? Semua data cluster ini (kavling, blok, tipe, gambar) akan hilang permanen.</div>
+                          <div className="text-xs mb-2" style={{ color: C.red }}>Hapus "{c.name}"? Cluster dipindah ke "Baru dihapus" dan masih bisa dipulihkan selama {TRASH_DAYS} hari.</div>
                           <div className="flex gap-2">
                             <button onClick={() => { deleteCluster(c.id); setConfirmDeleteClusterId(null); }} className="text-xs px-2 py-1.5 rounded-full flex-1" style={{ background: C.red, color: "#fff", border: "none" }}>Ya, Hapus</button>
                             <button onClick={() => setConfirmDeleteClusterId(null)} className="text-xs px-3 py-1.5 rounded-full" style={{ border: `1px solid ${C.line}`, color: C.steel, background: C.panel }}>Batal</button>
@@ -335,6 +337,46 @@ export default function HomeScreen() {
                       <button onClick={() => toggleArchiveCluster(c.id)} className="text-xs px-2 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.ink, background: C.panel, flexShrink: 0 }}>Buka Kembali</button>
                     </div>
                   ))}
+                </div>
+              </Collapse>
+            </div>
+          )}
+
+          {trashClusters.length > 0 && (
+            <div className="mt-2">
+              <button onClick={() => setShowTrash((v) => !v)} className="text-xs" style={{ color: C.steel }} aria-expanded={showTrash}>
+                <Chevron open={showTrash} turn={90} glyph="▸" /> Baru dihapus ({trashClusters.length})
+              </button>
+              <Collapse open={showTrash}>
+                <div className="mt-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 8 }}>
+                  {trashClusters.map((c) => {
+                    const daysLeft = Math.max(0, TRASH_DAYS - Math.floor((Date.now() - new Date(c.deletedAt || Date.now()).getTime()) / 86400000));
+                    return (
+                      <div key={c.id} className="rounded-xl p-2.5" style={{ background: C.paper, border: `1px dashed ${tint(C.red, 40)}` }}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div style={{ minWidth: 0 }}>
+                            <div className="text-sm" style={{ color: C.steel, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
+                            <div className="text-xs" style={{ color: C.faint }}>Hilang permanen dalam {daysLeft} hari</div>
+                          </div>
+                          {canEdit && confirmPurgeId !== c.id && (
+                            <div className="flex items-center gap-1.5" style={{ flexShrink: 0 }}>
+                              <button onClick={() => restoreCluster(c.id)} className="text-xs" style={{ height: 30, padding: "0 12px", borderRadius: 999, border: "1px solid transparent", background: C.accent, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Pulihkan</button>
+                              <button onClick={() => setConfirmPurgeId(c.id)} aria-label="Hapus permanen" data-tip="Hapus permanen|Tidak bisa dipulihkan lagi" style={{ width: 30, height: 30, borderRadius: "50%", border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 0 }}><Ic name="trash" size={14} /></button>
+                            </div>
+                          )}
+                        </div>
+                        {canEdit && confirmPurgeId === c.id && (
+                          <div className="mt-2">
+                            <div className="text-xs" style={{ color: C.red }}>Hapus permanen? Semua datanya tidak bisa dipulihkan lagi.</div>
+                            <div className="flex gap-2 mt-1.5">
+                              <button onClick={() => { purgeCluster(c.id); setConfirmPurgeId(null); }} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: "1px solid transparent", background: C.red, color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ya, hapus permanen</button>
+                              <button onClick={() => setConfirmPurgeId(null)} className="text-xs" style={{ height: 28, padding: "0 12px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Batal</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </Collapse>
             </div>

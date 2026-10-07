@@ -11,6 +11,7 @@ export const WHATS_NEW_GROUPS = [
     versionNote: "Tampilan baru: sidebar, Dashboard, mode gelap",
     date: "7 Oktober 2026",
     items: [
+      { icon: "🗑️", title: "Baru dihapus: cluster yang terhapus bisa dipulihkan", desc: "Menghapus cluster kini memindahkannya ke bagian Baru dihapus di bawah daftar cluster (Home), lengkap dengan datanya. Di sana ada tombol Pulihkan untuk mengembalikannya, dan Hapus permanen (dengan konfirmasi) bila memang sudah tidak diperlukan. Cluster yang dibiarkan 30 hari akan dibuang otomatis." },
       { icon: "🎨", title: "Warna penanda untuk kartu cluster", desc: "Tiap kartu cluster di Home bisa diberi warna lewat ikon palet: garis berwarna di atas kartu dan bar progres ikut senada, sedangkan tombol Buka Cluster tetap biru. Pilihan ada 8 warna atau tanpa warna, dan tersimpan per cluster." },
       { icon: "🧩", title: "Duplikat cluster dan atur urutan kartu", desc: "Di kartu cluster (Home) ada tombol Duplikat yang menyalin cluster lengkap dengan kavling, blok, tipe, status, dan gambar petanya, bernama \"<nama> Copy\" (warna penanda ikut tersalin) dan bisa diganti namanya, cocok untuk bereksperimen. Kartu juga bisa diseret lewat pegangan titik-titik di kiri atas untuk mengubah urutan; urutannya tersimpan." },
       { icon: "🌙", title: "Peta hitam di mode gelap", desc: "Di mode gelap, gambar Site Plan kini berlatar hitam dengan garis dan tulisan terang, jadi tidak silau. Warna kavling tetap berwarna, sedangkan hasil Cetak dan PNG tetap memakai peta putih asli." },
@@ -178,6 +179,8 @@ export const TABLE_LAYOUT_KEY = "bria-table-layout-v1";
 export const TABLE_FILTER_KEY_BASE = "bria-table-filter-v1";
 export function tableFilterKeyFor(id) { return id === LEGACY_CLUSTER_ID ? TABLE_FILTER_KEY_BASE : `${TABLE_FILTER_KEY_BASE}:${id}`; }
 export const CLUSTERS_INDEX_KEY = "clusters-index-v1";
+export const CLUSTERS_TRASH_KEY = "clusters-trash-v1"; // cluster yang baru dihapus (bisa dipulihkan sampai TRASH_DAYS hari)
+export const TRASH_DAYS = 30;
 export const APP_TITLE_KEY = "app-title-v1";
 export const LAST_CLUSTER_KEY = "last-cluster-v1";
 export const LAST_BACKUP_KEY = "last-backup-v1";
