@@ -242,11 +242,11 @@ export default function InspectorPanel() {
         {canEdit && <div className="mt-3 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
           {confirmDeleteId === h.id ? (
             <div className="flex gap-2">
-              <button onClick={() => { removeHouse(h.id); setConfirmDeleteId(null); }} className="text-xs px-2.5 py-1 rounded-lg flex-1" style={{ background: C.red, color: "#fff" }}>Ya, Hapus Kavling Ini</button>
-              <button onClick={() => setConfirmDeleteId(null)} className="text-xs px-2.5 py-1 rounded-lg" style={{ border: `1px solid ${C.line}`, color: C.steel }}>Batal</button>
+              <button onClick={() => { removeHouse(h.id); setConfirmDeleteId(null); }} style={{ height: 32, padding: "0 14px", borderRadius: 999, border: "1px solid transparent", background: C.red, color: "#fff", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: "inherit" }}><Ic name="trash" size={14} /> Ya, Hapus Kavling Ini</button>
+              <button onClick={() => setConfirmDeleteId(null)} style={{ height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel, color: C.ink, fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Batal</button>
             </div>
           ) : (
-            <button onClick={() => setConfirmDeleteId(h.id)} className="text-xs" style={{ color: C.red }}>Hapus Kavling Ini</button>
+            <button onClick={() => setConfirmDeleteId(h.id)} style={{ height: 32, padding: "0 14px", borderRadius: 999, border: `1px solid ${tint(C.red, 38)}`, background: tint(C.red, 12), color: C.red, fontWeight: 600, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "inherit" }}><Ic name="trash" size={14} /> Hapus Kavling Ini</button>
           )}
         </div>}
         </div>
