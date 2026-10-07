@@ -701,7 +701,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setClusters((prev) => { const next = [...prev, entry]; saveClustersIndex(next); return next; });
     openCluster(id);
   }
-  // Menyalin satu cluster utuh (kavling, blok, tipe, status, gambar peta) menjadi cluster baru bernama "<nama> (salinan)".
+  // Menyalin satu cluster utuh (kavling, blok, tipe, status, gambar peta) menjadi cluster baru bernama "<nama> Copy" (warna penanda ikut tersalin).
   // Hanya membaca dari cluster asal; tidak mengubah data aslinya.
   async function duplicateCluster(id) {
     if (!canEdit) return null;
@@ -721,7 +721,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
       if (!cfgValue && id === LEGACY_CLUSTER_ID) cfgValue = JSON.stringify({ blocks: DEFAULT_BLOCKS, tipeOptions: DEFAULT_TIPE, statusFields: DEFAULT_STATUS, kategoriOptions: DEFAULT_KATEGORI });
       if (cfgValue) await storage.set(configKeyFor(newId), cfgValue, false);
     } catch (e) { console.error(e); return null; }
-    const entry = { id: newId, name: `${src.name} (salinan)`, subtitle: src.subtitle || "" };
+    const entry = { id: newId, name: `${src.name} Copy`, subtitle: src.subtitle || "", ...(src.color ? { color: src.color } : {}) };
     setClusters((prev) => { const idx = prev.findIndex((c) => c.id === id); const next = [...prev]; next.splice(idx < 0 ? next.length : idx + 1, 0, entry); saveClustersIndex(next); return next; });
     return newId;
   }
