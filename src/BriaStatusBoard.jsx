@@ -1471,9 +1471,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
         table.dataTbl tr.row-sel td, table.dataTbl tr.row-sel:hover td { background: var(--row-selected) !important; }
         table.dataTbl tr.row-sel td:first-child { box-shadow: inset 4px 0 0 ${C.accent}; }
         table.dataTbl input[type=checkbox] { accent-color: ${C.green}; width: 14px; height: 14px; }
-        table.dataTbl input.status-dot { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid ${C.faint}; background: transparent; cursor: pointer; display: inline-block; vertical-align: middle; position: relative; margin: 0; }
-        table.dataTbl input.status-dot:checked { background: ${C.green}; border-color: ${C.green}; }
-        table.dataTbl input.status-dot:checked::after { content: ""; position: absolute; left: 3.5px; top: 1px; width: 3.5px; height: 6.5px; border: solid #fff; border-width: 0 1.6px 1.6px 0; transform: rotate(45deg); }
+        table.dataTbl input.status-dot { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--steel) 60%, transparent); background: var(--panel); cursor: pointer; display: inline-block; vertical-align: middle; position: relative; margin: 0; transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease; }
+        table.dataTbl input.status-dot:hover { border-color: ${C.accent}; box-shadow: 0 0 0 3px color-mix(in srgb, ${C.accent} 18%, transparent); }
+        table.dataTbl input.status-dot:checked { background: ${C.green}; border-color: ${C.green}; box-shadow: 0 1px 3px color-mix(in srgb, ${C.green} 45%, transparent); }
+        table.dataTbl input.status-dot:checked::after { content: ""; position: absolute; left: 4.5px; top: 1.5px; width: 4px; height: 7.5px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
         table.dataTbl input.status-dot:focus-visible { outline: 2px solid ${C.accent}; outline-offset: 2px; }
         table.dataTbl td select, table.dataTbl td input:not([type=checkbox]) { height: 20px; box-sizing: border-box; padding-top: 0; padding-bottom: 0; }
         table.dataTbl th { z-index: 3; }
