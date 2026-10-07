@@ -188,7 +188,7 @@ export default function HomeScreen() {
                   const in7 = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
                   const due = hs.filter((h) => h.followUpDate && h.followUpDate <= in7).length;
                   return (
-                    <div key={c.id} className="rounded-2xl" style={{ background: C.panel, boxShadow: c.pinned ? `0 0 0 1.5px ${C.accent}` : C.cardShadow, padding: 18 }}>
+                    <div key={c.id} className="rounded-2xl" style={{ background: C.panel, boxShadow: c.pinned ? `0 0 0 1.5px ${C.gold}` : C.cardShadow, padding: 18 }}>
                       {confirmDeleteClusterId === c.id ? (
                         <div>
                           <div className="text-xs mb-2" style={{ color: C.red }}>Hapus "{c.name}"? Semua data cluster ini (kavling, blok, tipe, gambar) akan hilang permanen.</div>
@@ -224,7 +224,7 @@ export default function HomeScreen() {
                               />
                             </div>
                             {canEdit && (
-                              <button onClick={() => togglePinCluster(c.id)} title={c.pinned ? "Lepas pin" : "Pin cluster ini"} aria-label={c.pinned ? "Lepas pin" : "Pin cluster ini"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.line}`, background: C.panel, color: c.pinned ? C.accent : C.steel, fontSize: 14, cursor: "pointer", flexShrink: 0 }}>★</button>
+                              <button onClick={() => togglePinCluster(c.id)} title={c.pinned ? "Lepas pin" : "Pin cluster ini"} aria-label={c.pinned ? "Lepas pin" : "Pin cluster ini"} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid ${c.pinned ? C.gold : C.line}`, background: c.pinned ? tint(C.gold, 18) : C.panel, color: c.pinned ? C.gold : C.steel, fontSize: 14, cursor: "pointer", flexShrink: 0 }}>★</button>
                             )}
                           </div>
                           {cs && (
