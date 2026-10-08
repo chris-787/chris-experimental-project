@@ -479,8 +479,21 @@ export default function BriaStatusBoard({ onLogout, session }) {
             const pf = JSON.parse(savedFilter.value);
             const validBlockNames = (migratedBlocks || []).map((b) => b.name);
             const validTipeNames = (migratedTipe || []).map((t) => t.name);
-            if (Array.isArray(pf.tableBlocks)) setTableBlocks(pf.tableBlocks.filter((n) => validBlockNames.includes(n)));
-            if (Array.isArray(pf.tableTipes)) setTableTipes(pf.tableTipes.filter((n) => validTipeNames.includes(n)));
+            // Yang disimpan = daftar yang DISEMBUNYIKAN, jadi blok/tipe baru
+            // otomatis tampil dan nama lama yang sudah tidak ada diabaikan.
+            // Format lama (daftar yang dipilih) tetap dibaca; kalau tidak ada
+            // satu pun namanya yang cocok (basi, mis. setelah ganti kode
+            // blok), semua dianggap dipilih.
+            const pick = (valid, hidden, legacySel) => {
+              if (Array.isArray(hidden)) return valid.filter((n) => !hidden.includes(n));
+              if (Array.isArray(legacySel)) {
+                const sel = legacySel.filter((n) => valid.includes(n));
+                return sel.length ? sel : (legacySel.length ? valid : []);
+              }
+              return valid;
+            };
+            setTableBlocks(pick(validBlockNames, pf.hiddenBlocks, pf.tableBlocks));
+            setTableTipes(pick(validTipeNames, pf.hiddenTipes, pf.tableTipes));
             if (typeof pf.tableStatusFilter === "string") setTableStatusFilter(pf.tableStatusFilter);
           }
         } catch (e) {}
@@ -492,8 +505,15 @@ export default function BriaStatusBoard({ onLogout, session }) {
 
   useEffect(() => {
     if (!currentClusterId || !clusterLoaded) return;
-    storage.set(tableFilterKeyFor(currentClusterId), JSON.stringify({ tableBlocks, tableTipes, tableStatusFilter }), false).catch(() => {});
-  }, [tableBlocks, tableTipes, tableStatusFilter, currentClusterId, clusterLoaded]);
+    const hiddenBlocks = blocks.map((b) => b.name).filter((n) => !tableBlocks.includes(n));
+    const hiddenTipes = tipeOptions.map((t) => t.name).filter((n) => !tableTipes.includes(n));
+    // Jeda singkat: klik beruntun cukup menyimpan keadaan terakhir saja, supaya
+    // dua penyimpanan tidak saling menimpa dengan urutan terbalik.
+    const t = setTimeout(() => {
+      storage.set(tableFilterKeyFor(currentClusterId), JSON.stringify({ hiddenBlocks, hiddenTipes, tableStatusFilter }), false).catch(() => {});
+    }, 400);
+    return () => clearTimeout(t);
+  }, [tableBlocks, tableTipes, tableStatusFilter, currentClusterId, clusterLoaded, blocks, tipeOptions]);
 
   // Dengarkan perubahan kavling, pengaturan, dan gambar site plan cluster
   // ini lewat SATU koneksi real-time (bukan 3 koneksi terpisah seperti
@@ -1588,6 +1608,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         table.dataTbl tr.row-sel td:first-child { box-shadow: inset 4px 0 0 ${C.accent}; }
         table.dataTbl td select, table.dataTbl td input:not([type=checkbox]):not(.status-dot), table.dataTbl td textarea { border: 1px solid color-mix(in srgb, var(--steel) 30%, transparent) !important; }
         table.dataTbl td select, table.dataTbl td input:not([type=checkbox]):not(.status-dot) { height: 22px !important; padding-top: 0 !important; padding-bottom: 0 !important; line-height: 20px !important; }
+        table.dataTbl td input[list]::-webkit-calendar-picker-indicator { margin: 0 !important; padding: 0 !important; height: 100% !important; width: 14px !important; }
         table.dataTbl td select:hover, table.dataTbl td input:not([type=checkbox]):not(.status-dot):hover { border-color: color-mix(in srgb, var(--steel) 55%, transparent) !important; }
         table.dataTbl td select:focus, table.dataTbl td input:not([type=checkbox]):not(.status-dot):focus { border-color: ${C.accent} !important; outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, ${C.accent} 18%, transparent); }
         table.dataTbl input[type=checkbox] { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; margin: 0; border-radius: 4px; border: 1.5px solid color-mix(in srgb, var(--steel) 42%, transparent); background: color-mix(in srgb, var(--panel) 55%, transparent); cursor: pointer; position: relative; vertical-align: middle; transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease; }
