@@ -14,6 +14,13 @@ const TITLES = { kerja: "Main Mode", data: "Data Mode", dashboard: "Dashboard", 
 export default function ClusterHeader() {
   const { KAVLING_SEARCH_LIMIT, SmallSpinner, activeCluster, calibrating, canEdit, currentClusterId, dirty, goMode, houses, mode, setSelectedId, reloadAfterRemoteUpdate, openConflict, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setClusters, setTableSearchQuery, tableSearchQuery, updateClusterMeta } = useBoard();
   // Ganti cluster dari judul halaman (hanya tampil di HP; di desktop ada di sidebar).
+  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 760px)");
+    const on = (e) => setNarrow(e.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   const [swOpen, setSwOpen] = useState(false);
   const swRef = useRef(null);
   useEffect(() => {
@@ -91,7 +98,7 @@ export default function ClusterHeader() {
               value={tableSearchQuery}
               onChange={(e) => setTableSearchQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && mode !== "data" && results[0]) pick(results[0].id); if (e.key === "Escape") setTableSearchQuery(""); }}
-              placeholder="Cari kavling, mis. RB/D-06"
+              placeholder={narrow ? "Cari kavling…" : "Cari kavling, mis. RB/D-06"}
               style={{ border: "none", outline: "none", background: "transparent", fontFamily: "inherit", fontSize: 12, color: C.ink, width: "100%", minWidth: 0 }}
             />
           </label>
@@ -131,7 +138,7 @@ export default function ClusterHeader() {
               >
                 Simpan Perubahan
               </button>
-              <div className="text-xs flex items-center gap-1.5" style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", marginTop: 4, whiteSpace: "nowrap", color: saving ? C.steel : dirty ? C.amber : C.green }} role="status">
+              <div className="text-xs flex items-center gap-1.5 save-status" style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", marginTop: 4, whiteSpace: "nowrap", color: saving ? C.steel : dirty ? C.amber : C.green }} role="status">
                 {saving && <><SmallSpinner /> Menyimpan...</>}
                 {!saving && dirty && "Ada perubahan belum disimpan"}
                 {!saving && !dirty && savedToast && "Tersimpan ✓"}
@@ -145,7 +152,7 @@ export default function ClusterHeader() {
       </div>
 
       {saveConflict && (
-        <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
+        <div className="flex items-center justify-between gap-2 flex-wrap mb-2.5 p-2 rounded-lg" style={{ background: C.alertRedBg, border: `1px solid ${C.red}` }}>
           <span className="text-xs" style={{ color: C.red }}>Gagal menyimpan — data ini sudah diubah oleh pengguna lain. Perubahan Anda masih ada di layar, tapi belum tersimpan.</span>
           <span className="flex items-center gap-1.5">
             <button onClick={openConflict} className="text-xs px-2 py-1 rounded-lg font-semibold" style={{ background: C.red, color: "#fff" }}>Lihat dan gabungkan</button>
@@ -154,7 +161,7 @@ export default function ClusterHeader() {
         </div>
       )}
       {!saveConflict && remoteUpdateAvailable && (
-        <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
+        <div className="flex items-center justify-between gap-2 flex-wrap mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
           <span className="text-xs" style={{ color: C.amber }}>Ada pembaruan baru dari pengguna lain. Anda bisa menggabungkannya dengan perubahan Anda, atau memuat ulang (perubahan Anda yang belum disimpan akan hilang).</span>
           <span className="flex items-center gap-1.5">
             <button onClick={openConflict} className="text-xs px-2 py-1 rounded-lg font-semibold" style={{ background: C.amber, color: "#fff" }}>Lihat dan gabungkan</button>

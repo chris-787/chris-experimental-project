@@ -328,6 +328,8 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
   /* Dashboard: keterangan satu baris, dua tombol berdampingan sama lebar */
   .dash-desc { flex: 1 1 100% !important; min-width: 0 !important; }
   .dash-btn { flex: 1 1 0; justify-content: center; padding: 0 10px !important; }
+  /* Tulisan status simpan rata kiri di bawah tombol, supaya tidak terpotong di tepi layar */
+  .save-status { left: 0 !important; transform: none !important; }
   /* Judul dan kotak cari selebar layar */
   .hdr-title, .hdr-search { flex: 1 1 100% !important; max-width: 100%; }
 }
