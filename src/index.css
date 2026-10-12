@@ -340,3 +340,10 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 @media (max-width: 760px) and (orientation: portrait) { .dt-rotate-hint { display: block; } }
 .dt-card.dt-full .dt-scroll { flex: 1 1 auto; min-height: 0; max-height: none !important; }
 .dt-card.dt-full .dt-pager { margin-top: 6px; padding-top: 6px; }
+
+/* HP miring (landscape): bar menu bawah dibuat pendek, ikon dan tulisan sebaris */
+@media (max-width: 760px) and (orientation: landscape) {
+  .app-side, .app-side.collapsed { padding: .2rem .5rem calc(.2rem + env(safe-area-inset-bottom)); }
+  .side-item, .app-side.collapsed .side-item { flex-direction: row; gap: 6px; height: 34px; min-height: 0; font-size: 11px; }
+  .app-main { padding-bottom: 3.5rem; }
+}
