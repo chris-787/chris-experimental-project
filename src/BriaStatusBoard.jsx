@@ -1250,6 +1250,10 @@ export default function BriaStatusBoard({ onLogout, session }) {
   }
   function selectFromMap(id) {
     setSelectedId(id);
+    // Di HP detail kavling ada di bawah peta, jadi layar digulir ke sana supaya hasil ketukan langsung terlihat.
+    if (typeof window !== "undefined" && window.innerWidth <= 760) {
+      setTimeout(() => document.getElementById("inspector-anchor")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    }
   }
   function toggleTableBlock(name) {
     setTableBlocks((prev) => (prev.includes(name) ? prev.filter((b) => b !== name) : [...prev, name]));

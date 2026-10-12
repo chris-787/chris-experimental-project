@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { C } from "../../theme";
 import { Ic } from "../ui";
 import { measureTextWidth } from "../../lib/helpers";
 import ThemeToggle from "../ThemeToggle";
+import { Collapse } from "../anim";
+import ClusterSwitchList from "./ClusterSwitchList";
 import { useBoard } from "./BoardContext";
 
 // Kepala halaman (tidak menempel saat di-scroll): judul mode, nama cluster,
@@ -11,6 +13,18 @@ const TITLES = { kerja: "Main Mode", data: "Data Mode", dashboard: "Dashboard", 
 
 export default function ClusterHeader() {
   const { KAVLING_SEARCH_LIMIT, SmallSpinner, activeCluster, calibrating, canEdit, currentClusterId, dirty, goMode, houses, mode, setSelectedId, reloadAfterRemoteUpdate, openConflict, remoteUpdateAvailable, saveConflict, saveHouses, savedToast, saving, setClusters, setTableSearchQuery, tableSearchQuery, updateClusterMeta } = useBoard();
+  // Ganti cluster dari judul halaman (hanya tampil di HP; di desktop ada di sidebar).
+  const [swOpen, setSwOpen] = useState(false);
+  const swRef = useRef(null);
+  useEffect(() => {
+    if (!swOpen) return undefined;
+    const onDown = (e) => { if (swRef.current && !swRef.current.contains(e.target)) setSwOpen(false); };
+    const onKey = (e) => { if (e.key === "Escape") setSwOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("touchstart", onDown); document.removeEventListener("keydown", onKey); };
+  }, [swOpen]);
   const textW = (t, ph) => Math.ceil(measureTextWidth(t || ph || "", "12px 'Plus Jakarta Sans', sans-serif")) + 8;
   const q = tableSearchQuery.trim().toLowerCase();
   const allMatches = useMemo(
@@ -25,9 +39,20 @@ export default function ClusterHeader() {
     <>
       <div className="flex items-start gap-3 flex-wrap" style={{ marginBottom: 12 }}>
         <div style={{ flex: "1 1 240px", minWidth: 0 }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px", color: C.ink, lineHeight: 1.2 }}>
-            {TITLES[mode]}{calibrating ? " · Edit Site Plan" : ""}
-          </h1>
+          <div ref={swRef} className="flex items-center gap-2" style={{ position: "relative", flexWrap: "wrap" }}>
+            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px", color: C.ink, lineHeight: 1.2 }}>
+              {TITLES[mode]}{calibrating ? " · Edit Site Plan" : ""}
+            </h1>
+            <button className="phone-only" onClick={() => setSwOpen((v) => !v)} aria-expanded={swOpen} aria-haspopup="listbox" aria-label="Ganti cluster" style={{ alignItems: "center", gap: 6, border: `1px solid ${C.line}`, background: "transparent", color: C.steel, borderRadius: 999, padding: "5px 11px", minHeight: 32, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+              <Ic name="swap" size={13} />Ganti cluster
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ transition: "transform .3s cubic-bezier(.3,.8,.2,1)", transform: swOpen ? "rotate(180deg)" : "none" }}><path d="M6 9l6 6 6-6" /></svg>
+            </button>
+            <div className="phone-only" style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 50, marginTop: 6 }}>
+              <Collapse open={swOpen}>
+                <ClusterSwitchList onClose={() => setSwOpen(false)} style={{ boxShadow: "0 10px 30px rgba(0,0,0,.18)" }} />
+              </Collapse>
+            </div>
+          </div>
           <div className="flex items-center flex-wrap" style={{ marginTop: 2 }}>
             <input
               value={activeCluster.name}

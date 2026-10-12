@@ -14,6 +14,7 @@ const VIRTUAL_OVERSCAN = 6;
 
 export default function DataTable() {
   const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, tipeColor, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
+  const [fltOpen, setFltOpen] = React.useState(false);
   const [fillKey, setFillKey] = React.useState(null);
   const [segRef, segBox] = useSlideIndicator([tableView]);
   // Baris masuk bergantian: kelas animasi dipasang sesaat setelah tabel tampil (agar animasi CSS benar-benar mulai).
@@ -161,7 +162,12 @@ export default function DataTable() {
               <button onClick={() => { setSelectedRows([]); setBulkDeleteArmed(false); }} className="text-xs ml-auto" style={{ color: C.steel }}>Batal pilih</button>
             </div>
           )}
-          <div className="mb-2">
+          <button className="phone-only mb-2" onClick={() => setFltOpen((v) => !v)} aria-expanded={fltOpen} style={{ alignItems: "center", gap: 8, width: "100%", border: `1px solid ${C.line}`, background: "transparent", color: C.ink, borderRadius: 12, padding: "8px 12px", minHeight: 40, fontSize: 12, fontFamily: "inherit", cursor: "pointer", textAlign: "left" }}>
+            <span style={{ flex: 1 }}><b>Blok</b> {tableBlocks.length}/{blocks.length} · <b>Tipe</b> {tableTipes.length}/{tipeOptions.length}</span>
+            <span style={{ color: C.steel }}>{fltOpen ? "Tutup" : "Atur"}</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ color: C.steel, transition: "transform .3s cubic-bezier(.3,.8,.2,1)", transform: fltOpen ? "rotate(180deg)" : "none" }}><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <div className={`mb-2 flt-body ${fltOpen ? "open" : ""}`}>
             <div className="flex items-center gap-2 flex-wrap mb-1.5">
               <span className="text-xs" style={{ color: C.steel, minWidth: 40 }}>Blok:</span>
               <button onClick={() => setTableBlocks(blocks.map((b) => b.name))} className="text-xs" style={{ color: C.ink, textDecoration: "underline" }}>Select All</button>

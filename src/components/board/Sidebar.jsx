@@ -5,6 +5,7 @@ import { timeAgo } from "../../lib/calc";
 import { JAKARTA_TZ, timeFormatter, useJakartaClock } from "../../lib/jakartaClock";
 import { SlideInd, useSlideIndicator } from "../slide";
 import { Collapse } from "../anim";
+import ClusterSwitchList from "./ClusterSwitchList";
 import { useBoard } from "./BoardContext";
 
 // Menu kiri (desktop) / bar menu bawah (HP). Bisa dilipat jadi ikon saja.
@@ -40,7 +41,7 @@ function SideClock({ collapsed }) {
 }
 
 export default function Sidebar() {
-  const { activeCluster, blocks, canEdit, clusterStats, clusters, currentClusterId, displayName, goHome, goMode, houses, switchCluster, handleLogoutClick, lastBackupAt, mode, sidebarCollapsed, toggleSidebar, totalTarget } = useBoard();
+  const { activeCluster, blocks, canEdit, displayName, goHome, goMode, handleLogoutClick, lastBackupAt, mode, sidebarCollapsed, toggleSidebar, totalTarget } = useBoard();
   const [clOpen, setClOpen] = useState(false);
   const clRef = useRef(null);
   useEffect(() => {
@@ -51,7 +52,6 @@ export default function Sidebar() {
     document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
   }, [clOpen]);
-  const otherClusters = (clusters || []).filter((c) => !c.archived || c.id === currentClusterId);
   const initials = (displayName || "?").slice(0, 2).toUpperCase();
   // Latar menu aktif bergeser halus antar menu (lihat slide.jsx).
   const [menuRef, menuBox] = useSlideIndicator([mode, sidebarCollapsed]);
@@ -107,27 +107,7 @@ export default function Sidebar() {
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0, color: C.steel, transition: "transform .3s cubic-bezier(.3,.8,.2,1)", transform: clOpen ? "rotate(180deg)" : "none" }}><path d="M6 9l6 6 6-6" /></svg>
           </button>
           <Collapse open={clOpen}>
-            <div role="listbox" aria-label="Pilih cluster" style={{ border: `1px solid ${C.line}`, borderRadius: 12, marginTop: 6, overflow: "hidden", background: C.panel }}>
-              {otherClusters.map((c, i) => {
-                const active = c.id === currentClusterId;
-                const st = clusterStats && clusterStats[c.id];
-                const sub = active ? `${houses.length} / ${totalTarget || "—"} kavling` : st ? `${st.total} / ${st.target || "—"} kavling` : (c.subtitle || "");
-                return (
-                  <button key={c.id} role="option" aria-selected={active} onClick={() => { setClOpen(false); switchCluster(c.id); }}
-                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", border: "none", borderTop: i ? `1px solid ${C.line}` : "none", background: active ? tint(C.data, 14) : "transparent", color: active ? C.data : C.ink, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
-                    <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: "50%", background: c.color || C.steel, flexShrink: 0 }} />
-                    <span style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{ display: "block", fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name || "—"}</span>
-                      {sub && <span style={{ display: "block", fontSize: 11, color: C.steel }}>{sub}</span>}
-                    </span>
-                    {active && <Ic name="checkCircle" size={14} />}
-                  </button>
-                );
-              })}
-              <button onClick={() => { setClOpen(false); goHome(); }} style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", border: "none", borderTop: `1px solid ${C.line}`, background: "transparent", color: C.steel, cursor: "pointer", fontSize: 12, textAlign: "left", fontFamily: "inherit" }}>
-                <Ic name="home" size={14} />Semua cluster (Home)
-              </button>
-            </div>
+            <ClusterSwitchList onClose={() => setClOpen(false)} style={{ marginTop: 6 }} />
           </Collapse>
         </div>
       </div>

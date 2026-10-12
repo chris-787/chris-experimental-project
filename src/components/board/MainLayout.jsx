@@ -34,7 +34,7 @@ export default function MainLayout() {
         />
       )}
       {!calibrating && (
-        <div className="rounded-xl p-3 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+        <div id="inspector-anchor" className="rounded-xl p-3 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow, scrollMarginTop: 8 }}>
           <InspectorPanel />
         </div>
       )}

@@ -111,6 +111,10 @@ body {
   .sk-map-main, .sk-map-side { flex-basis: 100% !important; min-width: 0 !important; }
 }
 
+/* Elemen khusus HP (tersembunyi di layar lebar) */
+.phone-only { display: none !important; }
+@media (max-width: 760px) { .phone-only { display: inline-flex !important; } div.phone-only { display: block !important; } }
+
 /* HP: tombol opsi peta dilipat, tinggi site plan mengikuti gambar */
 .opts-toggle { display: none; }
 @media (max-width: 640px) {
@@ -162,7 +166,7 @@ body {
 @media (max-width: 1000px) { .home-grid { grid-template-columns: minmax(0, 1fr); } }
 .dash-tabs { scrollbar-width: none; }
 .dash-tabs::-webkit-scrollbar { display: none; }
-@media (max-width: 560px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } .kpi-wide { grid-column: span 2; } }
+@media (max-width: 560px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; } .kpi-grid .kpi-wide { grid-column: auto; } }
 
 /* Bentuk kartu mengikuti mockup: sudut lebih bulat, garis tipis */
 .rounded-xl { border-radius: 16px; }
@@ -315,3 +319,12 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
 .search-scroll::-webkit-scrollbar-track { background: transparent; }
 .search-scroll::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--steel) 50%, transparent); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
 .search-scroll::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--steel) 70%, transparent); background-clip: content-box; }
+
+/* HP: lebih nyaman disentuh */
+@media (max-width: 760px) {
+  /* Ukuran huruf 16px mencegah iPhone memperbesar layar sendiri saat kolom diketik. */
+  input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.editable-heading), select, textarea { font-size: 16px !important; }
+  /* Area sentuh kotak centang dan bullet status diperluas tanpa mengubah tampilannya. */
+  table.dataTbl input[type=checkbox]::before, table.dataTbl input.status-dot::before { content: ""; position: absolute; inset: -9px; }
+  .flt-body:not(.open) { display: none; }
+}
