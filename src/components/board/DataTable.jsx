@@ -132,7 +132,7 @@ export default function DataTable() {
                 <span className="text-sm font-medium" style={{ color: C.ink, whiteSpace: "nowrap" }}>Data Blok ({tableRows.length})</span>
               </div>
               <div className="flex items-center gap-1.5 flex-wrap" style={{ justifyContent: "flex-end" }}>
-                <button onClick={fitZoom} className="text-xs px-3 py-1.5 rounded-full border" title="Perkecil otomatis sampai semua kolom muat selebar layar" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Muat semua kolom</button>
+                <button onClick={fitZoom} className="text-xs px-3 py-1.5 rounded-full border" title="Perkecil otomatis sampai semua kolom muat selebar layar" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Muat semua</button>
                 <button onClick={() => setTableZoom((z) => Math.max(30, z - 10))} aria-label="Perkecil" style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
                 <span className="text-xs" style={{ color: C.steel, minWidth: 34, textAlign: "center" }}>{tableZoom}%</span>
                 <button onClick={() => setTableZoom((z) => Math.min(150, z + 10))} aria-label="Perbesar" style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>+</button>

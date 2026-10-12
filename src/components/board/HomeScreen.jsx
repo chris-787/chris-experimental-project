@@ -52,7 +52,7 @@ export default function HomeScreen() {
               <div style={{ fontSize: 12, color: C.steel }}>Created by Aditya Christiandi Sinulingga. Ver 2.0</div>
             </div>
           </div>
-          <div style={{ position: "relative", flex: "0 1 380px", minWidth: 200 }}>
+          <div style={{ position: "relative", flex: "1 1 260px", maxWidth: 380, minWidth: 200 }}>
           <label className="flex items-center gap-2 search-pill" style={{ background: C.paper, border: `1px solid ${C.line}`, borderRadius: 999, padding: "0 14px", height: 36, color: C.steel }}>
             <Ic name="search" size={16} />
             <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>Cari kavling di semua cluster</span>

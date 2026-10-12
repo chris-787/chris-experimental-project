@@ -331,6 +331,11 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
   /* Judul dan kotak cari selebar layar */
   .hdr-title, .hdr-search { flex: 1 1 100% !important; max-width: 100%; }
 }
+/* HP miring: judul, kotak cari, dan tombol Simpan berbagi satu baris supaya layar yang pendek tidak habis untuk header */
+@media (max-width: 760px) and (orientation: landscape) {
+  .hdr-title { flex: 1 1 250px !important; }
+  .hdr-search { flex: 1 1 140px !important; min-width: 140px !important; }
+}
 
 /* Tabel data layar penuh */
 .dt-card.dt-full { position: fixed; inset: 0; z-index: 95; margin: 0 !important; border-radius: 0 !important; display: flex; flex-direction: column; padding: calc(8px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left)) !important; box-sizing: border-box; overflow: hidden; }
