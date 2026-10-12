@@ -2,6 +2,7 @@ import { C } from "../../theme";
 import { Chip, Ic, cellInput, focusWhen, tint } from "../../components/ui";
 import { MONTHS } from "../../lib/constants";
 import React from "react";
+import { createPortal } from "react-dom";
 import { rupiah } from "../../lib/helpers";
 import StatusCell from "./StatusCell";
 import { statusColor } from "../../lib/palette";
@@ -12,9 +13,32 @@ import { useBoard } from "./BoardContext";
 const VIRTUAL_MIN = 60;
 const VIRTUAL_OVERSCAN = 6;
 
+// Saat layar penuh, tabel dipindah ke <body> supaya tidak terjebak di dalam kontainer halaman (animasi/transisi halaman membuat fixed ikut terkurung).
+function Portaled({ on, children }) {
+  return on ? createPortal(children, document.body) : children;
+}
+
 export default function DataTable() {
   const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, tipeColor, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
   const [fltOpen, setFltOpen] = React.useState(false);
+  // Layar penuh: tabel memenuhi seluruh layar (berguna di HP, terutama saat dimiringkan).
+  const [full, setFull] = React.useState(false);
+  React.useEffect(() => {
+    if (!full) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => { if (e.key === "Escape") setFull(false); };
+    document.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; document.removeEventListener("keydown", onKey); };
+  }, [full]);
+  // Muat semua kolom: zoom diatur otomatis supaya seluruh lebar tabel pas di layar.
+  const fitZoom = () => {
+    const box = scrollRef.current && scrollRef.current.parentElement;
+    if (!box) return;
+    const total = columns.filter((c) => !hiddenCols.includes(c.key)).reduce((sum, c) => sum + colWidth(c.key), 0);
+    if (!total) return;
+    setTableZoom(Math.min(150, Math.max(30, Math.floor(((box.clientWidth - 4) / total) * 100))));
+  };
   const [fillKey, setFillKey] = React.useState(null);
   const [segRef, segBox] = useSlideIndicator([tableView]);
   // Baris masuk bergantian: kelas animasi dipasang sesaat setelah tabel tampil (agar animasi CSS benar-benar mulai).
@@ -100,7 +124,28 @@ export default function DataTable() {
   const vEnd = virtual ? Math.min(Math.max(vRange[1], vStart), pageRows.length) : pageRows.length;
   return (
     <>
-        <div className="rounded-xl p-2.5 mb-3" style={{ background: C.panel, boxShadow: C.cardShadow }}>
+      <Portaled on={full}>
+        <div className={`rounded-xl p-2.5 mb-3 dt-card ${full ? "dt-full" : ""}`} style={{ background: C.panel, boxShadow: C.cardShadow }}>
+          {full && (
+            <div className="dt-fullbar">
+              <div className="flex items-center gap-2" style={{ minWidth: 0 }}>
+                <span className="text-sm font-medium" style={{ color: C.ink, whiteSpace: "nowrap" }}>Data Blok ({tableRows.length})</span>
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap" style={{ justifyContent: "flex-end" }}>
+                <button onClick={fitZoom} className="text-xs px-3 py-1.5 rounded-full border" title="Perkecil otomatis sampai semua kolom muat selebar layar" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Muat semua kolom</button>
+                <button onClick={() => setTableZoom((z) => Math.max(30, z - 10))} aria-label="Perkecil" style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
+                <span className="text-xs" style={{ color: C.steel, minWidth: 34, textAlign: "center" }}>{tableZoom}%</span>
+                <button onClick={() => setTableZoom((z) => Math.min(150, z + 10))} aria-label="Perbesar" style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>+</button>
+                <div className="flex items-center rounded-lg overflow-hidden" style={{ border: `1px solid ${C.line}`, background: C.panel }} role="group" aria-label="Tampilan kolom">
+                  {[["ringkas", "Ringkas"], ["lengkap", "Lengkap"]].map(([v, label]) => (
+                    <button key={v} onClick={() => setTableView(v)} className="text-xs px-2 py-1" aria-pressed={tableView === v} style={{ background: tableView === v ? C.select : "transparent", color: tableView === v ? C.selectInk : C.steel }}>{label}</button>
+                  ))}
+                </div>
+                <button onClick={() => setFull(false)} aria-label="Tutup layar penuh" title="Tutup (Esc)" style={{ width: 30, height: 30, borderRadius: 999, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel, display: "inline-flex", alignItems: "center", justifyContent: "center" }}><Ic name="close" size={14} /></button>
+              </div>
+              <div className="dt-rotate-hint text-xs" style={{ color: C.steel }}>Miringkan HP agar lebih banyak kolom terlihat.</div>
+            </div>
+          )}
           {followUpFilterActive && (
             <div className="flex items-center justify-between mb-2.5 p-2 rounded-lg" style={{ background: C.alertAmberBg, border: `1px solid ${C.amber}` }}>
               <span className="text-xs" style={{ color: C.amber }}>Menampilkan hanya kavling yang perlu ditindaklanjuti.</span>
@@ -239,12 +284,12 @@ export default function DataTable() {
               </label>
               <button onClick={resetColWidths} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.steel, background: C.panel }}>Reset</button>
               <div className="flex items-center gap-1.5">
-                <button onClick={() => setTableZoom((z) => Math.max(50, z - 10))} style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
+                <button onClick={() => setTableZoom((z) => Math.max(30, z - 10))} style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
                 <div className="flex items-center" style={{ height: 30, borderRadius: 999, border: `1px solid ${C.line}`, background: C.panel }}>
                   <input
                     type="number"
                     value={tableZoom}
-                    onChange={(e) => setTableZoom(Math.min(150, Math.max(50, Number(e.target.value) || 100)))}
+                    onChange={(e) => setTableZoom(Math.min(150, Math.max(30, Number(e.target.value) || 100)))}
                     onDoubleClick={() => setTableZoom(100)}
                     title="Zoom tabel. Klik 2x untuk kembali ke 100%"
                     style={{ width: 46, height: "100%", textAlign: "right", border: "none", outline: "none", background: "transparent", fontSize: 12, color: C.steel, padding: "0 2px 0 6px" }}
@@ -260,6 +305,7 @@ export default function DataTable() {
                     style={{ background: "transparent", color: tableView === v ? C.selectInk : C.steel }}>{label}</button>
                 ))}
               </div>
+              <button onClick={() => setFull(true)} className="text-xs px-3 py-1.5 rounded-full border inline-flex items-center gap-1.5" title="Tampilkan tabel memenuhi layar" style={{ borderColor: C.line, color: C.ink, background: C.panel }}><Ic name="expand" size={13} />Layar penuh</button>
               <div style={{ position: "relative" }}>
                 <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-3 py-1.5 rounded-full border" title="Pilih kolom yang ditampilkan" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Filter</button>
                 {showColMenu && (
@@ -299,7 +345,7 @@ export default function DataTable() {
               </span>
             </div>
           )}
-          <div ref={scrollRef} onScroll={onTableScroll} style={{ overflowAnchor: "none", overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
+          <div ref={scrollRef} className="dt-scroll" onScroll={onTableScroll} style={{ overflowAnchor: "none", overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
             {/* Kolom yang disembunyikan: cell-nya ikut disembunyikan (display:none), kalau tidak isinya
                 (lingkaran status) meluap dan menimpa kolom di sebelahnya */}
             {hiddenCols.length > 0 && (
@@ -595,7 +641,7 @@ export default function DataTable() {
             </table>
           </div>
 
-          <div className="flex items-center justify-between flex-wrap gap-2.5 mt-2.5 pt-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
+          <div className="flex items-center justify-between flex-wrap gap-2.5 mt-2.5 pt-2.5 dt-pager" style={{ borderTop: `1px solid ${C.line}` }}>
             <div className="flex items-center gap-2 text-xs" style={{ color: C.steel }}>
               <span>Show</span>
               <select value={pageSize} onChange={(e) => setPageSize(e.target.value === "all" ? "all" : Number(e.target.value))} className="text-xs px-2 py-1 rounded-lg border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>
@@ -616,6 +662,7 @@ export default function DataTable() {
             </div>
           </div>
         </div>
+      </Portaled>
     </>
   );
 }

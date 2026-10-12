@@ -331,3 +331,12 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
   /* Judul dan kotak cari selebar layar */
   .hdr-title, .hdr-search { flex: 1 1 100% !important; max-width: 100%; }
 }
+
+/* Tabel data layar penuh */
+.dt-card.dt-full { position: fixed; inset: 0; z-index: 95; margin: 0 !important; border-radius: 0 !important; display: flex; flex-direction: column; padding: calc(8px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left)) !important; box-sizing: border-box; overflow: hidden; }
+.dt-card.dt-full > *:not(.dt-fullbar):not(.dt-scroll):not(.dt-pager) { display: none !important; }
+.dt-fullbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.dt-rotate-hint { display: none; flex: 1 1 100%; }
+@media (max-width: 760px) and (orientation: portrait) { .dt-rotate-hint { display: block; } }
+.dt-card.dt-full .dt-scroll { flex: 1 1 auto; min-height: 0; max-height: none !important; }
+.dt-card.dt-full .dt-pager { margin-top: 6px; padding-top: 6px; }
