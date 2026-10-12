@@ -38,7 +38,7 @@ export default function ClusterHeader() {
   return (
     <>
       <div className="flex items-start gap-3 flex-wrap" style={{ marginBottom: 12 }}>
-        <div style={{ flex: "1 1 240px", minWidth: 0 }}>
+        <div className="hdr-title" style={{ flex: "1 1 240px", minWidth: 0 }}>
           <div ref={swRef} className="flex items-center gap-2" style={{ position: "relative", flexWrap: "wrap" }}>
             <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px", color: C.ink, lineHeight: 1.2 }}>
               {TITLES[mode]}{calibrating ? " · Edit Site Plan" : ""}
@@ -83,7 +83,7 @@ export default function ClusterHeader() {
           </div>
         </div>
 
-        <div style={{ position: "relative", flex: "0 1 300px", minWidth: 180 }}>
+        <div className="hdr-search" style={{ position: "relative", flex: "0 1 300px", minWidth: 180 }}>
           <label className="flex items-center gap-2 search-pill" style={{ background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: "0 14px", height: 36, color: C.steel }}>
             <Ic name="search" size={16} />
             <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>Cari kavling</span>

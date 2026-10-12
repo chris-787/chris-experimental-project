@@ -325,4 +325,6 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
   /* Area sentuh kotak centang dan bullet status diperluas tanpa mengubah tampilannya. */
   table.dataTbl input[type=checkbox]::before, table.dataTbl input.status-dot::before { content: ""; position: absolute; inset: -9px; }
   .flt-body:not(.open) { display: none; }
+  /* Judul dan kotak cari selebar layar */
+  .hdr-title, .hdr-search { flex: 1 1 100% !important; max-width: 100%; }
 }
