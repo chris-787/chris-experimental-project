@@ -355,11 +355,11 @@ export default function DashboardPage() {
   return (
     <div className="viz">
       <div className="flex items-center gap-2 flex-wrap mb-3">
-        <div className="flex-1" style={{ minWidth: 200 }}>
-          <div className="text-sm" style={{ color: C.steel }}>Ringkasan semua kavling terpetakan</div>
+        <div className="flex-1 dash-desc" style={{ minWidth: 200 }}>
+          <div className="text-xs" style={{ color: C.steel }}>Ringkasan semua kavling terpetakan</div>
         </div>
-        <button onClick={() => setShowSimulasi(true)} style={{ ...pillBtn, background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}><Ic name="calculator" size={15} /> Simulasi Harga</button>
-        <button onClick={printReportPDF} style={{ ...pillBtn, background: C.accent, color: "#fff", border: "1px solid transparent" }}><Ic name="printer" size={15} /> Print Laporan</button>
+        <button className="dash-btn" onClick={() => setShowSimulasi(true)} style={{ ...pillBtn, background: C.panel, color: C.ink, border: `1px solid ${C.line}` }}><Ic name="calculator" size={15} /> Simulasi Harga</button>
+        <button className="dash-btn" onClick={printReportPDF} style={{ ...pillBtn, background: C.accent, color: "#fff", border: "1px solid transparent" }}><Ic name="printer" size={15} /> Print Laporan</button>
       </div>
       <div ref={slideRef} role="tablist" aria-label="Bagian dashboard" className="dash-tabs mb-3 slide-host" style={{ display: "flex", gap: 4, background: C.panel, border: `1px solid ${C.line}`, borderRadius: 999, padding: 4, width: "fit-content", maxWidth: "100%", overflowX: "auto" }}>
         <SlideInd box={slideBox} />
