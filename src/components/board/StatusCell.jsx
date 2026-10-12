@@ -11,7 +11,7 @@ import { useBoard } from "./BoardContext";
 // status yang dipilih.
 const pillBase = { display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, lineHeight: "16px", padding: "1px 8px", borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0 };
 
-export default function StatusCell({ h, fillKey }) {
+export default function StatusCell({ h, fillKey, compact }) {
   const { statusFields, updateStatus, getDetail, setDetail, canEdit, detailEditingKey, setDetailEditingKey } = useBoard();
   const [menu, setMenu] = useState(null);
   const addRef = useRef(null);
@@ -51,6 +51,18 @@ export default function StatusCell({ h, fillKey }) {
   }
 
   const fill = fillKey && canEdit;
+  // HP tegak: hanya daftar status aktif (bisa turun baris), tanpa tombol hapus/tambah; status diubah lewat detail kavling.
+  if (compact) {
+    return (
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, minWidth: 0 }}>
+        {active.length === 0 && <span style={{ fontSize: 12, color: C.faint }}>Belum ada status</span>}
+        {active.map((s) => {
+          const col = colorOf(s);
+          return <span key={s.key} style={{ ...pillBase, background: tint(col, 16), color: `color-mix(in srgb, ${col} var(--pill-mix), ${C.ink})` }}>{s.label}</span>;
+        })}
+      </div>
+    );
+  }
   return (
     <div
       style={{ display: "flex", alignItems: "center", gap: 4, minWidth: 0, overflow: "hidden", cursor: fill ? "copy" : undefined }}

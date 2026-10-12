@@ -352,3 +352,16 @@ html.vt-sidebar .app-side, html.vt-sidebar .side-label, html.vt-sidebar .side-hi
   .side-item, .app-side.collapsed .side-item { flex-direction: row; gap: 6px; height: 34px; min-height: 0; font-size: 11px; }
   .app-main { padding-bottom: 3.5rem; }
 }
+
+/* HP tegak: daftar ringkas 3 kolom dan lembar detail dari bawah */
+table.dataTbl.dt-compact td, table.dataTbl.dt-compact th { padding-top: 9px; padding-bottom: 9px; }
+table.dataTbl.dt-compact td { white-space: normal; }
+.dt-sheet-wrap { position: fixed; inset: 0; z-index: 96; background: rgba(0,0,0,.4); display: flex; align-items: flex-end; }
+.dt-sheet { width: 100%; max-height: 88vh; overflow-y: auto; background: var(--panel); border-radius: 18px 18px 0 0; padding: 8px 12px calc(16px + env(safe-area-inset-bottom)); box-sizing: border-box; box-shadow: 0 -8px 30px rgba(0,0,0,.25); }
+.dt-sheet-grip { width: 40px; height: 4px; border-radius: 4px; background: var(--line); margin: 0 auto 10px; }
+@media (prefers-reduced-motion: no-preference) {
+  .dt-sheet-wrap { animation: sheet-fade .2s ease both; }
+  .dt-sheet { animation: sheet-up .28s cubic-bezier(.3,.8,.2,1) both; }
+  @keyframes sheet-fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+}

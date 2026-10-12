@@ -5,6 +5,7 @@ import React from "react";
 import { createPortal } from "react-dom";
 import { rupiah } from "../../lib/helpers";
 import StatusCell from "./StatusCell";
+import InspectorPanel from "./InspectorPanel";
 import { statusColor } from "../../lib/palette";
 import { SlideInd, useSlideIndicator } from "../slide";
 import { useBoard } from "./BoardContext";
@@ -13,16 +14,52 @@ import { useBoard } from "./BoardContext";
 const VIRTUAL_MIN = 60;
 const VIRTUAL_OVERSCAN = 6;
 
+// HP tegak, Data Mode: detail kavling muncul sebagai lembar dari bawah saat baris diketuk.
+function DetailSheet({ onClose }) {
+  React.useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+  return createPortal(
+    <div className="dt-sheet-wrap" onClick={onClose}>
+      <div className="dt-sheet" role="dialog" aria-label="Detail kavling" onClick={(e) => e.stopPropagation()}>
+        <div className="dt-sheet-grip" aria-hidden="true" />
+        <InspectorPanel />
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function usePhonePortrait() {
+  const q = "(max-width: 760px) and (orientation: portrait)";
+  const [v, setV] = React.useState(() => typeof window !== "undefined" && window.matchMedia(q).matches);
+  React.useEffect(() => {
+    const mq = window.matchMedia(q);
+    const on = (e) => setV(e.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return v;
+}
+
 // Saat layar penuh, tabel dipindah ke <body> supaya tidak terjebak di dalam kontainer halaman (animasi/transisi halaman membuat fixed ikut terkurung).
 function Portaled({ on, children }) {
   return on ? createPortal(children, document.body) : children;
 }
 
 export default function DataTable() {
-  const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, tipeColor, rowRefs, selectedId, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
+  const { kontraktorColorOf, tableView, setTableView, FROZEN_KEYS, blocks, canEdit, bulkDelete, bulkDeleteArmed, bulkSetFollowUp, bulkSetKategori, bulkSetStatus, bulkSetTipe, calibrating, clusterDuplicateCount, colWidth: colWidthCtx, columns, confirmDeleteId, currentPage, detailEditingKey, duplicateFilterActive, duplicateHouse, exportExcel, finalHppPerM2, followUpFilterActive, frozenLeft, getDetail, hargaJualTotal, hiddenCols: hiddenColsCtx, houses, hppTotal, importExcel, importMsg, isDuplicateKavling, isIncomplete, kategoriOptions, lastDeleted, lastDeletedBulk, luasBangunanOf, marginOf, marginPct, mode, monthEditingKey, pageRows, pageSize, priceEditingKey, rangeEnd, rangeStart, removeHouse, resetColWidths, rowBg, zebraBg, tipeColor, rowRefs, selectedId, selectFromMap, selectedRows, setBulkDeleteArmed, setConfirmDeleteId, setCurrentPage, setDetail, setDetailEditingKey, setDuplicateFilterActive, setFollowUpFilterActive, setImportMsg, setMonthEditingKey, setPageSize, setPriceEditingKey, setSelectedId, setSelectedRows, setShowColMenu, setTableBlocks, setTableStatusFilter, setTableTipes, setTableZoom, setTextEditingKey, showColMenu, sortDir, sortKey, startColResize, statusFields, tableBlocks, tableRows, tableStatusFilter, tableTipes, tableZoom, textEditingKey, tipeOptions, toggleColHidden, toggleRowSelect, toggleSort, toggleTableBlock, toggleTableTipe, totalPages, totalRows, undoBulkDelete, undoDelete, updateHouse, updateStatus } = useBoard();
+  // HP tegak: daftar ringkas 3 kolom (Kavling, Tipe, Status); semua kolom ada di Layar penuh.
+  const phonePortrait = usePhonePortrait();
+  const [full, setFull] = React.useState(false);
+  const compact = phonePortrait && !full;
+  const COMPACT_KEEP = ["select", "kavling", "tipe", "statusGab"];
+  const hiddenCols = compact ? columns.filter((c) => !COMPACT_KEEP.includes(c.key)).map((c) => c.key) : hiddenColsCtx;
+  const colWidth = (k) => (compact ? ({ select: 34, kavling: 88, tipe: 96, statusGab: "auto" }[k]) : colWidthCtx(k));
   const [fltOpen, setFltOpen] = React.useState(false);
   // Layar penuh: tabel memenuhi seluruh layar (berguna di HP, terutama saat dimiringkan).
-  const [full, setFull] = React.useState(false);
   React.useEffect(() => {
     if (!full) return undefined;
     const prev = document.body.style.overflow;
@@ -44,7 +81,7 @@ export default function DataTable() {
   // Baris masuk bergantian: kelas animasi dipasang sesaat setelah tabel tampil (agar animasi CSS benar-benar mulai).
   const [rowsIn, setRowsIn] = React.useState(false);
   React.useEffect(() => { const id = setTimeout(() => setRowsIn(true), 60); return () => clearTimeout(id); }, []);
-  const fillOk = tableView === "ringkas" && canEdit && !hiddenCols.includes("statusGab");
+  const fillOk = !compact && tableView === "ringkas" && canEdit && !hiddenCols.includes("statusGab");
   React.useEffect(() => { if (!fillOk) setFillKey(null); }, [fillOk]);
   React.useEffect(() => {
     if (!fillKey) return undefined;
@@ -282,6 +319,7 @@ export default function DataTable() {
                 Import Excel/CSV
                 <input type="file" accept=".xlsx,.xls,.csv" onChange={importExcel} style={{ display: "none" }} />
               </label>
+              {!compact && (<>
               <button onClick={resetColWidths} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.steel, background: C.panel }}>Reset</button>
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setTableZoom((z) => Math.max(30, z - 10))} style={{ width: 30, height: 30, borderRadius: 999, fontSize: 15, cursor: "pointer", border: `1px solid ${C.line}`, color: C.ink, background: C.panel }}>−</button>
@@ -305,7 +343,9 @@ export default function DataTable() {
                     style={{ background: "transparent", color: tableView === v ? C.selectInk : C.steel }}>{label}</button>
                 ))}
               </div>
+              </>)}
               <button onClick={() => setFull(true)} className="text-xs px-3 py-1.5 rounded-full border inline-flex items-center gap-1.5" title="Tampilkan tabel memenuhi layar" style={{ borderColor: C.line, color: C.ink, background: C.panel }}><Ic name="expand" size={13} />Layar penuh</button>
+              {!compact && (
               <div style={{ position: "relative" }}>
                 <button onClick={() => setShowColMenu((v) => !v)} className="text-xs px-3 py-1.5 rounded-full border" title="Pilih kolom yang ditampilkan" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>Filter</button>
                 {showColMenu && (
@@ -320,6 +360,7 @@ export default function DataTable() {
                   </div>
                 )}
               </div>
+              )}
             </div>
           </div>
 
@@ -345,13 +386,13 @@ export default function DataTable() {
               </span>
             </div>
           )}
-          <div ref={scrollRef} className="dt-scroll" onScroll={onTableScroll} style={{ overflowAnchor: "none", overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
+          <div ref={scrollRef} className="dt-scroll" onScroll={onTableScroll} style={{ overflowAnchor: "none", overflowX: "auto", maxHeight: mode === "data" ? "calc(100vh - 130px)" : 940, overflowY: "auto", zoom: compact ? 1 : tableZoom / 100, border: `1px solid ${C.line}`, borderRadius: 12 }}>
             {/* Kolom yang disembunyikan: cell-nya ikut disembunyikan (display:none), kalau tidak isinya
                 (lingkaran status) meluap dan menimpa kolom di sebelahnya */}
             {hiddenCols.length > 0 && (
               <style>{columns.map((c, i) => (hiddenCols.includes(c.key) ? `table.dataTbl > thead > tr > :nth-child(${i + 1}), table.dataTbl > tbody > tr > :nth-child(${i + 1}):not([colspan]) { display: none; }` : "")).join("\n")}</style>
             )}
-            <table className="dataTbl w-full" style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
+            <table className={`dataTbl w-full ${compact ? "dt-compact" : ""}`} style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
                 {columns.filter((c) => !hiddenCols.includes(c.key)).map((c) => (
                   <col key={c.key} style={{ width: colWidth(c.key) }} />
@@ -401,7 +442,7 @@ export default function DataTable() {
                   <tr aria-hidden="true"><td colSpan={17 + statusFields.length} style={{ height: vStart * rowH, padding: 0, border: 0 }} /></tr>
                 )}
                 {pageRows.slice(vStart, vEnd).map((h, k) => { const i = vStart + k; return (
-                  <tr key={h.id} data-row="1" className={[!virtual && i < 24 ? (rowsIn ? "row-in" : "row-pre") : "", selectedId === h.id && !selectedRows.includes(h.id) ? "row-sel" : ""].join(" ").trim() || undefined} ref={(el) => (rowRefs.current[h.id] = el)} style={{ "--i": i, background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? "var(--row-selected)" : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => selectRow(h.id)}>
+                  <tr key={h.id} data-row="1" className={[!virtual && i < 24 ? (rowsIn ? "row-in" : "row-pre") : "", selectedId === h.id && !selectedRows.includes(h.id) ? "row-sel" : ""].join(" ").trim() || undefined} ref={(el) => (rowRefs.current[h.id] = el)} style={{ "--i": i, background: selectedRows.includes(h.id) ? C.alertAmberBg : selectedId === h.id ? "var(--row-selected)" : i % 2 === 1 ? zebraBg : "transparent", cursor: "pointer" }} onClick={() => (compact && mode === "kerja" ? selectFromMap(h.id) : selectRow(h.id))}>
                     <td className="text-center frz" style={{ color: C.steel, fontFamily: "IBM Plex Mono, monospace", left: frozenLeft.no, background: rowBg(h, i) }} onClick={(e) => e.stopPropagation()}>
                       {(pageSize === "all" ? 0 : (currentPage - 1) * pageSize) + i + 1}
                     </td>
@@ -427,6 +468,13 @@ export default function DataTable() {
                         )}
                       </div>
                     </td>
+                    {compact ? (
+                      <td>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: C.ink }}>
+                          <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: 3, background: tipeColor(h.tipe), flexShrink: 0 }} />{h.tipe}
+                        </span>
+                      </td>
+                    ) : (
                     <td onClick={(e) => e.stopPropagation()}>
                       <div style={{ position: "relative" }}>
                         <span aria-hidden="true" style={{ position: "absolute", left: 8, top: "50%", marginTop: -4, width: 8, height: 8, borderRadius: 3, background: tipeColor(h.tipe), pointerEvents: "none" }} />
@@ -435,13 +483,14 @@ export default function DataTable() {
                         </select>
                       </div>
                     </td>
+                    )}
                     <td>
                       <select style={cellInput} value={h.kategori} onChange={(e) => updateHouse(h.id, { kategori: e.target.value })}>
                         {kategoriOptions.map((k) => <option key={k} value={k}>{k}</option>)}
                       </select>
                     </td>
                     <td>
-                      <StatusCell h={h} fillKey={fillKey} />
+                      <StatusCell h={h} fillKey={fillKey} compact={compact} />
                     </td>
                     {statusFields.map((s) => (
                       <td key={s.key} className={s.hasDetail ? "" : "text-center"}>
@@ -663,6 +712,7 @@ export default function DataTable() {
           </div>
         </div>
       </Portaled>
+      {compact && mode === "data" && selectedId && <DetailSheet onClose={() => setSelectedId(null)} />}
     </>
   );
 }

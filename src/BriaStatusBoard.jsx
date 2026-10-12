@@ -1252,7 +1252,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
     setSelectedId(id);
     // Di HP detail kavling ada di bawah peta, jadi layar digulir ke sana supaya hasil ketukan langsung terlihat.
     if (typeof window !== "undefined" && window.innerWidth <= 760) {
-      setTimeout(() => document.getElementById("inspector-anchor")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+      setTimeout(() => document.getElementById("inspector-anchor")?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
     }
   }
   function toggleTableBlock(name) {
