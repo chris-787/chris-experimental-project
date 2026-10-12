@@ -1613,6 +1613,7 @@ export default function BriaStatusBoard({ onLogout, session }) {
         @media (max-width: 680px) {
           .inspector-cols { grid-template-columns: minmax(0, 1fr); gap: 12px; }
         }
+        table.dataTbl td button.text-xs { font-size: 12px; }
         table.dataTbl tr:hover td { background: var(--row-hover) !important; }
         table.dataTbl tr.row-sel td, table.dataTbl tr.row-sel:hover td { background: var(--row-selected) !important; }
         table.dataTbl tr.row-sel td:first-child { box-shadow: inset 4px 0 0 ${C.accent}; }

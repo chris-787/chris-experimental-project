@@ -9,7 +9,7 @@ import { useBoard } from "./BoardContext";
 // label berwarna (detail ikut di dalam label). Tombol "+ status" membuka daftar
 // status yang belum aktif. Saat "Isi cepat" menyala, klik sel = nyalakan/matikan
 // status yang dipilih.
-const pillBase = { display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, lineHeight: "16px", padding: "1px 8px", borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0 };
+const pillBase = { display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, lineHeight: "16px", padding: "1px 8px", borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0 };
 
 export default function StatusCell({ h, fillKey }) {
   const { statusFields, updateStatus, getDetail, setDetail, canEdit, detailEditingKey, setDetailEditingKey } = useBoard();
@@ -56,7 +56,7 @@ export default function StatusCell({ h, fillKey }) {
       style={{ display: "flex", alignItems: "center", gap: 4, minWidth: 0, overflow: "hidden", cursor: fill ? "copy" : undefined }}
       onClick={fill ? (e) => { e.stopPropagation(); updateStatus(h.id, fillKey, !h.status[fillKey]); } : undefined}
     >
-      {active.length === 0 && <span style={{ fontSize: 11, color: C.faint, whiteSpace: "nowrap" }}>Belum ada status</span>}
+      {active.length === 0 && <span style={{ fontSize: 12, color: C.faint, whiteSpace: "nowrap" }}>Belum ada status</span>}
       {active.map((s) => {
         const col = colorOf(s);
         const key = `${h.id}:${s.key}`;
@@ -74,7 +74,7 @@ export default function StatusCell({ h, fillKey }) {
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") setDetailEditingKey(null); }}
                 onBlur={() => setDetailEditingKey(null)}
                 placeholder="keterangan"
-                style={{ ...cellInput, width: 110, minWidth: 80, height: 18, padding: "0 6px", fontSize: 11, borderRadius: 999 }}
+                style={{ ...cellInput, width: 110, minWidth: 80, height: 20, padding: "0 6px", fontSize: 12, borderRadius: 999 }}
               />
             </span>
           );

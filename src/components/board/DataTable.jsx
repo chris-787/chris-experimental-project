@@ -368,7 +368,7 @@ export default function DataTable() {
                         {!isDuplicateKavling(h) && isIncomplete(h) && <span title="Data harga/luas bangunan belum lengkap" style={{ width: 7, height: 7, borderRadius: "50%", background: C.gold, flexShrink: 0 }} />}
                         {calibrating ? (
                           <div className="flex items-center gap-1" style={{ minWidth: 0 }}>
-                            <span style={{ color: C.steel, flexShrink: 0, fontSize: 11 }}>{h.blok}-</span>
+                            <span style={{ color: C.steel, flexShrink: 0, fontSize: 12 }}>{h.blok}-</span>
                             <input
                               defaultValue={h.noKavling}
                               onBlur={(e) => updateHouse(h.id, { noKavling: e.target.value })}
@@ -412,13 +412,13 @@ export default function DataTable() {
                                   onKeyDown={(e) => { if (e.key === "Enter") setDetailEditingKey(null); }}
                                   placeholder="mis. keterangan"
                                 />
-                                <button onClick={() => setDetailEditingKey(null)} style={{ fontSize: 11, color: "#fff", background: C.accent, borderRadius: 8, padding: "0 6px", height: 20, flexShrink: 0 }}>✓</button>
+                                <button onClick={() => setDetailEditingKey(null)} style={{ fontSize: 12, color: "#fff", background: C.accent, borderRadius: 8, padding: "0 6px", height: 20, flexShrink: 0 }}>✓</button>
                               </div>
                             ) : (
                               <div
                                 onClick={(e) => { e.stopPropagation(); setDetailEditingKey(`${h.id}:${s.key}`); }}
                                 title={getDetail(h, s.key) || "Klik untuk isi"}
-                                style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 11, color: getDetail(h, s.key) ? C.ink : C.steel, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, lineHeight: "18px" }}
+                                style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 12, color: getDetail(h, s.key) ? C.ink : C.steel, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, lineHeight: "18px" }}
                               >
                                 {getDetail(h, s.key) || "Klik untuk isi"}
                               </div>
@@ -485,7 +485,7 @@ export default function DataTable() {
                       ) : (
                         <div
                           onClick={(e) => { e.stopPropagation(); setMonthEditingKey(h.id); }}
-                          style={{ fontSize: 11, color: C.ink, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, textAlign: "center" }}
+                          style={{ fontSize: 12, color: C.ink, cursor: "pointer", padding: "0 6px", border: `1px dashed ${C.line}`, borderRadius: 8, textAlign: "center" }}
                         >
                           {MONTHS[h.spkBulan - 1]}
                         </div>
@@ -506,7 +506,7 @@ export default function DataTable() {
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:hpp`); }}
                           title="Klik untuk ubah"
-                          style={{ fontSize: 11, color: C.data, cursor: "pointer", padding: "1px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.data, 14) }}
+                          style={{ fontSize: 12, color: C.data, cursor: "pointer", padding: "1px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.data, 14) }}
                         >
                           <span style={{ opacity: 0.65 }}>{rupiah(h.hppPerM2)}</span>
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hppTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
@@ -519,7 +519,7 @@ export default function DataTable() {
                         {h.adendum && <input type="number" style={{ ...cellInput, minWidth: 90 }} value={h.adendumAmount || ""} onChange={(e) => updateHouse(h.id, { adendumAmount: Number(e.target.value) || 0 })} />}
                       </div>
                       {h.adendum && h.adendumAmount ? (
-                        <div style={{ fontSize: 10, color: h.adendumAmount < 0 ? C.red : C.steel, marginTop: 2, whiteSpace: "normal", wordBreak: "break-word" }}>{rupiah(h.adendumAmount)}</div>
+                        <div style={{ fontSize: 12, color: h.adendumAmount < 0 ? C.red : C.steel, marginTop: 2, whiteSpace: "normal", wordBreak: "break-word" }}>{rupiah(h.adendumAmount)}</div>
                       ) : null}
                     </td>
                     <td>
@@ -536,7 +536,7 @@ export default function DataTable() {
                         <div
                           onClick={(e) => { e.stopPropagation(); setPriceEditingKey(`${h.id}:harga`); }}
                           title="Klik untuk ubah"
-                          style={{ fontSize: 11, color: C.accent2, cursor: "pointer", padding: "1px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.accent, 14) }}
+                          style={{ fontSize: 12, color: C.accent2, cursor: "pointer", padding: "1px 8px", borderRadius: 8, whiteSpace: "nowrap", textAlign: "center", background: tint(C.accent, 14) }}
                         >
                           <span style={{ opacity: 0.65 }}>{rupiah(h.hargaJualPerM2)}</span>
                           {luasBangunanOf(h) ? <> → <b>{rupiah(hargaJualTotal(h))}</b></> : <span style={{ color: C.amber }}> (atur LB Tipe)</span>}
@@ -544,10 +544,10 @@ export default function DataTable() {
                       )}
                     </td>
                     <td style={{ fontFamily: "IBM Plex Mono, monospace", color: marginPct(h) >= 20 ? C.green : C.red, fontWeight: 600, whiteSpace: "nowrap" }}>
-                      {!luasBangunanOf(h) ? <span style={{ color: C.steel, fontWeight: 400, fontSize: 11 }}>atur LB Tipe</span> : (
+                      {!luasBangunanOf(h) ? <span style={{ color: C.steel, fontWeight: 400, fontSize: 12 }}>atur LB Tipe</span> : (
                         <>
                           {marginPct(h).toFixed(2)}%
-                          <span style={{ fontSize: 10, fontWeight: 400, color: C.steel, marginLeft: 6 }}>{rupiah(marginOf(h))}</span>
+                          <span style={{ fontSize: 12, fontWeight: 400, color: C.steel, marginLeft: 6 }}>{rupiah(marginOf(h))}</span>
                           {h.adendum && h.adendumAmount ? <div style={{ fontSize: 9, fontWeight: 400, color: C.steel }}>HPP/m² efektif: {rupiah(Math.round(finalHppPerM2(h)))}</div> : null}
                         </>
                       )}
