@@ -304,7 +304,7 @@ export default function DataTable() {
                 <span className="flex items-center gap-1 text-xs" style={{ color: C.steel }}><span style={{ width: 7, height: 7, borderRadius: "50%", background: C.gold, display: "inline-block" }} /> Data belum lengkap</span>
               </div>
             </div>
-            <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="flex items-center gap-2.5 flex-wrap dt-tools">
               <select value={tableStatusFilter} onChange={(e) => setTableStatusFilter(e.target.value)} className="text-xs px-3 py-1.5 rounded-full border" style={{ borderColor: C.line, color: C.ink, background: C.panel }}>
                 <option value="semua">Semua Status</option>
                 {statusFields.map((s) => (
@@ -365,7 +365,7 @@ export default function DataTable() {
           </div>
 
           {fillOk && (
-            <div className="flex items-center gap-1.5 flex-wrap mb-2">
+            <div className="flex items-center gap-1.5 flex-wrap mb-2 dt-fillbar">
               <span className="text-xs font-semibold" style={{ color: C.ink }}>Isi cepat:</span>
               {statusFields.map((s, i) => {
                 const col = statusColor(i);

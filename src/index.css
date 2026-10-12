@@ -365,3 +365,11 @@ table.dataTbl.dt-compact td { white-space: normal; }
   @keyframes sheet-fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 }
+
+/* HP miring: toolbar tabel satu baris yang bisa digeser, supaya baris data tidak tertutup */
+@media (max-width: 760px) and (orientation: landscape) {
+  .dt-card:not(.dt-full) .dt-tools { flex-wrap: nowrap !important; overflow-x: auto; padding-bottom: 4px; }
+  .dt-card:not(.dt-full) .dt-tools > * { flex-shrink: 0; }
+  .dt-card:not(.dt-full) .dt-tools > button[title^="Tampilkan tabel memenuhi"] { order: -1; }
+  .dt-card:not(.dt-full) .dt-fillbar > span:last-child { display: none; }
+}
