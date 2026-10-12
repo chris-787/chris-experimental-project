@@ -373,3 +373,8 @@ table.dataTbl.dt-compact td { white-space: normal; }
   .dt-card:not(.dt-full) .dt-tools > button[title^="Tampilkan tabel memenuhi"] { order: -1; }
   .dt-card:not(.dt-full) .dt-fillbar > span:last-child { display: none; }
 }
+
+/* Home di HP: bar atas dua baris rapi (merek di atas; kotak cari, tema, dan Log Out di bawahnya) */
+@media (max-width: 760px) {
+  .home-brand { flex: 1 1 100% !important; }
+}

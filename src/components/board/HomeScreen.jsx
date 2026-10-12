@@ -34,7 +34,7 @@ export default function HomeScreen() {
       {/* BAR ATAS (Home tidak memakai sidebar) */}
       <div style={{ margin: "-1rem -1rem 0", background: C.panel, borderBottom: `1px solid ${C.line}`, padding: "12px 24px" }}>
         <div className="flex items-center gap-3 flex-wrap" style={{ maxWidth: 1180, margin: "0 auto", position: "relative" }}>
-          <div className="flex items-center gap-2.5" style={{ flex: "1 1 240px", minWidth: 0 }}>
+          <div className="flex items-center gap-2.5 home-brand" style={{ flex: "1 1 320px", minWidth: 0 }}>
             <BrandMark size={36} />
             <div style={{ minWidth: 0 }}>
               <input
@@ -49,7 +49,7 @@ export default function HomeScreen() {
                 size={Math.max(appTitle.length, 10)}
                 style={{ color: C.ink, background: "transparent", border: "none", borderBottom: "1px dashed transparent", outline: "none", padding: 0, fontFamily: "inherit", fontSize: 14, fontWeight: 700, maxWidth: "100%", display: "block" }}
               />
-              <div style={{ fontSize: 12, color: C.steel }}>Created by Aditya Christiandi Sinulingga. Ver 2.0</div>
+              <div style={{ fontSize: 12, color: C.steel, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Created by Aditya Christiandi Sinulingga. Ver 2.0</div>
             </div>
           </div>
           <div style={{ position: "relative", flex: "1 1 260px", maxWidth: 380, minWidth: 200 }}>
